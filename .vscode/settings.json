@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "listutils.h": "c",
+        "sortalgorithms.h": "c"
+    }
+}
