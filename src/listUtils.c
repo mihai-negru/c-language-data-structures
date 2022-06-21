@@ -13,7 +13,7 @@ linkedList* createLinkedList(int (*compareData)(void *, void *), void (*printDat
         newList->compareData = compareData;
         newList->printData = printData;
         newList->freeData = freeData;
-        newList->head = NULL;
+        newList->head = newList->tail = NULL;
         newList->size = 0;
     } else {
         errno = ENOMEM;
@@ -41,81 +41,52 @@ TlistNode* createlistNode(void *data, size_t dataSize) {
     return newNode;
 }
 
+int is_list_empty(linkedList *list) {
+    (void)list;
+
+    return 0;
+}
+
+int get_list_size(linkedList *list) {
+    (void)list;
+
+    return 0;
+}
+
+void list_swap_data(linkedList *list, TlistNode *firstNode, TlistNode *secondNode) {
+    (void)list;
+    (void)firstNode;
+    (void)secondNode;
+}
+
+int list_change_data(linkedList *list, TlistNode *baseNode, void *newData) {
+    (void)list;
+    (void)baseNode;
+    (void)newData;
+
+    return 0;
+}
+
 int list_insert(linkedList *list, void *data, size_t dataSize) {
-    if (list == NULL || data == NULL)
-        return -1;
-
-    TlistNode *newNode = createlistNode(data, dataSize);
-    
-    if (newNode == NULL)
-        return -1;
-
-    if (list->head == NULL) {
-        list->head = newNode;
-    } else {
-        TlistNode *iterator = list->head;
-
-        while (iterator->next != NULL)
-            iterator = iterator->next;
-
-        iterator->next = newNode;
-    }
-
-    ++(list->size);
+    (void)list;
+    (void)data;
+    (void)dataSize;
 
     return 0;
 }
 
 int list_insert_order(linkedList *list, void *data, size_t dataSize) {
-    if (list == NULL || data == NULL)
-        return -1;
-
-    TlistNode *newNode = createlistNode(data, dataSize);
-    
-    if (newNode == NULL)
-        return -1;
-
-    if (list->head == NULL) {
-        list->head = newNode;
-    } else {
-        TlistNode *iterator = list->head;
-        TlistNode *prev_iterator = NULL;
-
-        while (iterator != NULL && list->compareData(newNode->data, iterator->data) > 0) {
-            prev_iterator = iterator;
-            iterator = iterator->next;
-        }
-
-        newNode->next = iterator;
-
-        if (prev_iterator)
-            prev_iterator->next = newNode;
-        else
-            list->head = newNode;
-    }
-
-    ++(list->size);
+    (void)list;
+    (void)data;
+    (void)dataSize;
 
     return 0;
 }
 
 int list_insert_front(linkedList *list, void *data, size_t dataSize) {
-    if (list == NULL || data == NULL)
-        return -1;
-
-    TlistNode *newNode = createlistNode(data, dataSize);
-    
-    if (newNode == NULL)
-        return -1;
-
-    if (list->head == NULL) {
-        list->head = newNode;
-    } else {
-        newNode->next = list->head;
-        list->head = newNode;
-    }
-
-    ++(list->size);
+    (void)list;
+    (void)data;
+    (void)dataSize;
 
     return 0;
 }
@@ -143,6 +114,28 @@ TlistNode* list_find_index(linkedList *list, int dataIndex) {
 TlistNode* list_find_data(linkedList *list, void *data) {
     (void)list;
     (void)data;
+    return NULL;
+}
+
+linkedList* list_erase(linkedList *list, int leftIndex, int rightIndex) {
+    (void)list;
+    (void)leftIndex;
+    (void)rightIndex;
+
+    return NULL;
+}
+
+linkedList* list_filter(linkedList *list, int (*filterFunction)(void *)) {
+    (void)list;
+    (void)filterFunction;
+
+    return NULL;
+}
+
+linkedList* list_map(linkedList *list, int (*mapFunction)(void *)) {
+    (void)list;
+    (void)mapFunction;
+
     return NULL;
 }
 

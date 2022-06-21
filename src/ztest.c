@@ -25,26 +25,5 @@ void freeInt(void *a) {
 int main(void) {
     linkedList *list = createLinkedList(&compareInt, &printInt, &freeInt);
     
-    if (list == NULL) return 0;
-    FILE *fin = NULL;
-
-    if ((fin = fopen("ztest.txt", "r")) == NULL) {
-        perror("Could not open the file");
-        return -1;
-    }
-
-    student some;
-    int age;
-
-    while (fscanf(fin, "%d", &age) > 0) {
-        some.nume = malloc(100);
-        snprintf(some.nume, 100, "%c", age);
-        some.age = age;
-        list_insert(list, &some, sizeof(student));
-    }
-
-    fclose(fin);
-    list_print(list);
-    printf("\n");
     list_free_all(list);
 }
