@@ -1,2 +1,5 @@
 .vscode/c_cPP_properties.json
 .vscode/settings.json
+src/ztest.c
+src/ztest.txt
+src/ztest

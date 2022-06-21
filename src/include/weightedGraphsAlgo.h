@@ -1,5 +1,5 @@
-#ifndef COST_GRAPH_ALGO_H_
-#define COST_GRAPH_ALGO_H_
+#ifndef WEIGHTED_GRAPH_ALGO_H_
+#define WEIGHTED_GRAPH_ALGO_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,4 +7,4 @@
 #include <errno.h>
 #include "functionTypes.h"
 
-#endif // COST_GRAPH_ALGO_H_
+#endif // WEIGHTED_GRAPH_ALGO_H_

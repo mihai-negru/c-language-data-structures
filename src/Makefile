@@ -1,7 +1,7 @@
 CFLAGS = -c -g -Wextra -Werror -Wall
 
 FILES = ./avlTreeUtils.c ./bstUtils.c \
-		./costGraphsAlgo.c ./listUtils.c \
+		./weightedGraphsAlgo.c ./listUtils.c \
 		./doubleListUtils.c ./heapUtils.c \
 		./hashTableUtils.c ./sortAlgorithms.c \
 		./ordGraphUtils.c ./priQueueUtils.c \
@@ -9,7 +9,7 @@ FILES = ./avlTreeUtils.c ./bstUtils.c \
 		./unordGraphUtils.c ./functionTypes.c \
 		./redBlackTreeUtils.c
 
-OUTFILES = avlTreeUtils.o bstUtils.o costGraphsAlgo.o \
+OUTFILES = avlTreeUtils.o bstUtils.o weightedGraphsAlgo.o \
 		 doubleListUtils.o hashTableUtils.o \
 		 heapUtils.o listUtils.o ordGraphUtils.o \
 		 priQueueUtils.o queueUtils.o sortAlgorithms.o \
@@ -37,4 +37,4 @@ run: ztest
 
 clean:
 	@find . -type f -name "*.o" -exec rm -rf {} \;
-	@rm -rf test
+	@rm -rf ztest
