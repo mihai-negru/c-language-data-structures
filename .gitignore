@@ -3,3 +3,4 @@
 src/ztest.c
 src/ztest.txt
 src/ztest
+src/libdatastruc.a
