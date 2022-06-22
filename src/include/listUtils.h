@@ -45,42 +45,119 @@ typedef struct {
     size_t size;
 } linkedList;
 
-linkedList* createLinkedList(int (*compareData)(void *, void *),
-                            void (*printData)(void *),
-                            void (*freeData)(void *));
+linkedList* createLinkedList(
+    int (*compareData)(void *, void *),
+    void (*printData)(void *),
+    void (*freeData)(void *)
+);
 
-TlistNode* createlistNode(void *data, size_t dataSize);
+TlistNode* createlistNode(
+    void *data,
+    size_t dataSize
+);
 
-int is_list_empty(linkedList *list);
+void list_print(
+    linkedList *list
+);
 
-int get_list_size(linkedList *list);
+void list_free_all(
+    linkedList *list
+);
 
-void list_swap_data(linkedList *list, TlistNode *firstNode, TlistNode *secondNode);
+int is_list_empty(
+    linkedList *list
+);
 
-int list_change_data(linkedList *list, TlistNode *baseNode, void *newData);
+int get_list_size(
+    linkedList *list
+);
 
-int list_insert(linkedList *list, void *data, size_t dataSize);
+TlistNode* get_list_head(
+    linkedList *list
+);
 
-int list_insert_order(linkedList *list, void *data, size_t dataSize);
+TlistNode* get_list_tail(
+    linkedList *list
+);
 
-int list_insert_front(linkedList *list, void *data, size_t dataSize);
+void list_swap_data(
+    linkedList *list,
+    TlistNode *firstNode,
+    TlistNode *secondNode
+);
 
-int list_delete_data(linkedList *list, void *data);
+int list_change_data(
+    linkedList *list,
+    TlistNode *baseNode,
+    void *newData,
+    size_t dataSize
+);
 
-int list_delete_index(linkedList *list, int dataIndex);
+int list_insert(
+    linkedList *list,
+    void *data,
+    size_t dataSize
+);
 
-TlistNode* list_find_index(linkedList *list, int dataIndex);
+int list_insert_order(
+    linkedList *list,
+    void *data,
+    size_t dataSize
+);
 
-TlistNode* list_find_data(linkedList *list, void *data);
+int list_insert_front(
+    linkedList *list,
+    void *data,
+    size_t dataSize
+);
 
-linkedList* list_erase(linkedList *list, int leftIndex, int rightIndex);
+int list_insert_index(
+    linkedList *list,
+    void *data,
+    size_t dataSize,
+    size_t dataIndex
+);
 
-linkedList* list_filter(linkedList *list, int (*filterFunction)(void *));
+TlistNode* list_find_index(
+    linkedList *list,
+    size_t dataIndex
+);
 
-linkedList* list_map(linkedList *list, int (*mapFunction)(void *));
+TlistNode* list_find_data(
+    linkedList *list,
+    void *data
+);
 
-void list_print(linkedList *list);
+int list_delete_data(
+    linkedList *list,
+    void *data
+);
 
-void list_free_all(linkedList *list);
+int list_delete_index(
+    linkedList *list,
+    size_t dataIndex
+);
+
+int list_erase(
+    linkedList *list,
+    size_t leftIndex,
+    size_t rightIndex
+);
+
+linkedList* list_filter(
+    linkedList *list,
+    int (*filterFunction)(void *),
+    size_t dataSize
+);
+
+void list_map(
+    linkedList *list,
+    void* (*mapFunction)(void *),
+    size_t dataSize
+);
+
+void list_sort(
+    linkedList *list
+);
 
 #endif // LIST_UTILS_H_

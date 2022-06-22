@@ -32,7 +32,7 @@ delLib: $(LIBNAME)
 test: libdatastruc.a ztest.c
 	@gcc ztest.c -g -Wall -Wextra -L. -ldatastruc -o ztest
 
-run: ztest
+run: test
 	@valgrind --leak-check=full --show-leak-kinds=all ./ztest
 
 clean:
