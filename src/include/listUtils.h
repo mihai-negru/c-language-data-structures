@@ -156,8 +156,4 @@ void list_map(
     size_t dataSize
 );
 
-void list_sort(
-    linkedList *list
-);
-
 #endif // LIST_UTILS_H_
