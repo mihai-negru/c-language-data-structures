@@ -31,18 +31,26 @@
 #include <errno.h>
 #include "functionTypes.h"
 
+/**
+ * @brief Linked List Node object definition
+ * 
+ */
 typedef struct listNode {
-    void *data;
-    struct listNode *next;
+    void *data;                 // Pointer to data
+    struct listNode *next;      // Pointer to next node
 } TlistNode;
 
+/**
+ * @brief Linked List object definition
+ * 
+ */
 typedef struct {
-    TlistNode *head;
-    TlistNode *tail;
-    int (*compareData)(void *, void *);
-    void (*printData)(void *);
-    void (*freeData)(void *);
-    size_t size;
+    TlistNode *head;                        // head of linked list
+    TlistNode *tail;                        // tail of linked list
+    int (*compareData)(void *, void *);     // function to compare items
+    void (*printData)(void *);              // function to print item
+    void (*freeData)(void *);               // function to free item
+    size_t size;                            // size of linked list
 } linkedList;
 
 linkedList* createLinkedList(
