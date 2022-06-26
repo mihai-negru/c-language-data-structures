@@ -524,149 +524,199 @@ TlistNode* list_find_data(linkedList *list, void *data) {
 }
 
 /**
- * @brief 
+ * @brief Function to delete a node based on a value. Program will
+ * recieve a list and a pointer to data that user wants to be deleted.
+ * However data pointer has to be valid and to exist in the current list
+ * (If you are not sure that data exists you should not call list_find_data because
+ * delete function will find it by itself and in case it does not exist it will return 1)
  * 
- * @param list 
- * @param data 
- * @return int 
+ * @param list a linked list object
+ * @param data a pointer to a typed data to be removed 
+ * @return int 1 if function failed (list is NULL, list is empty, no valid data pointer
+ * or element is not in the list) and 0 if function passed successfully
  */
 int list_delete_data(linkedList *list, void *data) {
+    // Check if list is allocated and it is not empty
+    // Check if data pointer is valid
     if (list == NULL || list->head == NULL || data == NULL)
         return 1;
 
     TlistNode *iterator = list->head;
     TlistNode *prevIterator = NULL;
 
+    // Find list data associated with data pointer
     while (iterator != NULL && list->compareData(iterator->data, data) != 0) {
         prevIterator = iterator;
         iterator = iterator->next;
     }
 
+    // List does not contain such element
     if (iterator == NULL)
         return 1;
 
     if (prevIterator == NULL) {
+        // Element is the head of the list
         list->head = list->head->next;
     } else {
+        // Update link with next node
         prevIterator->next = iterator->next;
 
+        // Update tail if necessary
         if (iterator->next == NULL)
             list->tail = prevIterator;
     }
 
+    // Free content of data
     if (list->freeData)
         list->freeData(iterator->data);
 
+    // Free data pointer and set to NULL
     free(iterator->data);
     iterator->data = NULL;
 
+    // Free node pointer and set to NULL
     free(iterator);
     iterator = NULL;
 
+    // Deletion went successfully
     return 0;
 }
 
 /**
- * @brief 
+ * @brief Function to delete a node based on an index. Program will
+ * recieve a list and a index from which element will be erased. If
+ * dataIndex is bigger than actual size of the list then function will
+ * fail its execution and will return 1. It is necessary for list to be
+ * allocated and not be be empty (in this case 1 will be returned).
  * 
- * @param list 
- * @param dataIndex 
- * @return int 
+ * @param list a linked list object
+ * @param dataIndex node index in the list to be removed starts from 0
+ * @return int 1 if function fails and 0 if deletion went successfully
  */
 int list_delete_index(linkedList *list, size_t dataIndex) {
+    // Check if list is allocated and it is not empty
+    // Check if data pointer is valid
     if (list == NULL || list->head == NULL || dataIndex >= list->size)
         return 1;
 
     TlistNode *iterator = list->head;
     TlistNode *prevIterator = NULL;
 
+    // Find node from index
     while (dataIndex--) {
         prevIterator = iterator;
         iterator = iterator->next;
     }
 
-    if (iterator == NULL)
-        return 1;
-
     if (prevIterator == NULL) {
+        // Removing node is current head
         list->head = list->head->next;
     } else {
+        // Update links within the nodes
         prevIterator->next = iterator->next;
 
+        // Update list tail if necessery
         if (iterator->next == NULL)
             list->tail = prevIterator;
     }
 
+    // Free content of data
     if (list->freeData)
         list->freeData(iterator->data);
 
+    // Free data pointer and set to NULL
     free(iterator->data);
     iterator->data = NULL;
 
+    // Free node pointer and set to NULL
     free(iterator);
     iterator = NULL;
 
+    // Deletion went successfully
     return 0;
 }
 
 /**
- * @brief 
+ * @brief Function to erase a set of nodes from range [leftIndex; rightIndex]
+ * If leftIndex is greater than rightIndex that they will be swapped. If rightIndex
+ * is bigger than actual size of the list rightIndex will be updated to the end of
+ * the list. If both left and right index are bigger than actual list size than
+ * the last element from linked object will be removed.
  * 
- * @param list 
- * @param leftIndex 
- * @param rightIndex 
- * @return int 
+ * @param list a linked list object
+ * @param leftIndex left index to start deletion
+ * @param rightIndex right index to finish deletion
+ * @return int 1 if function fails (list is empty or not allocated) and
+ * 0 if deletion of the range went successfully
  */
 int list_erase(linkedList *list, size_t leftIndex, size_t rightIndex) {
+    // Check if list is allocated and it is not empty
     if (list == NULL || list->head == NULL)
         return 1;
 
+    // Check if boundaries are set right
+    // Swap if necessary
     if (leftIndex > rightIndex) {
         int temporar = leftIndex;
         leftIndex = rightIndex;
         rightIndex = temporar;
     }
 
+    // Recalibrate left index if needed
     if (leftIndex >= list->size)
         leftIndex = list->size - 1;
 
+    // Recalibrate right index if needed
     if (rightIndex >= list->size)
         rightIndex = list->size - 1;
 
     TlistNode *iterator = list->head;
     TlistNode *prevIterator = NULL;
+
+    // Compute number of nodes from range
     int deleteNumber = rightIndex - leftIndex + 1;
 
+    // Update iterator and prevIterator
+    // pointer to beginning of list deletion
     while (leftIndex--) {
         prevIterator = iterator;
         iterator = iterator->next;
     }
 
+    // Delete every number from given range
     while (deleteNumber--) {
         if (prevIterator == NULL) {
+            // Check if removed node is head
             list->head = list->head->next;
         } else {
+            // Update nodes links
             prevIterator->next = iterator->next;
 
+            // Update list tail if neccessary
             if (iterator->next == NULL)
                 list->tail = prevIterator;
         }
 
+        // Free content of data
         if (list->freeData)
             list->freeData(iterator->data);
 
+        // Free data pointer and set to NULL
         free(iterator->data);
         iterator->data = NULL;
 
+        // Free node pointer and set to NULL
         free(iterator);
         iterator = NULL;
 
+        // Remove next node
         if (prevIterator == NULL)
             iterator = list->head;
         else
             iterator = prevIterator->next;
     }
 
+    // Deletion went successfully
     return 0;
 }
 
@@ -740,6 +790,7 @@ void list_map(linkedList *list, void* (*mapFunction)(void *), size_t dataSize) {
     // Iterate through every element in the list
     // and map every single object
     while (iterator != NULL) {
+        // Copy mapped bytes in data bytes
         memmove(iterator->data, mapFunction(iterator->data), dataSize);
         iterator = iterator->next;
     }
