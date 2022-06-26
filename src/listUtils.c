@@ -487,6 +487,10 @@ TlistNode* list_find_index(linkedList *list, size_t dataIndex) {
     if (list == NULL || dataIndex >= list->size)
         return NULL;
 
+    // Return last element
+    if (dataIndex == list->size - 1)
+        return list->tail;
+
     TlistNode *iterator = list->head;
 
     // Iterate in list until hit indexed node
