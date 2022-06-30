@@ -139,7 +139,7 @@ void list_print(linkedList *list) {
  * @brief Function to free every byte of memory allocated for a specific
  * linked list object. The function will iterate through all nodes and will
  * free the data content according to freeData function provided by user at
- * cration of linked list, however if no free function was provided it means
+ * creation of linked list, however if no free function was provided it means
  * that data pointer does not contain any dinamically allocated elements.
  * 
  * @param list an allocated linked list object. If list is not allocated
@@ -285,7 +285,7 @@ int list_change_data(linkedList *list, TlistNode *baseNode, void *newData, size_
         return 1;
 
     // Copy all bytes from new data to current data
-    memcpy(baseNode->data, newData, dataSize);
+    memmove(baseNode->data, newData, dataSize);
 
     return 0;
 }
@@ -468,6 +468,9 @@ int list_insert_index(linkedList *list, void *data, size_t dataSize, size_t data
     newNode->next = iterator->next;
     iterator->next = newNode;
 
+    // Increase list size
+    ++(list->size);
+
     // Insertion went successfully
     return 0;
 }
@@ -582,6 +585,9 @@ int list_delete_data(linkedList *list, void *data) {
     free(iterator);
     iterator = NULL;
 
+    // Decrease list size
+    --(list->size);
+
     // Deletion went successfully
     return 0;
 }
@@ -636,6 +642,9 @@ int list_delete_index(linkedList *list, size_t dataIndex) {
     free(iterator);
     iterator = NULL;
 
+    // Deacrise list size
+    --(list->size);
+
     // Deletion went successfully
     return 0;
 }
@@ -686,6 +695,9 @@ int list_erase(linkedList *list, size_t leftIndex, size_t rightIndex) {
         prevIterator = iterator;
         iterator = iterator->next;
     }
+
+    // Deacrise list size
+    list->size -= deleteNumber;
 
     // Delete every number from given range
     while (deleteNumber--) {

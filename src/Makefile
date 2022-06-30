@@ -33,7 +33,7 @@ test: libdatastruc.a ztest.c
 	@gcc ztest.c -g -Wall -Wextra -L. -ldatastruc -o ztest
 
 run: test
-	@valgrind --leak-check=full --show-leak-kinds=all ./ztest
+	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./ztest
 
 clean:
 	@find . -type f -name "*.o" -exec rm -rf {} \;
