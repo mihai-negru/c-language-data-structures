@@ -133,13 +133,13 @@ If you have dynamic elements in a structure and want to store the strucutre in t
         data.name = malloc(SET_A_WORD_SIZE);
         scanf("%d", &data.age);
         scanf("%s", data.name);
-        insert(list, &data, sizeof(person));
+        list_insert(list, &data, sizeof(person));
     }
 
     // It is very important not to free manually data.name
     // This will be done in freeing the entire list
 
-    free_list_all(list);
+    list_free_all(list);
     // Will free every allocation made for list including data.name
 ```
 
