@@ -31,4 +31,63 @@
 #include <errno.h>
 #include "functionTypes.h"
 
+/**
+ * @brief stack Node object definition
+ * 
+ */
+typedef struct stackNode {
+    void *data;                 // Pointer to data
+    struct stackNode *next;     // Pointer to next data node
+} TStackNode;
+
+/**
+ * @brief stack object definition
+ * 
+ */
+typedef struct {
+    TStackNode *top;            // Pointer to top data node
+    void (*freeData)(void *);   // Function to free one data
+    size_t size;                // Size of the stack
+} TStack;
+
+TStack* create_stack(
+    void (*freeData)(void *)
+);
+
+TStackNode* create_stack_node(
+    void *data,
+    size_t dataSize
+);
+
+void free_stack(
+    TStack *stack
+);
+
+void print_stack(
+    TStack *stack,
+    void (*printData)(void *)
+);
+
+int is_stack_empty(
+    TStack *stack
+);
+
+int get_stack_size(
+    TStack *stack
+);
+
+void* stack_top(
+    TStack *stack
+);
+
+int stack_push(
+    TStack *stack,
+    void *data,
+    size_t dataSize
+);
+
+int stack_pop(
+    TStack *stack
+);
+
 #endif // STACK_UTILS_H_

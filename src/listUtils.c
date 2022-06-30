@@ -90,7 +90,7 @@ TlistNode* createlistNode(void *data, size_t dataSize) {
     if (newNode) {
         newNode->next = NULL;
 
-        // Allocate on heap memory for data
+        // Allocate heap memory for data
         newNode->data = malloc(dataSize);
 
         // Check if 

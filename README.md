@@ -1,6 +1,4 @@
 # Taskuri
-* list
-* doubleList
 * stackUtils
 * queueUtils
 * bst
