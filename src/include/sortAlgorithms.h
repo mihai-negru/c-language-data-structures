@@ -29,6 +29,5 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "functionTypes.h"
 
 #endif // SORT_ALGORITHMS_H_

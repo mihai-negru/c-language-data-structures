@@ -38,5 +38,6 @@
 #include "sortAlgorithms.h"
 #include "stackUtils.h"
 #include "unordGraphUtils.h"
+#include "functionTypes.h"
 
 #endif // DATA_STRUCTURES_H_

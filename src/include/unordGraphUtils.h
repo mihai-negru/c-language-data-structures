@@ -29,6 +29,5 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "functionTypes.h"
 
 #endif // UNORDERED_GRAPH_UTILS_H_
