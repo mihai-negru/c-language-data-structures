@@ -53,11 +53,6 @@ TStack* create_stack(
     void (*freeData)(void *)
 );
 
-TStackNode* create_stack_node(
-    void *data,
-    size_t dataSize
-);
-
 void free_stack(
     TStack *stack
 );

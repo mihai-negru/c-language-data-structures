@@ -63,7 +63,7 @@ TStack* create_stack(void (*freeData)(void *)) {
  * @param dataSize size of one generic data
  * @return TStackNode* new allocated stack node object or NULL
  */
-TStackNode* create_stack_node(void *data, size_t dataSize) {
+static TStackNode* create_stack_node(void *data, size_t dataSize) {
     // Check if data address is valid
     if (data == NULL)
         return NULL;
