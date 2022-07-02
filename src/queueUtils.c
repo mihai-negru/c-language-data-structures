@@ -23,3 +23,58 @@
  */
 
 #include "./include/queueUtils.h"
+
+TQueue* create_queue(void (*freeData)(void *)) {
+    (void)freeData;
+    return NULL;
+}
+
+static TQueueNode* create_queue_node(void *data, size_t dataSize) {
+    (void)data;
+    (void)dataSize;
+    return NULL;
+}
+
+void free_queue(TQueue *queue) {
+    (void)queue;
+}
+
+void print_queue(TQueue *queue, void (*printData)(void *)) {
+    (void)queue;
+    (void)printData;
+}
+
+int is_queue_empty(TQueue *queue) {
+    (void)queue;
+    return 0;
+}
+
+int get_queue_size(TQueue *queue) {
+    (void)queue;
+    return 0;
+}
+
+void* queue_front(TQueue *queue) {
+    (void)queue;
+    return NULL;
+}
+
+void* queue_back(TQueue *queue) {
+    (void)queue;
+    return NULL;
+}
+
+int queue_push(TQueue *queue, void *data, size_t dataSize) {
+    (void)queue;
+    (void)data;
+    (void)dataSize;
+
+    TQueueNode *newNode = create_queue_node(data, dataSize);
+    (void)newNode;
+    return 0;
+}
+
+int queue_pop(TQueue *queue) {
+    (void)queue;
+    return 0;
+}

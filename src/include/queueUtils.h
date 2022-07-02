@@ -30,4 +30,55 @@
 #include <string.h>
 #include <errno.h>
 
+typedef struct queueNode {
+    void *data;                 // Pointer to data
+    struct queueNode *next;     // Pointer to next data node
+} TQueueNode;
+
+typedef struct {
+    TQueueNode *front;
+    TQueueNode *back;            // Pointer to top data node
+    void (*freeData)(void *);   // Function to free one data
+    size_t size;                // Size of the stack
+} TQueue;
+
+TQueue* create_queue(
+    void (*freeData)(void *)
+);
+
+void free_queue(
+    TQueue *queue
+);
+
+void print_stack(
+    TQueue *queue,
+    void (*printData)(void *)
+);
+
+int is_queue_empty(
+    TQueue *queue
+);
+
+int get_queue_size(
+    TQueue *queue
+);
+
+void* queue_front(
+    TQueue *queue
+);
+
+void* queue_back(
+    TQueue *queue
+);
+
+int queue_push(
+    TQueue *queue,
+    void *data,
+    size_t dataSize
+);
+
+int queue_pop(
+    TQueue *queue
+);
+
 #endif // QUEUE_UTILS_H_
