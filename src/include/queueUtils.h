@@ -37,9 +37,9 @@ typedef struct queueNode {
 
 typedef struct {
     TQueueNode *front;
-    TQueueNode *back;            // Pointer to top data node
-    void (*freeData)(void *);   // Function to free one data
-    size_t size;                // Size of the stack
+    TQueueNode *back;
+    void (*freeData)(void *);
+    size_t size;
 } TQueue;
 
 TQueue* create_queue(
@@ -50,7 +50,7 @@ void free_queue(
     TQueue *queue
 );
 
-void print_stack(
+void print_queue(
     TQueue *queue,
     void (*printData)(void *)
 );
