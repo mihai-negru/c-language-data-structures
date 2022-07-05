@@ -26,7 +26,7 @@
 
 /**
  * @brief Create a stack object. Allocation may fail
- * if there is not enought memory on heap, in this case
+ * if there is not enough memory on heap, in this case
  * an exception will be thrown
  * 
  * @param freeData pointer to a function to free content of one data
@@ -158,7 +158,7 @@ void print_stack(TStack *stack, void (*printData)(void *)) {
 
         TStackNode *iterator = stack->top;
 
-        // Print every node accroding
+        // Print every node according
         // to printData function
         while (iterator != NULL) {
             printData(iterator->data);
@@ -169,10 +169,10 @@ void print_stack(TStack *stack, void (*printData)(void *)) {
 
 /**
  * @brief Function to check if a stack object
- * is empty or not. The function tests if top of list
+ * is empty or not. The function tests if top of stack
  * is NULL in that case function will return true, otherwise
- * it will return false. A NULL list is also considered as an
- * empty list
+ * it will return false. A NULL stack is also considered as an
+ * empty stack
  * 
  * @param stack a stack obecjt
  * @return int 1(True) if stack is not allocated or empty and 0(False) otherwise
@@ -190,7 +190,7 @@ int is_stack_empty(TStack *stack) {
  * 
  * @param stack a stack object
  * @return int -1 if stack is not allocated or
- * list size
+ * stack size
  */
 int get_stack_size(TStack *stack) {
     if (stack == NULL)
@@ -219,8 +219,8 @@ void* stack_top(TStack *stack) {
  * @brief Function to push one generic data to a stack.
  * Function may fail if stack or data is not valid (have
  * address NULL) or not enough heap memory is left. You can
- * push different data types into stack, but you will have to difine
- * diferent functions to print stack or to maintain it
+ * push different data types into stack, but you will have to define
+ * diferent functions to print stack and to maintain it
  * 
  * @param stack a stack object
  * @param data pointer to an address of a generic data type
@@ -260,7 +260,7 @@ int stack_push(TStack *stack, void *data, size_t dataSize) {
 /**
  * @brief Function to pop one genric data from a stack.
  * Function may fail if stack or data is not valid (have
- * address NULL). Function will remove element from the stack
+ * address NULL). Function will remove the top element from the stack
  * and will clear the content of the data accroding to freeData
  * function provided by the user at creation of the stack.
  * 

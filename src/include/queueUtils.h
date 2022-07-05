@@ -30,16 +30,24 @@
 #include <string.h>
 #include <errno.h>
 
+/**
+ * @brief queue Node object definition
+ * 
+ */
 typedef struct queueNode {
     void *data;                 // Pointer to data
     struct queueNode *next;     // Pointer to next data node
 } TQueueNode;
 
+/**
+ * @brief queue object definition
+ * 
+ */
 typedef struct {
-    TQueueNode *front;
-    TQueueNode *back;
-    void (*freeData)(void *);
-    size_t size;
+    TQueueNode *front;          // Pointer to beginning of queue
+    TQueueNode *back;           // Pointer to end of queue
+    void (*freeData)(void *);   // Function to free one data
+    size_t size;                // Size of the queue
 } TQueue;
 
 TQueue* create_queue(

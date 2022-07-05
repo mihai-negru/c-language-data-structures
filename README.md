@@ -1,5 +1,4 @@
 # Taskuri
-* stackUtils
 * queueUtils
 * bst
 * avlTree
@@ -11,3 +10,4 @@
 * costGraphs
 * hashTable
 * sort
+* function types
