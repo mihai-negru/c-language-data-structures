@@ -39,25 +39,48 @@ Example of creating a stack:
 
 ```C
     typedef struct {
-        int elem;
         int check; // For int 0
-        void (*printInt)(int);
+        int elem;
     } Int;
 
     typedef struct {
-        float elem;
         int check; // for float 1
-        void *(printFloat)(float);
+        float elem;
     } Float;
 
     typedef struct {
-        char elem;
         int check; // For char 2
-        void (*printChar)(char);
+        char elem;
     } Char;
 
     // And so on for every data type;
+
+    // One way to print it would be:
+
+    void printData(void *a) {
+        if (a == NULL) return;
+
+        int check = *(int *)a;
+
+        if (check == 0) {
+            Int *fb = (Int *)a;
+
+            printf("%d ", fb->elem);
+        } else if (check == 1) {
+            Float *fb = (Float *)a;
+
+            printf("%f ", fb->elem);
+        } else if (check == 2) {
+            Char *fb = (Char *)a;
+
+            printf("%c ", fb->elem);
+        } else {
+            printf("Not known check var\n");
+        }
+    }
 ```
+
+>**NOTE:** It is very **IMPORTANT** in this situation for the **check** variable to be the first member of the structure, otherwise it is posibble to access different memory locations which will fail into a Segmentation Fault.
 
 >**NOTE:** Some types of structures as above and functions to print different classes of data types are described in **functionTypes.h/.md** section.
 
@@ -137,6 +160,6 @@ First function will check if stack exists and if it is empty.
 
 >**NOTE:** A non-existing stack is also considered as an empty stack.
 
-The second function will return the sizze of the stack or **-1** if stack does not exist.
+The second function will return the size of the stack or **-1** if stack does not exist.
 
-## For some other examples of using linked lists you can look up at /examples/stacks
+## For some other examples of using stacks you can look up at /examples/stacks

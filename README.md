@@ -1,5 +1,4 @@
 # Taskuri
-* queueUtils
 * bst
 * avlTree
 * redBlackTree

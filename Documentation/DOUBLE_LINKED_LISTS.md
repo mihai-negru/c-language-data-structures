@@ -284,5 +284,5 @@ Examples of list filter and mapping
 
 > **NOTE:** If filter function return **0** for every element then NULL pointer will be returned and no newList will be created, however you can pass a NULL double linked list pointer to **dlist_free_all**, but it will have no effect.
 
-## For some other examples of using linked lists you can look up at /examples/doubleLists
+## For some other examples of using double linked lists you can look up at /examples/doubleLists
 
