@@ -42,7 +42,7 @@ Char        Char_def            (void) { return (Char){.pass = 8, .val = '0'}; }
 UChar       UChar_def           (void) { return (UChar){.pass = 9, .val = '0'}; }
 Float       Float_def           (void) { return (Float){.pass = 10, .val = 0.0}; }
 Double      Double_def          (void) { return (Double){.pass = 11, .val = 0.0}; }
-LongDouble  LongDouble_def      (void) { return (LongDouble){.pass = 0, .val = 0.0}; }
+LongDouble  LongDouble_def      (void) { return (LongDouble){.pass = 12, .val = 0.0}; }
 
 /**
  * @brief Function to print one data type
