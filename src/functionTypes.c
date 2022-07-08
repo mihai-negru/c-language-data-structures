@@ -181,6 +181,13 @@ void print_long_double(const void *data) {
     printf("%Lf ", *(const long double *)data);
 }
 
+void print_string(const void *data) {
+    if (data == NULL)
+        return;
+
+    printf("%s ", (const char *)data);
+}
+
 int compare_short_int(const void *data1, const void *data2) {
     if (data1 == NULL || data2 == NULL) {
         errno = ENODATA;
@@ -393,4 +400,53 @@ int compare_long_double(const void *data1, const void *data2) {
         return -1;
     else
         return 0;
+}
+
+int compare_string_size(const void *data1, const void *data2) {
+    if (data1 == NULL || data2 == NULL) {
+        errno = ENODATA;
+        perror("Data is not allocated");
+        exit(2);
+    }
+
+    size_t data1_len = strlen((const char *)data1);
+    size_t data2_len = strlen((const char *)data2);
+
+    if (data1_len > data2_len)
+        return 1;
+    else if (data1_len < data2_len)
+        return -1;
+    else
+        return 0;
+}
+
+int compare_string_lexi(const void *data1, const void *data2) {
+    if (data1 == NULL || data2 == NULL) {
+        errno = ENODATA;
+        perror("Data is not allocated");
+        exit(2);
+    }
+
+    return strcmp((const char *)data1, (const char *)data2);
+}
+
+int compare_string(const void *data1, const void *data2) {
+    if (data1 == NULL || data2 == NULL) {
+        errno = ENODATA;
+        perror("Data is not allocated");
+        exit(2);
+    }
+
+    const char* typed_data1 = (const char*)data1;
+    const char* typed_data2 = (const char*)data2;
+
+    size_t data1_size = strlen(typed_data1);
+    size_t data2_size = strlen(typed_data2);
+
+    if (data1_size > data2_size)
+        return 1;
+    else if (data1_size < data2_size)
+        return -1;
+    else
+        return strcmp(typed_data1, typed_data2);
 }

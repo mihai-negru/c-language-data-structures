@@ -122,6 +122,7 @@ void print_uchar        (const void *data);
 void print_float        (const void *data);
 void print_double       (const void *data);
 void print_long_double  (const void *data);
+void print_string       (const void *data);
 
 int compare_short_int   (const void *data1, const void *data2);
 int compare_ushort_int  (const void *data1, const void *data2);
@@ -136,5 +137,8 @@ int compare_uchar       (const void *data1, const void *data2);
 int compare_float       (const void *data1, const void *data2);
 int compare_double      (const void *data1, const void *data2);
 int compare_long_double (const void *data1, const void *data2);
+int compare_string_size (const void *data1, const void *data2);
+int compare_string_lexi (const void *data1, const void *data2);
+int compare_string      (const void *data1, const void *data2);
 
 #endif // _FUNCTION_TYPES_H_
