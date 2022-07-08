@@ -9,4 +9,3 @@
 * costGraphs
 * hashTable
 * sort
-* function types

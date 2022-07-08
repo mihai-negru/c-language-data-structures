@@ -30,4 +30,135 @@
 #include <string.h>
 #include <errno.h>
 
+typedef struct bstNode {
+    void *data;
+    struct bstNode *parent;
+    struct bstNode *left;
+    struct bstNode *right;
+} TBstNode;
+
+typedef struct {
+    TBstNode *root;
+    int (*compareData)(const void *, const void *);
+    void (*freeData)(void *);
+    size_t size;
+} bstTree;
+
+bstTree* create_bst(
+    int (*compareData)(const void *, const void *),
+    void (*freeData)(void *)
+);
+
+void free_bst(
+    bstTree *tree
+);
+
+int is_bst_empty(
+    bstTree *tree
+);
+
+int bst_insert(
+    bstTree *tree,
+    const void *data,
+    size_t dataSize
+);
+
+TBstNode* bst_find_data(
+    bstTree *tree,
+    const void *data
+);
+
+void bst_change_node_data(
+    bstTree *tree,
+    TBstNode *baseNode,
+    const void *newData,
+    size_t dataSize
+);
+
+int bst_node_level(
+    bstTree *tree,
+    TBstNode *baseNode
+);
+
+TBstNode* get_bst_root(
+    bstTree *tree
+);
+
+size_t get_bst_size(
+    bstTree *tree
+);
+
+TBstNode* bst_max_node(
+    bstTree *tree
+);
+
+TBstNode* bst_min_node(
+    bstTree *tree
+);
+
+void* bst_max_data(
+    bstTree *tree
+);
+
+void* bst_min_data(
+    bstTree *tree
+);
+
+int bst_delete_data(
+    bstTree *tree,
+    const void *data
+);
+
+TBstNode* bst_predecessor_node(
+    bstTree *tree,
+    const void *data
+);
+
+TBstNode* bst_successor_node(
+    bstTree *tree,
+    const void *data
+);
+
+TBstNode* bst_lowest_common_ancestor_node(
+    bstTree *tree,
+    const void *data1,
+    const void *data2
+);
+
+TBstNode* bst_lowest_common_ancestor_data(
+    bstTree *tree,
+    const void *data1,
+    const void *data2
+);
+
+void* bst_predecessor_data(
+    bstTree *tree,
+    const void *data
+);
+
+void* bst_succecessor_data(
+    bstTree *tree,
+    const void *data
+);
+
+void bst_print_inorder(
+    bstTree *tree,
+    void (*printData)(const void *)
+);
+
+void bst_print_preorder(
+    bstTree *tree,
+    void (*printData)(const void *)
+);
+
+void bst_print_postorder(
+    bstTree *tree,
+    void (*printData)(const void *)
+);
+
+void bst_print_level(
+    bstTree *tree,
+    void (*printData)(const void *)
+);
+
 #endif // BST_UTILS_H_
