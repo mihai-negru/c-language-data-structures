@@ -18,7 +18,7 @@
     UInt UInt_def(void);
 ```
 
->**NOTE:** You must use this types just when you want different types in one data structures, for eample in a queue or stack.
+>**NOTE:** You must use these types just when you want different types in one data structures, for eample in a queue or stack.
 
 Example of correct use of predefined data types from functionTypes.h
 
