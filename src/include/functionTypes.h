@@ -30,78 +30,130 @@
 #include <string.h>
 #include <errno.h>
 
+/**
+ * @brief ShortInt data type definition
+ * default pass variable = 0
+ */
 typedef struct {
     char pass;
     short int val;
 } ShortInt;
 ShortInt ShortInt_def(void);
 
+/**
+ * @brief UShortInt data type definition
+ * default pass variable = 1
+ */
 typedef struct {
     char pass;
     unsigned short int val;
 } UShortInt;
 UShortInt UShortInt_def(void);
 
+/**
+ * @brief UInt data type definition
+ * default pass variable = 2
+ */
 typedef struct {
     char pass;
     unsigned int val;
 } UInt;
 UInt UInt_def(void);
 
+/**
+ * @brief Int data type definition
+ * default pass variable = 3
+ */
 typedef struct {
     char pass;
     int val;
 } Int;
 Int Int_def(void);
 
+/**
+ * @brief LongInt data type definition
+ * default pass variable = 4
+ */
 typedef struct {
     char pass;
     long int val;
 } LongInt;
 LongInt LongInt_def(void);
 
+/**
+ * @brief ULongInt data type definition
+ * default pass variable = 5
+ */
 typedef struct {
     char pass;
     unsigned long int val;
 } ULongInt;
 ULongInt ULongInt_def(void);
 
+/**
+ * @brief LLInt data type definition
+ * default pass variable = 6
+ */
 typedef struct {
     char pass;
     long long int val;
 } LLInt;
 LLInt LLInt_def(void);
 
+/**
+ * @brief ULLInt data type definition
+ * default pass variable = 7
+ */
 typedef struct {
     char pass;
     unsigned long long int val;
 } ULLInt;
 ULLInt ULLInt_def(void);
 
+/**
+ * @brief Char data type definition
+ * default pass variable = 8
+ */
 typedef struct {
     char pass;
     char val;
 } Char;
 Char Char_def(void);
 
+/**
+ * @brief UChar data type definition
+ * default pass variable = 9
+ */
 typedef struct {
     char pass;
     unsigned char val;
 } UChar;
 UChar UChar_def(void);
 
+/**
+ * @brief Float data type definition
+ * default pass variable = 10
+ */
 typedef struct {
     char pass;
     float val;
 } Float;
 Float Float_def(void);
 
+/**
+ * @brief Double data type definition
+ * default pass variable = 11
+ */
 typedef struct {
     char pass;
     double val;
 } Double;
 Double Double_def(void);
 
+/**
+ * @brief LongDouble data type definition
+ * default pass variable = 12
+ */
 typedef struct {
     char pass;
     long double val;
