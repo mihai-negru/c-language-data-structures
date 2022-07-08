@@ -30,4 +30,111 @@
 #include <string.h>
 #include <errno.h>
 
+typedef struct {
+    char pass;
+    short int val;
+} ShortInt;
+ShortInt ShortInt_def(void);
+
+typedef struct {
+    char pass;
+    unsigned short int val;
+} UShortInt;
+UShortInt UShortInt_def(void);
+
+typedef struct {
+    char pass;
+    unsigned int val;
+} UInt;
+UInt UInt_def(void);
+
+typedef struct {
+    char pass;
+    int val;
+} Int;
+Int Int_def(void);
+
+typedef struct {
+    char pass;
+    long int val;
+} LongInt;
+LongInt LongInt_def(void);
+
+typedef struct {
+    char pass;
+    unsigned long int val;
+} ULongInt;
+ULongInt ULongInt_def(void);
+
+typedef struct {
+    char pass;
+    long long int val;
+} LLInt;
+LLInt LLInt_def(void);
+
+typedef struct {
+    char pass;
+    unsigned long long int val;
+} ULLInt;
+ULLInt ULLInt_def(void);
+
+typedef struct {
+    char pass;
+    char val;
+} Char;
+Char Char_def(void);
+
+typedef struct {
+    char pass;
+    unsigned char val;
+} UChar;
+UChar UChar_def(void);
+
+typedef struct {
+    char pass;
+    float val;
+} Float;
+Float Float_def(void);
+
+typedef struct {
+    char pass;
+    double val;
+} Double;
+Double Double_def(void);
+
+typedef struct {
+    char pass;
+    long double val;
+} LongDouble;
+LongDouble LongDouble_def(void);
+
+void print_all_data     (void *data);
+void print_short_int    (void *data);
+void print_ushort_int   (void *data);
+void print_uint         (void *data);
+void print_int          (void *data);
+void print_long_int     (void *data);
+void print_ulong_int    (void *data);
+void print_llong_int    (void *data);
+void print_ullong_int   (void *data);
+void print_char         (void *data);
+void print_uchar        (void *data);
+void print_float        (void *data);
+void print_double       (void *data);
+void print_long_double  (void *data);
+
+int compare_short_int   (void *data1, void *data2);
+int compare_ushort_int  (void *data1, void *data2);
+int compare_uint        (void *data1, void *data2);
+int compare_int         (void *data1, void *data2);
+int compare_long_int    (void *data1, void *data2);
+int compare_ulong_int   (void *data1, void *data2);
+int compare_llong_int   (void *data1, void *data2);
+int compare_ullong_int  (void *data1, void *data2);
+int compare_char        (void *data1, void *data2);
+int compare_uchar       (void *data1, void *data2);
+int compare_float       (void *data1, void *data2);
+int compare_double      (void *data1, void *data2);
+int compare_long_double (void *data1, void *data2);
+
 #endif // _FUNCTION_TYPES_H_
