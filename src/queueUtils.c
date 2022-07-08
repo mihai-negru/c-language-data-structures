@@ -63,7 +63,7 @@ TQueue* create_queue(void (*freeData)(void *)) {
  * @param dataSize size of one generic data
  * @return TQueueNode* new allocated queue node object or NULL
  */
-static TQueueNode* create_queue_node(void *data, size_t dataSize) {
+static TQueueNode* create_queue_node(const void *data, size_t dataSize) {
     // Check if data address is valid
     if (data == NULL)
         return NULL;
@@ -149,7 +149,7 @@ void free_queue(TQueue *queue) {
  * @param queue a queue object
  * @param printData a pointer to a function to print content of data pointer
  */
-void print_queue(TQueue *queue, void (*printData)(void *)) {
+void print_queue(TQueue *queue, void (*printData)(const void *)) {
     // Check is queue is allocated
     if (queue) {
         // Queue is empty, print []
@@ -244,7 +244,7 @@ void* queue_back(TQueue *queue) {
  * @return int 1(Fail) if function failed or 0(Success) if
  * pushing on the queue went successfully
  */
-int queue_push(TQueue *queue, void *data, size_t dataSize) {
+int queue_push(TQueue *queue, const void *data, size_t dataSize) {
     // Check if queue and data addresses are valid
     if (queue == NULL || data == NULL)
         return 1;

@@ -37,7 +37,7 @@
  * @return linkedList* return a new dynamically allocated list or NULL if
  * allocation went wrong
  */
-linkedList* createLinkedList(int (*compareData)(void *, void *), void (*printData)(void *), void (*freeData)(void *)) {
+linkedList* createLinkedList(int (*compareData)(const void *, const void *), void (*printData)(const void *), void (*freeData)(void *)) {
     // It is required for every linked list to have a compare and a print function
     // The free function is optional
     if (compareData == NULL || printData == NULL) {
@@ -78,7 +78,7 @@ linkedList* createLinkedList(int (*compareData)(void *, void *), void (*printDat
  * @param dataSize size of an element
  * @return TlistNode* return a new allocated node object
  */
-TlistNode* createlistNode(void *data, size_t dataSize) {
+TlistNode* createlistNode(const void *data, size_t dataSize) {
     // It is required for data to be a valid pointer
     if (data == NULL)
         return NULL;
@@ -279,7 +279,7 @@ void list_swap_data(linkedList *list, TlistNode *firstNode, TlistNode *secondNod
  * @param dataSize size of the new data
  * @return int function will return 1 if it fails and 0 otherwise
  */
-int list_change_data(linkedList *list, TlistNode *baseNode, void *newData, size_t dataSize) {
+int list_change_data(linkedList *list, TlistNode *baseNode, const void *newData, size_t dataSize) {
     // Check if input is valid
     if (list == NULL || baseNode == NULL || newData == NULL)
         return 1;
@@ -298,7 +298,7 @@ int list_change_data(linkedList *list, TlistNode *baseNode, void *newData, size_
  * @param dataSize the size of current data type
  * @return int 1 if function fails or 0 if insertion was successfully
  */
-int list_insert(linkedList *list, void *data, size_t dataSize) {
+int list_insert(linkedList *list, const void *data, size_t dataSize) {
     // Check if list and data are valid
     if (list == NULL || data == NULL)
         return 1;
@@ -339,7 +339,7 @@ int list_insert(linkedList *list, void *data, size_t dataSize) {
  * @param dataSize the size of current data type
  * @return int 1 if function fails or 0 if insertion was successfully
  */
-int list_insert_order(linkedList *list, void *data, size_t dataSize) {
+int list_insert_order(linkedList *list, const void *data, size_t dataSize) {
     // Check if list and data are valid
     if (list == NULL || data == NULL)
         return 1;
@@ -394,7 +394,7 @@ int list_insert_order(linkedList *list, void *data, size_t dataSize) {
  * @param dataSize the size of current data type
  * @return int 1 if function fails or 0 if insertion was successfully
  */
-int list_insert_front(linkedList *list, void *data, size_t dataSize) {
+int list_insert_front(linkedList *list, const void *data, size_t dataSize) {
     // Check if list and data are valid
     if (list == NULL || data == NULL)
         return 1;
@@ -437,7 +437,7 @@ int list_insert_front(linkedList *list, void *data, size_t dataSize) {
  * @param dataSize the size of current data type
  * @return int 1 if function fails or 0 if insertion was successfully
  */
-int list_insert_index(linkedList *list, void *data, size_t dataSize, size_t dataIndex) {
+int list_insert_index(linkedList *list, const void *data, size_t dataSize, size_t dataIndex) {
     // Check if list and data are valid
     if (list == NULL || data == NULL)
         return 1;
@@ -514,7 +514,7 @@ TlistNode* list_find_index(linkedList *list, size_t dataIndex) {
  * @return TlistNode* NULL if data is not found or a pointer
  * to a linked list node containing given data
  */
-TlistNode* list_find_data(linkedList *list, void *data) {
+TlistNode* list_find_data(linkedList *list, const void *data) {
     // Check if list and data are valid and
     // check if list is not empty
     if (list == NULL || list->head == NULL || data == NULL)
@@ -750,7 +750,7 @@ int list_erase(linkedList *list, size_t leftIndex, size_t rightIndex) {
  * @return linkedList* a filtered linked list object with smaller
  * or equal size of the original linked list object
  */
-linkedList* list_filter(linkedList *list, int (*filterFunction)(void *), size_t dataSize) {
+linkedList* list_filter(linkedList *list, int (*filterFunction)(const void *), size_t dataSize) {
     // Check if input is valid
     // Filter function has to be different from NULL pointer
     if (list == NULL || list->head == NULL || filterFunction == NULL)

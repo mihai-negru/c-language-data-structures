@@ -59,7 +59,7 @@ void free_stack(
 
 void print_stack(
     TStack *stack,
-    void (*printData)(void *)
+    void (*printData)(const void *)
 );
 
 int is_stack_empty(
@@ -76,7 +76,7 @@ void* stack_top(
 
 int stack_push(
     TStack *stack,
-    void *data,
+    const void *data,
     size_t dataSize
 );
 

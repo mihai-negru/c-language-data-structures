@@ -63,7 +63,7 @@ TStack* create_stack(void (*freeData)(void *)) {
  * @param dataSize size of one generic data
  * @return TStackNode* new allocated stack node object or NULL
  */
-static TStackNode* create_stack_node(void *data, size_t dataSize) {
+static TStackNode* create_stack_node(const void *data, size_t dataSize) {
     // Check if data address is valid
     if (data == NULL)
         return NULL;
@@ -149,7 +149,7 @@ void free_stack(TStack *stack) {
  * @param stack a stack object
  * @param printData a pointer to a function to print content of data pointer
  */
-void print_stack(TStack *stack, void (*printData)(void *)) {
+void print_stack(TStack *stack, void (*printData)(const void *)) {
     // Check is stack is allocated
     if (stack) {
         // Stack is empty, print []
@@ -228,7 +228,7 @@ void* stack_top(TStack *stack) {
  * @return int 1(Fail) if function failed or 0(Success) if
  * pushing on the stack went successfully
  */
-int stack_push(TStack *stack, void *data, size_t dataSize) {
+int stack_push(TStack *stack, const void *data, size_t dataSize) {
     // Check if stack and data addresses are valid
     if (stack == NULL || data == NULL)
         return 1;

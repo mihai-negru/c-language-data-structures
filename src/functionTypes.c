@@ -38,51 +38,51 @@ Float       Float_def           (void) { return (Float){.pass = 10, .val = 0.0};
 Double      Double_def          (void) { return (Double){.pass = 11, .val = 0.0}; }
 LongDouble  LongDouble_def      (void) { return (LongDouble){.pass = 0, .val = 0.0}; }
 
-void print_all_data(void *data) {
+void print_all_data(const void *data) {
     if (data == NULL)
         return;
 
-    char pass = *(char *)data;
+    const char pass = *(const char *)data;
 
     switch (pass) {
         case 0:
-            printf("%hd ", ((ShortInt *)data)->val);
+            printf("%hd ", ((const ShortInt *)data)->val);
             break;
         case 1:
-            printf("%hd ", ((UShortInt *)data)->val);
+            printf("%hd ", ((const UShortInt *)data)->val);
             break;
         case 2:
-            printf("%u ", ((UInt *)data)->val);
+            printf("%u ", ((const UInt *)data)->val);
             break;
         case 3:
-            printf("%d ", ((Int *)data)->val);
+            printf("%d ", ((const Int *)data)->val);
             break;
         case 4:
-            printf("%ld ", ((LongInt *)data)->val);
+            printf("%ld ", ((const LongInt *)data)->val);
             break;
         case 5:
-            printf("%lu ", ((ULongInt *)data)->val);
+            printf("%lu ", ((const ULongInt *)data)->val);
             break;
         case 6:
-            printf("%lld ", ((LLInt *)data)->val);
+            printf("%lld ", ((const LLInt *)data)->val);
             break;
         case 7:
-            printf("%llu ", ((ULLInt *)data)->val);
+            printf("%llu ", ((const ULLInt *)data)->val);
             break;
         case 8:
-            printf("%c ", ((Char *)data)->val);
+            printf("%c ", ((const Char *)data)->val);
             break;
         case 9:
-            printf("%c ", ((UChar *)data)->val);
+            printf("%c ", ((const UChar *)data)->val);
             break;
         case 10:
-            printf("%f ", ((Float *)data)->val);
+            printf("%f ", ((const Float *)data)->val);
             break;
         case 11:
-            printf("%lf ", ((Double *)data)->val);
+            printf("%lf ", ((const Double *)data)->val);
             break;
         case 12:
-            printf("%Lf ", ((LongDouble *)data)->val);
+            printf("%Lf ", ((const LongDouble *)data)->val);
             break;
         default:
             errno = EINVAL;
@@ -90,119 +90,119 @@ void print_all_data(void *data) {
     }
 }
 
-void print_short_int(void *data) {
+void print_short_int(const void *data) {
     if (data == NULL)
         return;
 
-    printf("%hd ", *(short int *)data);
+    printf("%hd ", *(const short int *)data);
 }
 
-void print_ushort_int(void *data) {
+void print_ushort_int(const void *data) {
     if (data == NULL)
         return;
 
-    printf("%hd ", *(unsigned short int *)data);
+    printf("%hd ", *(const unsigned short int *)data);
 }
 
-void print_uint(void *data) {
+void print_uint(const void *data) {
     if (data == NULL)
         return;
 
-    printf("%u ", *(unsigned int *)data);
+    printf("%u ", *(const unsigned int *)data);
 }
 
-void print_int(void *data) {
+void print_int(const void *data) {
     if (data == NULL)
         return;
 
-    printf("%d ", *(int *)data);
+    printf("%d ", *(const int *)data);
 }
 
-void print_long_int(void *data) {
+void print_long_int(const void *data) {
     if (data == NULL)
         return;
 
-    printf("%ld ", *(long int *)data);
+    printf("%ld ", *(const long int *)data);
 }
 
-void print_ulong_int(void *data) {
+void print_ulong_int(const void *data) {
     if (data == NULL)
         return;
 
-    printf("%lu ", *(unsigned long int *)data);
+    printf("%lu ", *(const unsigned long int *)data);
 }
 
-void print_llong_int(void *data) {
+void print_llong_int(const void *data) {
     if (data == NULL)
         return;
 
-    printf("%lld ", *(long long int *)data);
+    printf("%lld ", *(const long long int *)data);
 }
 
-void print_ullong_int(void *data) {
+void print_ullong_int(const void *data) {
     if (data == NULL)
         return;
 
-    printf("%llu ", *(unsigned long long int *)data);
+    printf("%llu ", *(const unsigned long long int *)data);
 }
 
-void print_char(void *data) {
+void print_char(const void *data) {
     if (data == NULL)
         return;
 
-    printf("%c ", *(char *)data);
+    printf("%c ", *(const char *)data);
 }
 
-void print_uchar(void *data) {
+void print_uchar(const void *data) {
     if (data == NULL)
         return;
 
-    printf("%c ", *(unsigned char *)data);
+    printf("%c ", *(const unsigned char *)data);
 }
 
-void print_float(void *data) {
+void print_float(const void *data) {
     if (data == NULL)
         return;
 
-    printf("%f ", *(float *)data);
+    printf("%f ", *(const float *)data);
 }
 
-void print_double(void *data) {
+void print_double(const void *data) {
     if (data == NULL)
         return;
 
-    printf("%lf ", *(double *)data);
+    printf("%lf ", *(const double *)data);
 }
 
-void print_long_double(void *data) {
+void print_long_double(const void *data) {
     if (data == NULL)
         return;
 
-    printf("%Lf ", *(long double *)data);
+    printf("%Lf ", *(const long double *)data);
 }
 
-int compare_short_int(void *data1, void *data2) {
+int compare_short_int(const void *data1, const void *data2) {
     if (data1 == NULL || data2 == NULL) {
         errno = ENODATA;
         perror("Data is not allocated");
         exit(2);
     }
 
-    short int *typed_data1 = (short int *)data1;
-    short int *typed_data2 = (short int *)data2;
+    const short int *typed_data1 = (const short int *)data1;
+    const short int *typed_data2 = (const short int *)data2;
 
     return (*typed_data1 - *typed_data2);
 }
 
-int compare_ushort_int(void *data1, void *data2) {
+int compare_ushort_int(const void *data1, const void *data2) {
     if (data1 == NULL || data2 == NULL) {
         errno = ENODATA;
         perror("Data is not allocated");
         exit(2);
     }
 
-    unsigned short int *typed_data1 = (unsigned short int *)data1;
-    unsigned short int *typed_data2 = (unsigned short int *)data2;
+    const unsigned short int *typed_data1 = (const unsigned short int *)data1;
+    const unsigned short int *typed_data2 = (const unsigned short int *)data2;
 
     if (*typed_data1 > *typed_data2)
         return 1;
@@ -212,15 +212,15 @@ int compare_ushort_int(void *data1, void *data2) {
         return 0;
 }
 
-int compare_uint(void *data1, void *data2) {
+int compare_uint(const void *data1, const void *data2) {
     if (data1 == NULL || data2 == NULL) {
         errno = ENODATA;
         perror("Data is not allocated");
         exit(2);
     }
 
-    unsigned int *typed_data1 = (unsigned int *)data1;
-    unsigned int *typed_data2 = (unsigned int *)data2;
+    const unsigned int *typed_data1 = (const unsigned int *)data1;
+    const unsigned int *typed_data2 = (const unsigned int *)data2;
 
     if (*typed_data1 > *typed_data2)
         return 1;
@@ -230,41 +230,41 @@ int compare_uint(void *data1, void *data2) {
         return 0;
 }
 
-int compare_int(void *data1, void *data2) {
+int compare_int(const void *data1, const void *data2) {
     if (data1 == NULL || data2 == NULL) {
         errno = ENODATA;
         perror("Data is not allocated");
         exit(2);
     }
 
-    int *typed_data1 = (int *)data1;
-    int *typed_data2 = (int *)data2;
+    const int *typed_data1 = (const int *)data1;
+    const int *typed_data2 = (const int *)data2;
 
     return (*typed_data1 - *typed_data2);
 }
 
-int compare_long_int(void *data1, void *data2) {
+int compare_long_int(const void *data1, const void *data2) {
     if (data1 == NULL || data2 == NULL) {
         errno = ENODATA;
         perror("Data is not allocated");
         exit(2);
     }
 
-    long int *typed_data1 = (long int *)data1;
-    long int *typed_data2 = (long int *)data2;
+    const long int *typed_data1 = (const long int *)data1;
+    const long int *typed_data2 = (const long int *)data2;
 
     return (*typed_data1 - *typed_data2);
 }
 
-int compare_ulong_int(void *data1, void *data2) {
+int compare_ulong_int(const void *data1, const void *data2) {
     if (data1 == NULL || data2 == NULL) {
         errno = ENODATA;
         perror("Data is not allocated");
         exit(2);
     }
 
-    unsigned long int *typed_data1 = (unsigned long int *)data1;
-    unsigned long int *typed_data2 = (unsigned long int *)data2;
+    const unsigned long int *typed_data1 = (const unsigned long int *)data1;
+    const unsigned long int *typed_data2 = (const unsigned long int *)data2;
 
     if (*typed_data1 > *typed_data2)
         return 1;
@@ -274,28 +274,28 @@ int compare_ulong_int(void *data1, void *data2) {
         return 0;
 }
 
-int compare_llong_int(void *data1, void *data2) {
+int compare_llong_int(const void *data1, const void *data2) {
     if (data1 == NULL || data2 == NULL) {
         errno = ENODATA;
         perror("Data is not allocated");
         exit(2);
     }
 
-    long long int *typed_data1 = (long long int *)data1;
-    long long int *typed_data2 = (long long int *)data2;
+    const long long int *typed_data1 = (const long long int *)data1;
+    const long long int *typed_data2 = (const long long int *)data2;
 
     return (*typed_data1 - *typed_data2);
 }
 
-int compare_ullong_int(void *data1, void *data2) {
+int compare_ullong_int(const void *data1, const void *data2) {
     if (data1 == NULL || data2 == NULL) {
         errno = ENODATA;
         perror("Data is not allocated");
         exit(2);
     }
 
-    unsigned long long int *typed_data1 = (unsigned long long int *)data1;
-    unsigned long long int *typed_data2 = (unsigned long long int *)data2;
+    const unsigned long long int *typed_data1 = (const unsigned long long int *)data1;
+    const unsigned long long int *typed_data2 = (const unsigned long long int *)data2;
 
     if (*typed_data1 > *typed_data2)
         return 1;
@@ -305,15 +305,15 @@ int compare_ullong_int(void *data1, void *data2) {
         return 0;
 }
 
-int compare_char(void *data1, void *data2) {
+int compare_char(const void *data1, const void *data2) {
     if (data1 == NULL || data2 == NULL) {
         errno = ENODATA;
         perror("Data is not allocated");
         exit(2);
     }
 
-    char *typed_data1 = (char *)data1;
-    char *typed_data2 = (char *)data2;
+    const char *typed_data1 = (const char *)data1;
+    const char *typed_data2 = (const char *)data2;
 
     if (*typed_data1 > *typed_data2)
         return 1;
@@ -323,15 +323,15 @@ int compare_char(void *data1, void *data2) {
         return 0;
 }
 
-int compare_uchar(void *data1, void *data2) {
+int compare_uchar(const void *data1, const void *data2) {
     if (data1 == NULL || data2 == NULL) {
         errno = ENODATA;
         perror("Data is not allocated");
         exit(2);
     }
 
-    unsigned char *typed_data1 = (unsigned char *)data1;
-    unsigned char *typed_data2 = (unsigned char *)data2;
+    const unsigned char *typed_data1 = (const unsigned char *)data1;
+    const unsigned char *typed_data2 = (const unsigned char *)data2;
 
     if (*typed_data1 > *typed_data2)
         return 1;
@@ -341,15 +341,15 @@ int compare_uchar(void *data1, void *data2) {
         return 0;
 }
 
-int compare_float(void *data1, void *data2) {
+int compare_float(const void *data1, const void *data2) {
     if (data1 == NULL || data2 == NULL) {
         errno = ENODATA;
         perror("Data is not allocated");
         exit(2);
     }
 
-    float *typed_data1 = (float *)data1;
-    float *typed_data2 = (float *)data2;
+    const float *typed_data1 = (const float *)data1;
+    const float *typed_data2 = (const float *)data2;
 
     if (*typed_data1 > *typed_data2)
         return 1;
@@ -359,15 +359,15 @@ int compare_float(void *data1, void *data2) {
         return 0;
 }
 
-int compare_double(void *data1, void *data2) {
+int compare_double(const void *data1, const void *data2) {
     if (data1 == NULL || data2 == NULL) {
         errno = ENODATA;
         perror("Data is not allocated");
         exit(2);
     }
 
-    double *typed_data1 = (double *)data1;
-    double *typed_data2 = (double *)data2;
+    const double *typed_data1 = (const double *)data1;
+    const double *typed_data2 = (const double *)data2;
 
     if (*typed_data1 > *typed_data2)
         return 1;
@@ -377,15 +377,15 @@ int compare_double(void *data1, void *data2) {
         return 0;
 }
 
-int compare_long_double(void *data1, void *data2) {
+int compare_long_double(const void *data1, const void *data2) {
     if (data1 == NULL || data2 == NULL) {
         errno = ENODATA;
         perror("Data is not allocated");
         exit(2);
     }
 
-    long double *typed_data1 = (long double *)data1;
-    long double *typed_data2 = (long double *)data2;
+    const long double *typed_data1 = (const long double *)data1;
+    const long double *typed_data2 = (const long double *)data2;
 
     if (*typed_data1 > *typed_data2)
         return 1;

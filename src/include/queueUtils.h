@@ -60,7 +60,7 @@ void free_queue(
 
 void print_queue(
     TQueue *queue,
-    void (*printData)(void *)
+    void (*printData)(const void *)
 );
 
 int is_queue_empty(
@@ -81,7 +81,7 @@ void* queue_back(
 
 int queue_push(
     TQueue *queue,
-    void *data,
+    const void *data,
     size_t dataSize
 );
 

@@ -47,20 +47,20 @@ typedef struct dlistNode {
 typedef struct {
     TdlistNode *head;                       // head of linked list
     TdlistNode *tail;                       // tail of linked list
-    int (*compareData)(void *, void *);     // function to compare items
-    void (*printData)(void *);              // function to print item
+    int (*compareData)(const void *, const void *);     // function to compare items
+    void (*printData)(const void *);              // function to print item
     void (*freeData)(void *);               // function to free item
     size_t size;                            // size of linked list
 } dlinkedList;
 
 dlinkedList* dcreateLinkedList(
-    int (*compareData)(void *, void *),
-    void (*printData)(void *),
+    int (*compareData)(const void *, const void *),
+    void (*printData)(const void *),
     void (*freeData)(void *)
 );
 
 TdlistNode* dcreatedlistNode(
-    void *data,
+    const void *data,
     size_t dataSize
 );
 
@@ -101,31 +101,31 @@ void dlist_swap_data(
 int dlist_change_data(
     dlinkedList *list,
     TdlistNode *baseNode,
-    void *newData,
+    const void *newData,
     size_t dataSize
 );
 
 int dlist_insert(
     dlinkedList *list,
-    void *data,
+    const void *data,
     size_t dataSize
 );
 
 int dlist_insert_order(
     dlinkedList *list,
-    void *data,
+    const void *data,
     size_t dataSize
 );
 
 int dlist_insert_front(
     dlinkedList *list,
-    void *data,
+    const void *data,
     size_t dataSize
 );
 
 int dlist_insert_index(
     dlinkedList *list,
-    void *data,
+    const void *data,
     size_t dataSize,
     size_t dataIndex
 );
@@ -137,7 +137,7 @@ TdlistNode* dlist_find_index(
 
 TdlistNode* dlist_find_data(
     dlinkedList *list,
-    void *data
+    const void *data
 );
 
 int dlist_delete_data(
@@ -158,7 +158,7 @@ int dlist_erase(
 
 dlinkedList* dlist_filter(
     dlinkedList *list,
-    int (*filterFunction)(void *),
+    int (*filterFunction)(const void *),
     size_t dataSize
 );
 
