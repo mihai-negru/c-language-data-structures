@@ -35,6 +35,7 @@ typedef struct bstNode {
     struct bstNode *parent;
     struct bstNode *left;
     struct bstNode *right;
+    int count;
 } TBstNode;
 
 typedef struct {
@@ -68,15 +69,7 @@ TBstNode* bst_find_data(
     const void *data
 );
 
-void bst_change_node_data(
-    bstTree *tree,
-    TBstNode *baseNode,
-    const void *newData,
-    size_t dataSize
-);
-
 int bst_node_level(
-    bstTree *tree,
     TBstNode *baseNode
 );
 
@@ -89,24 +82,25 @@ size_t get_bst_size(
 );
 
 TBstNode* bst_max_node(
-    bstTree *tree
+    TBstNode *root
 );
 
 TBstNode* bst_min_node(
-    bstTree *tree
+    TBstNode *root
 );
 
 void* bst_max_data(
-    bstTree *tree
+    TBstNode *root
 );
 
 void* bst_min_data(
-    bstTree *tree
+    TBstNode *root
 );
 
 int bst_delete_data(
     bstTree *tree,
-    const void *data
+    void *data,
+    size_t dataSize
 );
 
 TBstNode* bst_predecessor_node(
@@ -115,6 +109,16 @@ TBstNode* bst_predecessor_node(
 );
 
 TBstNode* bst_successor_node(
+    bstTree *tree,
+    const void *data
+);
+
+void* bst_predecessor_data(
+    bstTree *tree,
+    const void *data
+);
+
+void* bst_succecessor_data(
     bstTree *tree,
     const void *data
 );
@@ -131,34 +135,24 @@ TBstNode* bst_lowest_common_ancestor_data(
     const void *data2
 );
 
-void* bst_predecessor_data(
+void bst_traverse_inorder(
     bstTree *tree,
-    const void *data
+    void (*action)(const TBstNode *)
 );
 
-void* bst_succecessor_data(
+void bst_traverse_preorder(
     bstTree *tree,
-    const void *data
+    void (*action)(const TBstNode *)
 );
 
-void bst_print_inorder(
+void bst_traverse_postorder(
     bstTree *tree,
-    void (*printData)(const void *)
+    void (*action)(const TBstNode *)
 );
 
-void bst_print_preorder(
+void bst_traverse_level(
     bstTree *tree,
-    void (*printData)(const void *)
-);
-
-void bst_print_postorder(
-    bstTree *tree,
-    void (*printData)(const void *)
-);
-
-void bst_print_level(
-    bstTree *tree,
-    void (*printData)(const void *)
+    void (*action)(const TBstNode *)
 );
 
 #endif // BST_UTILS_H_
