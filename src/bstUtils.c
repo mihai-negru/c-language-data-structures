@@ -157,6 +157,24 @@ int bst_insert(bstTree *tree, const void *data, size_t dataSize) {
     return 0;
 }
 
+static TBstNode* bst_find_data_set_root(bstTree *tree, TBstNode *root, const void *data) {
+    if (tree == NULL || root == NULL)
+        return NULL;
+
+    TBstNode *iterator = root;
+
+    while (iterator) {
+        if (tree->compareData(iterator->data, data) <= -1)
+            iterator = iterator->right;
+        else if (tree->compareData(iterator->data, data) >= 1)
+            iterator = iterator->left;
+        else
+            return iterator;
+    }
+
+    return NULL;
+}
+
 TBstNode* bst_find_data(bstTree *tree, const void *data) {
     if (tree == NULL || tree->root == NULL)
         return NULL;
@@ -241,8 +259,8 @@ void* bst_max_data(TBstNode *root) {
 
     if (max_node)
         return max_node->data;
-    else
-        return NULL;
+    
+    return NULL;
 }
 
 void* bst_min_data(TBstNode *root) {
@@ -253,75 +271,70 @@ void* bst_min_data(TBstNode *root) {
 
     if (min_node)
         return min_node->data;
-    else
-        return NULL;
+    
+    return NULL;
 }
 
 static void bst_delete_data_helper(bstTree *tree, TBstNode *root, void *data, size_t dataSize) {
     if (tree == NULL || root == NULL)
         return;
 
-    TBstNode *delete_node = root;
+    TBstNode *delete_node = bst_find_data_set_root(tree, root, data);
 
-    while (delete_node) {
-        if (tree->compareData(delete_node->data, data) <= -1)
-            delete_node = delete_node->right;
-        else if (tree->compareData(delete_node->data, data) >= 1)
-            delete_node = delete_node->left;
-        else {
-            if (delete_node->left != NULL && delete_node->right != NULL) {
+    if (delete_node == NULL)
+        return;
+
+    if (delete_node->left != NULL && delete_node->right != NULL) {
+        TBstNode *delete_succecessor = bst_min_node(delete_node->right);
                 
-                TBstNode *delete_succecessor = bst_min_node(delete_node->right);
-                bst_change_data(delete_node, delete_succecessor, dataSize);
+        bst_change_data(delete_node, delete_succecessor, dataSize);
+        bst_delete_data_helper(tree, delete_node->right, delete_succecessor->data, dataSize);
+    } else {
+        if (delete_node->left != NULL) {
+            delete_node->left->parent = delete_node->parent;
 
-                bst_delete_data_helper(tree, delete_node->right, delete_succecessor->data, dataSize);
+            if (delete_node->parent != NULL) {
+                if (delete_node->parent->right == delete_node)
+                    delete_node->parent->right = delete_node->left;
+                else
+                    delete_node->parent->left = delete_node->left;
             } else {
-                if (delete_node->left != NULL) {
-                    delete_node->left->parent = delete_node->parent;
+                tree->root = delete_node->left;
+            }
+        } else if (delete_node->right != NULL) {
+            delete_node->right->parent = delete_node->parent;
 
-                    if (delete_node->parent != NULL) {
-                        if (delete_node->parent->right == delete_node)
-                            delete_node->parent->right = delete_node->left;
-                        else
-                            delete_node->parent->left = delete_node->left;
-                    } else {
-                        tree->root = delete_node->left;
-                    }
-                } else if (delete_node->right != NULL) {
-                    delete_node->right->parent = delete_node->parent;
-
-                    if (delete_node->parent != NULL) {
-                        if (delete_node->parent->right == delete_node)
-                            delete_node->parent->right = delete_node->right;
-                        else
-                            delete_node->parent->left = delete_node->right;
-                    } else {
-                        tree->root = delete_node->right;
-                    }
+            if (delete_node->parent != NULL) {
+                if (delete_node->parent->right == delete_node)
+                    delete_node->parent->right = delete_node->right;
+                else
+                    delete_node->parent->left = delete_node->right;
+            } else {
+                tree->root = delete_node->right;
+            }
+        } else {
+            if (delete_node->parent != NULL) {
+                if (delete_node->parent->right == delete_node)
+                    delete_node->parent->right = NULL;
+                else
+                    delete_node->parent->left = NULL;
                 } else {
-                    if (delete_node->parent != NULL) {
-                        if (delete_node->parent->right == delete_node)
-                            delete_node->parent->right = NULL;
-                        else
-                            delete_node->parent->left = NULL;
-                    } else {
-                        tree->root = NULL;
-                    }
+                    tree->root = NULL;
                 }
-
-                if (tree->freeData != NULL && delete_node->data != NULL)
-                    tree->freeData(delete_node->data);
-
-                if (delete_node->data != NULL)
-                    free(delete_node->data);
-
-                delete_node->data = NULL;
-
-                if (delete_node != NULL)
-                    free(delete_node);
-
-                delete_node = NULL;}
         }
+
+        if (tree->freeData != NULL && delete_node->data != NULL)
+            tree->freeData(delete_node->data);
+
+        if (delete_node->data != NULL)
+            free(delete_node->data);
+
+        delete_node->data = NULL;
+
+        if (delete_node != NULL)
+            free(delete_node);
+
+        delete_node = NULL;
     }
 }
 
@@ -334,17 +347,111 @@ int bst_delete_data(bstTree *tree, void *data, size_t dataSize) {
     return 0;
 }
 
-TBstNode* bst_predecessor_node(bstTree *tree, const void *data);
+TBstNode* bst_predecessor_node(bstTree *tree, const void *data) {
+    if (tree == NULL || tree->root == NULL || data == NULL)
+        return NULL;
 
-TBstNode* bst_successor_node(bstTree *tree, const void *data);
+    TBstNode *iterator = bst_find_data(tree, data);
 
-void* bst_predecessor_data(bstTree *tree, const void *data);
+    if (iterator == NULL)
+        return NULL;
 
-void* bst_succecessor_data(bstTree *tree, const void *data);
+    if (iterator->left != NULL)
+        return bst_max_node(iterator->left);
 
-TBstNode* bst_lowest_common_ancestor_node(bstTree *tree, const void *data1, const void *data2);
+    TBstNode *parent_iterator = iterator->parent;
 
-TBstNode* bst_lowest_common_ancestor_data(bstTree *tree, const void *data1, const void *data2);
+    while (parent_iterator != NULL && parent_iterator->left == iterator) {
+        iterator = parent_iterator;
+        parent_iterator = parent_iterator->parent;
+    }
+
+    return parent_iterator;
+}
+
+TBstNode* bst_successor_node(bstTree *tree, const void *data) {
+    if (tree == NULL || tree->root == NULL || data == NULL)
+        return NULL;
+
+    TBstNode *iterator = bst_find_data(tree, data);
+
+    if (iterator == NULL)
+        return NULL;
+
+    if (iterator->right != NULL)
+        return bst_min_node(iterator->right);
+
+    TBstNode *parent_iterator = iterator->parent;
+
+    while (parent_iterator != NULL && parent_iterator->right == iterator) {
+        iterator = parent_iterator;
+        parent_iterator = parent_iterator->parent;
+    }
+
+    return parent_iterator;
+}
+
+void* bst_predecessor_data(bstTree *tree, const void *data) {
+    if (tree == NULL || data == NULL)
+        return NULL;
+
+    TBstNode *predecessor_node = bst_predecessor_node(tree, data);
+
+    if (predecessor_node != NULL)
+        return predecessor_node->data;
+
+    return NULL;
+}
+
+void* bst_succecessor_data(bstTree *tree, const void *data) {
+    if (tree == NULL || data == NULL)
+        return NULL;
+
+    TBstNode *successor_node = bst_successor_node(tree, data);
+
+    if (successor_node != NULL)
+        return successor_node->data;
+
+    return NULL;
+}
+
+static TBstNode* bst_lowest_common_ancestor_node_helper(bstTree *tree, TBstNode *root, const void *data1, const void *data2) {
+    if (tree == NULL)
+        return NULL;
+
+    while (root != NULL) {
+        if ((tree->compareData(root->data, data1) >= 1) && (tree->compareData(root->data, data2) >= 1))
+            root = root->left;
+        else if ((tree->compareData(root->data, data1) <= -1) && (tree->compareData(root->data, data2) <= -1))
+            root = root->right;
+        else
+            return root;
+    }
+
+    return NULL;
+}
+
+TBstNode* bst_lowest_common_ancestor_node(bstTree *tree, const void *data1, const void *data2) {
+    if (tree == NULL || data1 == NULL || data2 == NULL)
+        return NULL;
+
+    if (bst_find_data(tree, data1) == NULL || bst_find_data(tree, data2) == NULL)
+        return NULL;
+
+    return bst_lowest_common_ancestor_node_helper(tree, tree->root, data1, data2);
+}
+
+void* bst_lowest_common_ancestor_data(bstTree *tree, const void *data1, const void *data2) {
+    if (tree == NULL || data1 == NULL || data2 == NULL)
+        return NULL;
+
+    TBstNode *common_ancestor = bst_lowest_common_ancestor_node(tree, data1, data2);
+
+    if (common_ancestor != NULL)
+        return common_ancestor->data;
+
+    return NULL;
+}
 
 static void bst_traverse_inorder_helper(TBstNode *root, void (*action)(const TBstNode *)) {
     if (root == NULL)

@@ -129,7 +129,7 @@ TBstNode* bst_lowest_common_ancestor_node(
     const void *data2
 );
 
-TBstNode* bst_lowest_common_ancestor_data(
+void* bst_lowest_common_ancestor_data(
     bstTree *tree,
     const void *data1,
     const void *data2
