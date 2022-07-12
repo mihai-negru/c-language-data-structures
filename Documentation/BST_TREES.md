@@ -88,19 +88,19 @@ For this section we have the following functions:
 
 ```C
     int is_bst_empty(bstTree *tree);
-    TBstNode* bst_find_data(bstTree *tree, const void *data);
-    int bst_node_level(TBstNode *baseNode);
-    TBstNode* get_bst_root(bstTree *tree);
+    bstTreeNode* bst_find_data(bstTree *tree, const void *data);
+    int bst_node_level(bstTreeNode *baseNode);
+    bstTreeNode* get_bst_root(bstTree *tree);
     size_t get_bst_size(bstTree *tree);
-    TBstNode* bst_max_node(TBstNode *root);
-    TBstNode* bst_min_node(TBstNode *root);
-    void* bst_max_data(TBstNode *root);
-    void* bst_min_data(TBstNode *root);
-    TBstNode* bst_predecessor_node(bstTree *tree, const void *data);
-    TBstNode* bst_successor_node(bstTree *tree, const void *data);
+    bstTreeNode* bst_max_node(bstTreeNode *root);
+    bstTreeNode* bst_min_node(bstTreeNode *root);
+    void* bst_max_data(bstTreeNode *root);
+    void* bst_min_data(bstTreeNode *root);
+    bstTreeNode* bst_predecessor_node(bstTree *tree, const void *data);
+    bstTreeNode* bst_successor_node(bstTree *tree, const void *data);
     void* bst_predecessor_data(bstTree *tree, const void *data);
     void* bst_succecessor_data(bstTree *tree, const void *data);
-    TBstNode* bst_lowest_common_ancestor_node(
+    bstTreeNode* bst_lowest_common_ancestor_node(
         bstTree *tree, const void *data1, const void *data2
     );
     void* bst_lowest_common_ancestor_data(
@@ -117,7 +117,7 @@ The functions do exacty what their name says, now let's see some quick examples 
 
     // I will need a function to work with the nodes
 
-    void printData(const TBstNode *node) {
+    void printData(const bstTreeNode *node) {
         if (node == NULL || node->data == NULL)
             return;
 
@@ -171,7 +171,7 @@ I have prepared 4 functions that will help you traverse you binary search tree:
 The definition of an **action** function is:
 
 ```C
-    void action(const TBstNode *node);
+    void action(const bstTreeNode *node);
 ```
 
 >**It takes one node and does whatever it wants**
@@ -180,7 +180,7 @@ If we want to print the nodes we will have to define the **printData** functions
 
 ```C
     // this is an action function, takes a node and does something
-    void printData(const TBstNode *node) {
+    void printData(const bstTreeNode *node) {
         if (node == NULL || node->data == NULL)
             return;
 
@@ -201,7 +201,7 @@ If we want to print the nodes we will have to define the **printData** functions
 If you want to do something more interesting you can define another action function as follows:
 
 ```C
-    void mapNodes(const TBstNode *node) {
+    void mapNodes(const bstTreeNode *node) {
         if (node == NULL || node->data == NULL)
             return;
 
