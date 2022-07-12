@@ -18,13 +18,20 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
+ * along with C-language-Data-Structures.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
 #include "./include/bstUtils.h"
 #include "./include/queueUtils.h"
 
+/**
+ * @brief Create a bst object
+ * 
+ * @param compareData 
+ * @param freeData 
+ * @return bstTree* 
+ */
 bstTree* create_bst(int (*compareData)(const void *, const void *), void (*freeData)(void *)) {
     if (compareData == NULL) {
         errno = EINVAL;
@@ -47,6 +54,13 @@ bstTree* create_bst(int (*compareData)(const void *, const void *), void (*freeD
     return newTree;
 }
 
+/**
+ * @brief Create a bst node object
+ * 
+ * @param data 
+ * @param dataSize 
+ * @return TBstNode* 
+ */
 static TBstNode* create_bst_node(const void *data, size_t dataSize) {
     if (data == NULL)
         return NULL;
@@ -78,6 +92,12 @@ static TBstNode* create_bst_node(const void *data, size_t dataSize) {
     return newNode;
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param root 
+ */
 static void free_bst_helper(bstTree *tree, TBstNode *root) {
     if (root == NULL)
         return;
@@ -99,6 +119,11 @@ static void free_bst_helper(bstTree *tree, TBstNode *root) {
     root = NULL;
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ */
 void free_bst(bstTree *tree) {
     if (tree) {
         free_bst_helper(tree, tree->root);
@@ -108,6 +133,12 @@ void free_bst(bstTree *tree) {
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @return int 
+ */
 int is_bst_empty(bstTree *tree) {
     if (tree == NULL || tree->root == NULL || tree->size == 0)
         return 1;
@@ -115,6 +146,14 @@ int is_bst_empty(bstTree *tree) {
     return 0;
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param data 
+ * @param dataSize 
+ * @return int 
+ */
 int bst_insert(bstTree *tree, const void *data, size_t dataSize) {
     if (tree == NULL || data == NULL || dataSize == 0)
         return 1;
@@ -157,6 +196,14 @@ int bst_insert(bstTree *tree, const void *data, size_t dataSize) {
     return 0;
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param root 
+ * @param data 
+ * @return TBstNode* 
+ */
 static TBstNode* bst_find_data_set_root(bstTree *tree, TBstNode *root, const void *data) {
     if (tree == NULL || root == NULL)
         return NULL;
@@ -175,6 +222,13 @@ static TBstNode* bst_find_data_set_root(bstTree *tree, TBstNode *root, const voi
     return NULL;
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param data 
+ * @return TBstNode* 
+ */
 TBstNode* bst_find_data(bstTree *tree, const void *data) {
     if (tree == NULL || tree->root == NULL)
         return NULL;
@@ -193,6 +247,13 @@ TBstNode* bst_find_data(bstTree *tree, const void *data) {
     return NULL;
 }
 
+/**
+ * @brief 
+ * 
+ * @param dest_node 
+ * @param src_node 
+ * @param dataSize 
+ */
 static void bst_change_data(TBstNode *dest_node, const TBstNode *src_node, size_t dataSize) {
     if (dest_node == NULL || src_node == NULL || dataSize == 0)
         return;
@@ -205,6 +266,12 @@ static void bst_change_data(TBstNode *dest_node, const TBstNode *src_node, size_
     dest_node->count = src_node->count;
 }
 
+/**
+ * @brief 
+ * 
+ * @param baseNode 
+ * @return int 
+ */
 int bst_node_level(TBstNode *baseNode) {
     if (baseNode == NULL)
         return -1;
@@ -219,6 +286,12 @@ int bst_node_level(TBstNode *baseNode) {
     return level_count;
 }
 
+/**
+ * @brief Get the bst root object
+ * 
+ * @param tree 
+ * @return TBstNode* 
+ */
 TBstNode* get_bst_root(bstTree *tree) {
     if (tree == NULL)
         return NULL;
@@ -226,6 +299,12 @@ TBstNode* get_bst_root(bstTree *tree) {
     return tree->root;
 }
 
+/**
+ * @brief Get the bst size object
+ * 
+ * @param tree 
+ * @return size_t 
+ */
 size_t get_bst_size(bstTree *tree) {
     if (tree == NULL)
         return -1;
@@ -233,6 +312,12 @@ size_t get_bst_size(bstTree *tree) {
     return tree->size;
 }
 
+/**
+ * @brief 
+ * 
+ * @param root 
+ * @return TBstNode* 
+ */
 TBstNode* bst_max_node(TBstNode *root) {
     if (root) {
         while (root->right != NULL)
@@ -242,6 +327,12 @@ TBstNode* bst_max_node(TBstNode *root) {
     return root;
 }
 
+/**
+ * @brief 
+ * 
+ * @param root 
+ * @return TBstNode* 
+ */
 TBstNode* bst_min_node(TBstNode *root) {
     if (root) {
         while (root->left != NULL)
@@ -251,6 +342,12 @@ TBstNode* bst_min_node(TBstNode *root) {
     return root;
 }
 
+/**
+ * @brief 
+ * 
+ * @param root 
+ * @return void* 
+ */
 void* bst_max_data(TBstNode *root) {
     if (root == NULL)
         return NULL;
@@ -263,6 +360,12 @@ void* bst_max_data(TBstNode *root) {
     return NULL;
 }
 
+/**
+ * @brief 
+ * 
+ * @param root 
+ * @return void* 
+ */
 void* bst_min_data(TBstNode *root) {
     if (root == NULL)
         return NULL;
@@ -275,6 +378,14 @@ void* bst_min_data(TBstNode *root) {
     return NULL;
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param root 
+ * @param data 
+ * @param dataSize 
+ */
 static void bst_delete_data_helper(bstTree *tree, TBstNode *root, void *data, size_t dataSize) {
     if (tree == NULL || root == NULL)
         return;
@@ -335,9 +446,19 @@ static void bst_delete_data_helper(bstTree *tree, TBstNode *root, void *data, si
             free(delete_node);
 
         delete_node = NULL;
+
+        --(tree->size);
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param data 
+ * @param dataSize 
+ * @return int 
+ */
 int bst_delete_data(bstTree *tree, void *data, size_t dataSize) {
     if (tree == NULL || tree->root == NULL)
         return 1;
@@ -347,6 +468,13 @@ int bst_delete_data(bstTree *tree, void *data, size_t dataSize) {
     return 0;
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param data 
+ * @return TBstNode* 
+ */
 TBstNode* bst_predecessor_node(bstTree *tree, const void *data) {
     if (tree == NULL || tree->root == NULL || data == NULL)
         return NULL;
@@ -369,6 +497,13 @@ TBstNode* bst_predecessor_node(bstTree *tree, const void *data) {
     return parent_iterator;
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param data 
+ * @return TBstNode* 
+ */
 TBstNode* bst_successor_node(bstTree *tree, const void *data) {
     if (tree == NULL || tree->root == NULL || data == NULL)
         return NULL;
@@ -391,6 +526,13 @@ TBstNode* bst_successor_node(bstTree *tree, const void *data) {
     return parent_iterator;
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param data 
+ * @return void* 
+ */
 void* bst_predecessor_data(bstTree *tree, const void *data) {
     if (tree == NULL || data == NULL)
         return NULL;
@@ -403,6 +545,13 @@ void* bst_predecessor_data(bstTree *tree, const void *data) {
     return NULL;
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param data 
+ * @return void* 
+ */
 void* bst_succecessor_data(bstTree *tree, const void *data) {
     if (tree == NULL || data == NULL)
         return NULL;
@@ -415,6 +564,15 @@ void* bst_succecessor_data(bstTree *tree, const void *data) {
     return NULL;
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param root 
+ * @param data1 
+ * @param data2 
+ * @return TBstNode* 
+ */
 static TBstNode* bst_lowest_common_ancestor_node_helper(bstTree *tree, TBstNode *root, const void *data1, const void *data2) {
     if (tree == NULL)
         return NULL;
@@ -431,6 +589,14 @@ static TBstNode* bst_lowest_common_ancestor_node_helper(bstTree *tree, TBstNode 
     return NULL;
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param data1 
+ * @param data2 
+ * @return TBstNode* 
+ */
 TBstNode* bst_lowest_common_ancestor_node(bstTree *tree, const void *data1, const void *data2) {
     if (tree == NULL || data1 == NULL || data2 == NULL)
         return NULL;
@@ -441,6 +607,14 @@ TBstNode* bst_lowest_common_ancestor_node(bstTree *tree, const void *data1, cons
     return bst_lowest_common_ancestor_node_helper(tree, tree->root, data1, data2);
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param data1 
+ * @param data2 
+ * @return void* 
+ */
 void* bst_lowest_common_ancestor_data(bstTree *tree, const void *data1, const void *data2) {
     if (tree == NULL || data1 == NULL || data2 == NULL)
         return NULL;
@@ -453,6 +627,12 @@ void* bst_lowest_common_ancestor_data(bstTree *tree, const void *data1, const vo
     return NULL;
 }
 
+/**
+ * @brief 
+ * 
+ * @param root 
+ * @param action 
+ */
 static void bst_traverse_inorder_helper(TBstNode *root, void (*action)(const TBstNode *)) {
     if (root == NULL)
         return;
@@ -462,6 +642,12 @@ static void bst_traverse_inorder_helper(TBstNode *root, void (*action)(const TBs
     bst_traverse_inorder_helper(root->right, action);
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param action 
+ */
 void bst_traverse_inorder(bstTree *tree, void (*action)(const TBstNode *)) {
     if (tree == NULL || action == NULL)
         return;
@@ -472,6 +658,12 @@ void bst_traverse_inorder(bstTree *tree, void (*action)(const TBstNode *)) {
         bst_traverse_inorder_helper(tree->root, action);
 }
 
+/**
+ * @brief 
+ * 
+ * @param root 
+ * @param action 
+ */
 static void bst_traverse_preorder_helper(TBstNode *root, void (*action)(const TBstNode *)) {
     if (root == NULL)
         return;
@@ -481,6 +673,12 @@ static void bst_traverse_preorder_helper(TBstNode *root, void (*action)(const TB
     bst_traverse_preorder_helper(root->right, action);
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param action 
+ */
 void bst_traverse_preorder(bstTree *tree, void (*action)(const TBstNode *)) {
     if (tree == NULL || action == NULL)
         return;
@@ -491,6 +689,12 @@ void bst_traverse_preorder(bstTree *tree, void (*action)(const TBstNode *)) {
         bst_traverse_preorder_helper(tree->root, action);
 }
 
+/**
+ * @brief 
+ * 
+ * @param root 
+ * @param action 
+ */
 static void bst_traverse_postorder_helper(TBstNode *root, void (*action)(const TBstNode *)) {
     if (root == NULL)
         return;
@@ -500,6 +704,12 @@ static void bst_traverse_postorder_helper(TBstNode *root, void (*action)(const T
     action(root);
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param action 
+ */
 void bst_traverse_postorder(bstTree *tree, void (*action)(const TBstNode *)) {
     if (tree == NULL || action == NULL)
         return;
@@ -510,6 +720,12 @@ void bst_traverse_postorder(bstTree *tree, void (*action)(const TBstNode *)) {
         bst_traverse_postorder_helper(tree->root, action);
 }
 
+/**
+ * @brief 
+ * 
+ * @param tree 
+ * @param action 
+ */
 void bst_traverse_level(bstTree *tree, void (*action)(const TBstNode *)) {
     if (tree == NULL || action == NULL)
         return;

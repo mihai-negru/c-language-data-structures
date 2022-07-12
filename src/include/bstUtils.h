@@ -18,7 +18,7 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with Collections-C.  If not, see <http://www.gnu.org/licenses/>.
+ * along with C-language-Data-Structures.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
 
@@ -30,19 +30,27 @@
 #include <string.h>
 #include <errno.h>
 
+/**
+ * @brief Binary Search Tree Node object definition
+ * 
+ */
 typedef struct bstNode {
-    void *data;
-    struct bstNode *parent;
-    struct bstNode *left;
-    struct bstNode *right;
-    int count;
+    void *data;                                         // Pointer to data
+    struct bstNode *parent;                             // Pointer to parent node
+    struct bstNode *left;                               // Pointer to left child node
+    struct bstNode *right;                              // Pointer to right child node
+    int count;                                          // Number of nodes with the same data value
 } TBstNode;
 
+/**
+ * @brief Binary Search Tree object definition
+ * 
+ */
 typedef struct {
-    TBstNode *root;
-    int (*compareData)(const void *, const void *);
-    void (*freeData)(void *);
-    size_t size;
+    TBstNode *root;                                     // Pointer to tree root
+    int (*compareData)(const void *, const void *);     // Function to compare two elements
+    void (*freeData)(void *);                           // Function to free content of data
+    size_t size;                                        // Size of the binary search tree
 } bstTree;
 
 bstTree* create_bst(
