@@ -1,5 +1,5 @@
 /**
- * @file priQueueUtils.c
+ * @file minPriQueueUtils.c
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2022-06-21
@@ -22,4 +22,4 @@
  * 
  */
 
-#include "./include/priQueueUtils.h"
+#include "./include/minPriQueueUtils.h"

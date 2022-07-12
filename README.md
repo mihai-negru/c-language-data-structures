@@ -1,8 +1,6 @@
 # Taskuri
-* avlTree
 * redBlackTree
-* heap
-* priQueue
+* priQueues
 * unordGraph
 * ordGraph
 * costGraphs
