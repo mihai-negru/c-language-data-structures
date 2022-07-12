@@ -47,7 +47,7 @@ typedef struct bstNode {
  * 
  */
 typedef struct {
-    bstTreeNode *root;                                     // Pointer to tree root
+    bstTreeNode *root;                                  // Pointer to tree root
     int (*compareData)(const void *, const void *);     // Function to compare two elements
     void (*freeData)(void *);                           // Function to free content of data
     size_t size;                                        // Size of the binary search tree
