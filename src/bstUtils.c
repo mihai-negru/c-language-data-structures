@@ -488,7 +488,7 @@ void* bst_min_data(TBstNode *root) {
  * @param data pointer to an address of a generic data to be deleted
  * @param dataSize size of one generic data
  */
-static void bst_delete_data_helper(bstTree *tree, TBstNode *root, void *data, size_t dataSize) {
+static void bst_delete_helper(bstTree *tree, TBstNode *root, void *data, size_t dataSize) {
     // Check if input data is valid
     if (tree == NULL || root == NULL)
         return;
@@ -509,7 +509,7 @@ static void bst_delete_data_helper(bstTree *tree, TBstNode *root, void *data, si
                 
         // Replace the selected bst node and remove the dublicate
         bst_change_data(delete_node, delete_succecessor, dataSize);
-        bst_delete_data_helper(tree, delete_node->right, delete_succecessor->data, dataSize);
+        bst_delete_helper(tree, delete_node->right, delete_succecessor->data, dataSize);
     } else {
         // Selected node has one or no chlid
 
@@ -600,13 +600,13 @@ static void bst_delete_data_helper(bstTree *tree, TBstNode *root, void *data, si
  * @return int 1(Fail) if function failed or 0(Success) if
  * deletion from bst went successfully
  */
-int bst_delete_data(bstTree *tree, void *data, size_t dataSize) {
+int bst_delete(bstTree *tree, void *data, size_t dataSize) {
     // Check if input data is valid
     if (tree == NULL || tree->root == NULL || dataSize == 0)
         return 1;
 
     // Call helper function for deletion
-    bst_delete_data_helper(tree, tree->root, data, dataSize);
+    bst_delete_helper(tree, tree->root, data, dataSize);
 
     // Deletion went successfully
     return 0;

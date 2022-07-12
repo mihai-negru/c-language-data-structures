@@ -1,5 +1,4 @@
 # Taskuri
-* bst
 * avlTree
 * redBlackTree
 * heap

@@ -105,7 +105,7 @@ void* bst_min_data(
     TBstNode *root
 );
 
-int bst_delete_data(
+int bst_delete(
     bstTree *tree,
     void *data,
     size_t dataSize
