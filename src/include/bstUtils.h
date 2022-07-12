@@ -40,14 +40,14 @@ typedef struct bstNode {
     struct bstNode *left;                               // Pointer to left child node
     struct bstNode *right;                              // Pointer to right child node
     int count;                                          // Number of nodes with the same data value
-} TBstNode;
+} bstTreeNode;
 
 /**
  * @brief Binary Search Tree object definition
  * 
  */
 typedef struct {
-    TBstNode *root;                                     // Pointer to tree root
+    bstTreeNode *root;                                     // Pointer to tree root
     int (*compareData)(const void *, const void *);     // Function to compare two elements
     void (*freeData)(void *);                           // Function to free content of data
     size_t size;                                        // Size of the binary search tree
@@ -72,16 +72,16 @@ int bst_insert(
     size_t dataSize
 );
 
-TBstNode* bst_find_data(
+bstTreeNode* bst_find_data(
     bstTree *tree,
     const void *data
 );
 
 int bst_node_level(
-    TBstNode *baseNode
+    bstTreeNode *baseNode
 );
 
-TBstNode* get_bst_root(
+bstTreeNode* get_bst_root(
     bstTree *tree
 );
 
@@ -89,20 +89,20 @@ size_t get_bst_size(
     bstTree *tree
 );
 
-TBstNode* bst_max_node(
-    TBstNode *root
+bstTreeNode* bst_max_node(
+    bstTreeNode *root
 );
 
-TBstNode* bst_min_node(
-    TBstNode *root
+bstTreeNode* bst_min_node(
+    bstTreeNode *root
 );
 
 void* bst_max_data(
-    TBstNode *root
+    bstTreeNode *root
 );
 
 void* bst_min_data(
-    TBstNode *root
+    bstTreeNode *root
 );
 
 int bst_delete(
@@ -111,12 +111,12 @@ int bst_delete(
     size_t dataSize
 );
 
-TBstNode* bst_predecessor_node(
+bstTreeNode* bst_predecessor_node(
     bstTree *tree,
     const void *data
 );
 
-TBstNode* bst_successor_node(
+bstTreeNode* bst_successor_node(
     bstTree *tree,
     const void *data
 );
@@ -131,7 +131,7 @@ void* bst_succecessor_data(
     const void *data
 );
 
-TBstNode* bst_lowest_common_ancestor_node(
+bstTreeNode* bst_lowest_common_ancestor_node(
     bstTree *tree,
     const void *data1,
     const void *data2
@@ -145,22 +145,22 @@ void* bst_lowest_common_ancestor_data(
 
 void bst_traverse_inorder(
     bstTree *tree,
-    void (*action)(const TBstNode *)
+    void (*action)(const bstTreeNode *)
 );
 
 void bst_traverse_preorder(
     bstTree *tree,
-    void (*action)(const TBstNode *)
+    void (*action)(const bstTreeNode *)
 );
 
 void bst_traverse_postorder(
     bstTree *tree,
-    void (*action)(const TBstNode *)
+    void (*action)(const bstTreeNode *)
 );
 
 void bst_traverse_level(
     bstTree *tree,
-    void (*action)(const TBstNode *)
+    void (*action)(const bstTreeNode *)
 );
 
 #endif // BST_UTILS_H_

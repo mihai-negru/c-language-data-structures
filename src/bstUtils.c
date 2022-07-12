@@ -71,15 +71,15 @@ bstTree* create_bst(int (*compareData)(const void *, const void *), void (*freeD
  * 
  * @param data pointer to an address of a generic data
  * @param dataSize size of one generic data
- * @return TBstNode* a new allocated binary search tree node object or NULL
+ * @return bstTreeNode* a new allocated binary search tree node object or NULL
  */
-static TBstNode* create_bst_node(const void *data, size_t dataSize) {
+static bstTreeNode* create_bst_node(const void *data, size_t dataSize) {
     // Check if data address is valid
     if (data == NULL)
         return NULL;
 
     // Allocate a new node on the heap
-    TBstNode *newNode = (TBstNode *)malloc(sizeof(TBstNode));
+    bstTreeNode *newNode = (bstTreeNode *)malloc(sizeof(bstTreeNode));
 
     // Check if allocation went successfully
     if (newNode) {
@@ -117,7 +117,7 @@ static TBstNode* create_bst_node(const void *data, size_t dataSize) {
  * @param tree an allocated binary search tree object
  * @param root pointer to current bst node object
  */
-static void free_bst_helper(bstTree *tree, TBstNode *root) {
+static void free_bst_helper(bstTree *tree, bstTreeNode *root) {
     // Check if current node is valid
     if (root == NULL)
         return;
@@ -203,8 +203,8 @@ int bst_insert(bstTree *tree, const void *data, size_t dataSize) {
         return 1;
 
     // Set iterator pointers  
-    TBstNode *iterator = tree->root;
-    TBstNode *parent_iterator = NULL;
+    bstTreeNode *iterator = tree->root;
+    bstTreeNode *parent_iterator = NULL;
 
     // Find a valid position for insertion
     while (iterator != NULL) {
@@ -223,7 +223,7 @@ int bst_insert(bstTree *tree, const void *data, size_t dataSize) {
     }
 
     // Create a new bst node object
-    TBstNode *newNode = create_bst_node(data, dataSize);
+    bstTreeNode *newNode = create_bst_node(data, dataSize);
 
     // Check if new bst node was created
     if (newNode == NULL) 
@@ -258,16 +258,16 @@ int bst_insert(bstTree *tree, const void *data, size_t dataSize) {
  * @param tree an allocated binary search tree object
  * @param root pointer to current working bst node object
  * @param data pointer to an address of a generic data type
- * @return TBstNode* binary search tree node object containing
+ * @return bstTreeNode* binary search tree node object containing
  * data value or NULL in case no such node exists
  */
-static TBstNode* bst_find_data_set_root(bstTree *tree, TBstNode *root, const void *data) {
+static bstTreeNode* bst_find_data_set_root(bstTree *tree, bstTreeNode *root, const void *data) {
     // Check if input data is valid
     if (tree == NULL || root == NULL)
         return NULL;
 
     // Set iterator pointer
-    TBstNode *iterator = root;
+    bstTreeNode *iterator = root;
 
     // Search for input data (void *data),
     // from root - subtree
@@ -291,16 +291,16 @@ static TBstNode* bst_find_data_set_root(bstTree *tree, TBstNode *root, const voi
  * 
  * @param tree an allocated binary search tree object
  * @param data pointer to an address of a generic data type
- * @return TBstNode* binary search tree node object containing
+ * @return bstTreeNode* binary search tree node object containing
  * data value or NULL in case no such node exists
  */
-TBstNode* bst_find_data(bstTree *tree, const void *data) {
+bstTreeNode* bst_find_data(bstTree *tree, const void *data) {
     // Check if input data is valid
     if (tree == NULL || tree->root == NULL)
         return NULL;
 
     // Set iterator pointer
-    TBstNode *iterator = tree->root;
+    bstTreeNode *iterator = tree->root;
 
     // Search for imput data (void *data) in all tree
     while (iterator) {
@@ -327,7 +327,7 @@ TBstNode* bst_find_data(bstTree *tree, const void *data) {
  * @param src_node bst node object to copy data bytes
  * @param dataSize size of a generic data type element
  */
-static void bst_change_data(TBstNode *dest_node, const TBstNode *src_node, size_t dataSize) {
+static void bst_change_data(bstTreeNode *dest_node, const bstTreeNode *src_node, size_t dataSize) {
     // Check if input data is valid
     if (dest_node == NULL || src_node == NULL || dataSize == 0)
         return;
@@ -351,7 +351,7 @@ static void bst_change_data(TBstNode *dest_node, const TBstNode *src_node, size_
  * @param baseNode bst node object to calculate its level
  * @return int level of input bst object node
  */
-int bst_node_level(TBstNode *baseNode) {
+int bst_node_level(bstTreeNode *baseNode) {
     // Check if input data is valid
     if (baseNode == NULL)
         return -1;
@@ -373,10 +373,10 @@ int bst_node_level(TBstNode *baseNode) {
  * @brief Function to get root node of the bst tree.
  * 
  * @param tree an allocated binary search tree object
- * @return TBstNode* the root node of the current binary
+ * @return bstTreeNode* the root node of the current binary
  * search tree
  */
-TBstNode* get_bst_root(bstTree *tree) {
+bstTreeNode* get_bst_root(bstTree *tree) {
     if (tree == NULL)
         return NULL;
 
@@ -402,9 +402,9 @@ size_t get_bst_size(bstTree *tree) {
  * as the beginning of the tree (root != tree(root)).
  * 
  * @param root pointer to current working bst node object
- * @return TBstNode* pointer to maximum node value from bst
+ * @return bstTreeNode* pointer to maximum node value from bst
  */
-TBstNode* bst_max_node(TBstNode *root) {
+bstTreeNode* bst_max_node(bstTreeNode *root) {
     if (root) {
         while (root->right != NULL)
             root = root->right;
@@ -419,9 +419,9 @@ TBstNode* bst_max_node(TBstNode *root) {
  * as the beginning of the tree (root != tree(root)).
  * 
  * @param root pointer to current working bst node object
- * @return TBstNode* pointer to minimum node value from bst
+ * @return bstTreeNode* pointer to minimum node value from bst
  */
-TBstNode* bst_min_node(TBstNode *root) {
+bstTreeNode* bst_min_node(bstTreeNode *root) {
     if (root) {
         while (root->left != NULL)
             root = root->left;
@@ -438,13 +438,13 @@ TBstNode* bst_min_node(TBstNode *root) {
  * @param root pointer to current working bst node object
  * @return void* pointer to maximum data value from bst tree
  */
-void* bst_max_data(TBstNode *root) {
+void* bst_max_data(bstTreeNode *root) {
     // Check if input data is valid
     if (root == NULL)
         return NULL;
 
     // Get maximum node from bst
-    TBstNode *max_node = bst_max_node(root);
+    bstTreeNode *max_node = bst_max_node(root);
 
     // Return data pointer if node is not NULL
     if (max_node)
@@ -462,13 +462,13 @@ void* bst_max_data(TBstNode *root) {
  * @param root pointer to current working bst node object
  * @return void* pointer to minimum data value from bst tree
  */
-void* bst_min_data(TBstNode *root) {
+void* bst_min_data(bstTreeNode *root) {
     // Check if input data is valid
     if (root == NULL)
         return NULL;
 
     // Get minimum node from bst
-    TBstNode *min_node = bst_min_node(root);
+    bstTreeNode *min_node = bst_min_node(root);
 
     // Return data pointer if node is not NULL
     if (min_node)
@@ -488,13 +488,13 @@ void* bst_min_data(TBstNode *root) {
  * @param data pointer to an address of a generic data to be deleted
  * @param dataSize size of one generic data
  */
-static void bst_delete_helper(bstTree *tree, TBstNode *root, void *data, size_t dataSize) {
+static void bst_delete_helper(bstTree *tree, bstTreeNode *root, void *data, size_t dataSize) {
     // Check if input data is valid
     if (tree == NULL || root == NULL)
         return;
 
     // Find current node (root) in binary search tree
-    TBstNode *delete_node = bst_find_data_set_root(tree, root, data);
+    bstTreeNode *delete_node = bst_find_data_set_root(tree, root, data);
 
     // Bst node was not found exit process
     if (delete_node == NULL)
@@ -505,7 +505,7 @@ static void bst_delete_helper(bstTree *tree, TBstNode *root, void *data, size_t 
         // Selected node has two children
 
         // Find a replacement for selected node
-        TBstNode *delete_succecessor = bst_min_node(delete_node->right);
+        bstTreeNode *delete_succecessor = bst_min_node(delete_node->right);
                 
         // Replace the selected bst node and remove the dublicate
         bst_change_data(delete_node, delete_succecessor, dataSize);
@@ -621,16 +621,16 @@ int bst_delete(bstTree *tree, void *data, size_t dataSize) {
  * 
  * @param tree an allocated binary search tree object
  * @param data pointer to an address of a generic data type
- * @return TBstNode* NULL or inorder predecessor of the
+ * @return bstTreeNode* NULL or inorder predecessor of the
  * node containing (void *data) value.
  */
-TBstNode* bst_predecessor_node(bstTree *tree, const void *data) {
+bstTreeNode* bst_predecessor_node(bstTree *tree, const void *data) {
     // Check if input data is valid
     if (tree == NULL || tree->root == NULL || data == NULL)
         return NULL;
 
     // Find node containing the data value
-    TBstNode *iterator = bst_find_data(tree, data);
+    bstTreeNode *iterator = bst_find_data(tree, data);
 
     // If node is not in bst than return NULL
     if (iterator == NULL)
@@ -642,7 +642,7 @@ TBstNode* bst_predecessor_node(bstTree *tree, const void *data) {
         return bst_max_node(iterator->left);
 
     // Set parent iterator
-    TBstNode *parent_iterator = iterator->parent;
+    bstTreeNode *parent_iterator = iterator->parent;
 
     // Find predecessor node
     while (parent_iterator != NULL && parent_iterator->left == iterator) {
@@ -663,16 +663,16 @@ TBstNode* bst_predecessor_node(bstTree *tree, const void *data) {
  * 
  * @param tree an allocated binary search tree object
  * @param data pointer to an address of a generic data type
- * @return TBstNode* NULL or inorder successor of the
+ * @return bstTreeNode* NULL or inorder successor of the
  * node containing (void *data) value.
  */
-TBstNode* bst_successor_node(bstTree *tree, const void *data) {
+bstTreeNode* bst_successor_node(bstTree *tree, const void *data) {
     // Check if input data is valid
     if (tree == NULL || tree->root == NULL || data == NULL)
         return NULL;
 
     // Find node containing the data value
-    TBstNode *iterator = bst_find_data(tree, data);
+    bstTreeNode *iterator = bst_find_data(tree, data);
 
     // If node is not in bst than return NULL
     if (iterator == NULL)
@@ -684,7 +684,7 @@ TBstNode* bst_successor_node(bstTree *tree, const void *data) {
         return bst_min_node(iterator->right);
 
     // Set parent iterator
-    TBstNode *parent_iterator = iterator->parent;
+    bstTreeNode *parent_iterator = iterator->parent;
 
     // Find successor node
     while (parent_iterator != NULL && parent_iterator->right == iterator) {
@@ -714,7 +714,7 @@ void* bst_predecessor_data(bstTree *tree, const void *data) {
         return NULL;
 
     // Get the predecessor node
-    TBstNode *predecessor_node = bst_predecessor_node(tree, data);
+    bstTreeNode *predecessor_node = bst_predecessor_node(tree, data);
 
     // Return data pointer if node is not NULL
     if (predecessor_node != NULL)
@@ -742,7 +742,7 @@ void* bst_succecessor_data(bstTree *tree, const void *data) {
         return NULL;
 
     // Get the successor node
-    TBstNode *successor_node = bst_successor_node(tree, data);
+    bstTreeNode *successor_node = bst_successor_node(tree, data);
 
     // Return data pointer if nodse is not NULL
     if (successor_node != NULL)
@@ -763,10 +763,10 @@ void* bst_succecessor_data(bstTree *tree, const void *data) {
  * @param tree an allocated binary search tree object
  * @param data1 pointer to an address of a generic data
  * @param data2 pointer to an address of a generic data
- * @return TBstNode* pointer to a bst node object that is the lowest
+ * @return bstTreeNode* pointer to a bst node object that is the lowest
  * common ancestor node of the two nodes containing data1 and data2
  */
-TBstNode* bst_lowest_common_ancestor_node(bstTree *tree, const void *data1, const void *data2) {
+bstTreeNode* bst_lowest_common_ancestor_node(bstTree *tree, const void *data1, const void *data2) {
     // Check if input data is valid
     if (tree == NULL || data1 == NULL || data2 == NULL)
         return NULL;
@@ -776,7 +776,7 @@ TBstNode* bst_lowest_common_ancestor_node(bstTree *tree, const void *data1, cons
         return NULL;
 
     // Set iterator pointer
-    TBstNode *iterator = tree->root;
+    bstTreeNode *iterator = tree->root;
 
     // Find the lowest common ancestor
     while (iterator != NULL) {
@@ -813,7 +813,7 @@ void* bst_lowest_common_ancestor_data(bstTree *tree, const void *data1, const vo
         return NULL;
 
     // Get the lowest common ancestor node
-    TBstNode *common_ancestor = bst_lowest_common_ancestor_node(tree, data1, data2);
+    bstTreeNode *common_ancestor = bst_lowest_common_ancestor_node(tree, data1, data2);
 
     // Return data pointer if node is not NULL
     if (common_ancestor != NULL)
@@ -831,7 +831,7 @@ void* bst_lowest_common_ancestor_data(bstTree *tree, const void *data1, const vo
  * @param root starting point of the binary search tree traversal
  * @param action a pointer function to perform an action on one bst node object
  */
-static void bst_traverse_inorder_helper(TBstNode *root, void (*action)(const TBstNode *)) {
+static void bst_traverse_inorder_helper(bstTreeNode *root, void (*action)(const bstTreeNode *)) {
     // Check if current working bst node is not NULL
     if (root == NULL)
         return;
@@ -858,7 +858,7 @@ static void bst_traverse_inorder_helper(TBstNode *root, void (*action)(const TBs
  * @param action a pointer to a function that will perform an action
  * on every bst node object from current working tree
  */
-void bst_traverse_inorder(bstTree *tree, void (*action)(const TBstNode *)) {
+void bst_traverse_inorder(bstTree *tree, void (*action)(const bstTreeNode *)) {
     // Check if input data is valid
     if (tree == NULL || action == NULL)
         return;
@@ -879,7 +879,7 @@ void bst_traverse_inorder(bstTree *tree, void (*action)(const TBstNode *)) {
  * @param root starting point of the binary search tree traversal
  * @param action a pointer function to perform an action on one bst node object
  */
-static void bst_traverse_preorder_helper(TBstNode *root, void (*action)(const TBstNode *)) {
+static void bst_traverse_preorder_helper(bstTreeNode *root, void (*action)(const bstTreeNode *)) {
     // Check if current working bst node is not NULL
     if (root == NULL)
         return;
@@ -906,7 +906,7 @@ static void bst_traverse_preorder_helper(TBstNode *root, void (*action)(const TB
  * @param action a pointer to a function that will perform an action
  * on every bst node object from current working tree
  */
-void bst_traverse_preorder(bstTree *tree, void (*action)(const TBstNode *)) {
+void bst_traverse_preorder(bstTree *tree, void (*action)(const bstTreeNode *)) {
     // Check if input data is valid
     if (tree == NULL || action == NULL)
         return;
@@ -927,7 +927,7 @@ void bst_traverse_preorder(bstTree *tree, void (*action)(const TBstNode *)) {
  * @param root starting point of the binary search tree traversal
  * @param action a pointer function to perform an action on one bst node object
  */
-static void bst_traverse_postorder_helper(TBstNode *root, void (*action)(const TBstNode *)) {
+static void bst_traverse_postorder_helper(bstTreeNode *root, void (*action)(const bstTreeNode *)) {
     // Check if current working bst node is not NULL
     if (root == NULL)
         return;
@@ -954,7 +954,7 @@ static void bst_traverse_postorder_helper(TBstNode *root, void (*action)(const T
  * @param action a pointer to a function that will perform an action
  * on every bst node object from current working tree
  */
-void bst_traverse_postorder(bstTree *tree, void (*action)(const TBstNode *)) {
+void bst_traverse_postorder(bstTree *tree, void (*action)(const bstTreeNode *)) {
     // Check if input data is valid
     if (tree == NULL || action == NULL)
         return;
@@ -979,7 +979,7 @@ void bst_traverse_postorder(bstTree *tree, void (*action)(const TBstNode *)) {
  * @param action a pointer to a function that will perform an action
  * on every bst node object from current working tree
  */
-void bst_traverse_level(bstTree *tree, void (*action)(const TBstNode *)) {
+void bst_traverse_level(bstTree *tree, void (*action)(const bstTreeNode *)) {
     // Check if input data is valid
     if (tree == NULL || action == NULL)
         return;
@@ -994,12 +994,12 @@ void bst_traverse_level(bstTree *tree, void (*action)(const TBstNode *)) {
         // Check if queue was created successfully
         if (level_queue) {
             // Push pointer to root node into qeuue
-            queue_push(level_queue, &tree->root, sizeof(TBstNode *));
+            queue_push(level_queue, &tree->root, sizeof(bstTreeNode *));
 
             // Traverse all nodes
             while (!is_queue_empty(level_queue)) {
                 // Get front node from queue
-                TBstNode *front_node = *(TBstNode **)queue_front(level_queue);
+                bstTreeNode *front_node = *(bstTreeNode **)queue_front(level_queue);
 
                 // Remove front node from queue
                 queue_pop(level_queue);
@@ -1009,11 +1009,11 @@ void bst_traverse_level(bstTree *tree, void (*action)(const TBstNode *)) {
 
                 // Push on queue front left child if it exists
                 if (front_node->left != NULL)
-                    queue_push(level_queue, &front_node->left, sizeof(TBstNode *));
+                    queue_push(level_queue, &front_node->left, sizeof(bstTreeNode *));
                 
                 // Push on queue front right child if it exists
                 if (front_node->right != NULL)
-                    queue_push(level_queue, &front_node->right, sizeof(TBstNode *));
+                    queue_push(level_queue, &front_node->right, sizeof(bstTreeNode *));
             }
 
             // Free queue object from heap
