@@ -175,6 +175,9 @@ void list_free_all(linkedList *list) {
 
         // Free list
         free(list);
+
+        // Set list pointer as NULL
+        list = NULL;
     }
 }
 

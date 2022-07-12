@@ -136,6 +136,9 @@ void free_stack(TStack *stack) {
 
         // Free stack object
         free(stack);
+
+        // Set stack pointer as NULL
+        stack = NULL;
     }
 }
 

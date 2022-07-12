@@ -136,6 +136,9 @@ void free_queue(TQueue *queue) {
 
         // Free queue object
         free(queue);
+
+        // Set queue pointer as NULL
+        queue = NULL;
     }
 }
 

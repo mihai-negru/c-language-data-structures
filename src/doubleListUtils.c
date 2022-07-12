@@ -203,6 +203,9 @@ void dlist_free_all(dlinkedList *list) {
 
         // Free list
         free(list);
+
+        // Set list pointer as NULL
+        list = NULL;
     }
 }
 
