@@ -1,5 +1,5 @@
 /**
- * @file minPriQueueUtils.h
+ * @file priQueueUtils.h
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2022-06-21
@@ -22,12 +22,12 @@
  * 
  */
 
-#ifndef MIN_PRIORITY_QUEUE_UTILS_H_
-#define MIN_PRIORITY_QUEUE_UTILS_H_
+#ifndef PRIORITY_QUEUE_UTILS_H_
+#define PRIORITY_QUEUE_UTILS_H_
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 
-#endif // MIN_PRIORITY_QUEUE_UTILS_H_
+#endif // PRIORITY_QUEUE_UTILS_H_

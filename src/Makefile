@@ -2,19 +2,18 @@ CFLAGS = -c -g -Wextra -Werror -Wall
 
 FILES = ./avlTreeUtils.c ./bstUtils.c \
 		./weightedGraphsAlgo.c ./listUtils.c \
-		./doubleListUtils.c ./maxPriQueueUtils.c \
+		./doubleListUtils.c ./priQueueUtils.c \
 		./hashTableUtils.c ./sortAlgorithms.c \
-		./ordGraphUtils.c ./minPriQueueUtils.c \
+		./ordGraphUtils.c ./redBlackTreeUtils.c \
 		./queueUtils.c ./stackUtils.c \
 		./unordGraphUtils.c ./functionTypes.c \
-		./redBlackTreeUtils.c
 
 OUTFILES = avlTreeUtils.o bstUtils.o weightedGraphsAlgo.o \
 		 doubleListUtils.o hashTableUtils.o \
-		 maxPriQueueUtils.o listUtils.o ordGraphUtils.o \
-		 minPriQueueUtils.o queueUtils.o sortAlgorithms.o \
+		 priQueueUtils.o listUtils.o ordGraphUtils.o \
+		 redBlackTreeUtils.o queueUtils.o sortAlgorithms.o \
 		 stackUtils.o unordGraphUtils.o functionTypes.o \
-		 redBlackTreeUtils.o
+		 
 
 LIBNAME = libdatastruc.a
 
