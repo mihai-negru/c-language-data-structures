@@ -89,7 +89,7 @@ static TQueueNode* create_queue_node(const void *data, size_t dataSize) {
         }
     } else {
         errno = ENOMEM;
-        perror("Not enough memory for node list allocation");
+        perror("Not enough memory for node queue allocation");
     }
 
     // Return a new queue node object or NULL

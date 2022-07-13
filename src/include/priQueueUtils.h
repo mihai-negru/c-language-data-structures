@@ -30,4 +30,72 @@
 #include <string.h>
 #include <errno.h>
 
+typedef struct {
+    void *pri;
+    void *data;
+} pri_node;
+
+typedef struct {
+    pri_node **nodes;
+    int (*compare_priority)(const void *, const void *);
+    size_t capacity;
+    size_t size;
+} priority_queue;
+
+priority_queue* create_priority_queue(
+    size_t init_capacity,
+    int (*compare_priority)(const void *, const void *)
+);
+
+void free_priority_queue(
+    priority_queue *pqueue,
+    void (*free_data)(void *),
+    void (*free_priority)(void *)
+);
+
+priority_queue* heapify(
+    const void *data,
+    const void *priority,
+    size_t data_size,
+    size_t pri_size,
+    size_t number_of_data,
+    int (*compare_priority)(const void *, const void *)
+);
+
+int change_node_priority(
+    priority_queue *pqueue,
+    size_t node_index,
+    const void *new_pri,
+    size_t pri_size
+);
+
+int pri_queue_push(
+    priority_queue *pqueue,
+    const void *data,
+    const void *priority,
+    size_t data_size,
+    size_t pri_size
+);
+
+void* pri_queue_top(
+    priority_queue *pqueue
+);
+
+int pri_queue_pop(
+    priority_queue *pqueue
+);
+
+int pri_queue_size(
+    priority_queue *pqueue
+);
+
+int is_priq_empty(
+    priority_queue *pqueue
+);
+
+void pri_queue_traverse(
+    priority_queue *pqueue,
+    void (*action)(const pri_node *)
+);
+
 #endif // PRIORITY_QUEUE_UTILS_H_
