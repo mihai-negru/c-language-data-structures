@@ -27,7 +27,13 @@
 #define DEFAULT_CAPACITY 10
 #define DEFAULT_REALLOC_RATIO 2
 
-priority_queue* create_priority_queue(size_t init_capacity, int (*compare_data)(const void *, const void *), int (*compare_priority)(const void *, const void *), void (*free_data)(void *), void (*free_priority)(void *)) {
+priority_queue* create_priority_queue(
+    size_t init_capacity,
+    int (*compare_data)(const void *, const void *),
+    int (*compare_priority)(const void *, const void *),
+    void (*free_data)(void *),
+    void (*free_priority)(void *)
+) {
     if (compare_priority == NULL) {
         errno = EINVAL;
         perror("Compare function undefined for priority queue");
@@ -62,32 +68,35 @@ priority_queue* create_priority_queue(size_t init_capacity, int (*compare_data)(
     return new_pri_queue;
 }
 
+static void free_priority_queue_node(priority_queue *pqueue, pri_node **free_node) {
+    if (pqueue != NULL && free_node != NULL && (*free_node != NULL)) {
+        if (pqueue->free_data != NULL && (*free_node)->data != NULL)
+            pqueue->free_data((*free_node)->data);
+
+        if ((*free_node)->data != NULL)
+            free((*free_node)->data);
+
+        (*free_node)->data = NULL;
+
+        if (pqueue->free_priority != NULL && (*free_node)->pri != NULL)
+            pqueue->free_priority((*free_node)->pri);
+
+        if ((*free_node)->pri != NULL)
+            free((*free_node)->pri);
+
+        (*free_node)->pri = NULL;
+
+        free((*free_node));
+
+        (*free_node) = NULL;
+    }
+}
+
 void free_priority_queue(priority_queue *pqueue) {
     if (pqueue != NULL) {
         if (pqueue->nodes != NULL) {
-            for (size_t iter = 0; iter < pqueue->capacity; ++iter) {
-                if (pqueue->nodes[iter] != NULL) {
-                    if (pqueue->free_data != NULL && pqueue->nodes[iter]->data != NULL)
-                        pqueue->free_data(pqueue->nodes[iter]->data);
-
-                    if (pqueue->nodes[iter]->data != NULL)
-                        free(pqueue->nodes[iter]->data);
-
-                    pqueue->nodes[iter]->data = NULL;
-
-                    if (pqueue->free_priority != NULL && pqueue->nodes[iter]->pri != NULL)
-                        pqueue->free_priority(pqueue->nodes[iter]->pri);
-
-                    if (pqueue->nodes[iter]->pri != NULL)
-                        free(pqueue->nodes[iter]->pri);
-
-                    pqueue->nodes[iter]->pri = NULL;
-
-                    free(pqueue->nodes[iter]);
-
-                    pqueue->nodes[iter] = NULL;
-                }
-            }
+            for (size_t iter = 0; iter < pqueue->size; ++iter)
+                free_priority_queue_node(pqueue, &pqueue->nodes[iter]);
 
             free(pqueue->nodes);
             pqueue->nodes = NULL;  
@@ -148,21 +157,27 @@ static int sift_node_down(priority_queue *pqueue, size_t start_index) {
 }
 
 static pri_node* create_priority_queue_node(const void *data, const void *priority, size_t data_size, size_t pri_size) {
-    if (data == NULL || data_size == 0 || priority == NULL || pri_size == 0)
+    if (priority == NULL || pri_size == 0)
         return NULL;
 
     pri_node *new_pri_queue_node = (pri_node *)malloc(sizeof(pri_node));
 
     if (new_pri_queue_node) {
-        new_pri_queue_node->data = malloc(data_size);
+        if (data != NULL && data_size != 0) {
+            new_pri_queue_node->data = malloc(data_size);
 
-        if (new_pri_queue_node->data == NULL) {
-            free(new_pri_queue_node);
+            if (new_pri_queue_node->data == NULL) {
+                free(new_pri_queue_node);
             
-            errno = ENOMEM;
-            perror("Not enough memory for data allocation");
+                errno = ENOMEM;
+                perror("Not enough memory for data allocation");
             
-            return NULL;
+                return NULL;
+            }
+
+            memcpy(new_pri_queue_node->data, data, data_size);
+        } else {
+            new_pri_queue_node->data = NULL;
         }
 
         new_pri_queue_node->pri = malloc(pri_size);
@@ -177,7 +192,6 @@ static pri_node* create_priority_queue_node(const void *data, const void *priori
             return NULL;
         }
 
-        memcpy(new_pri_queue_node->data, data, data_size);
         memcpy(new_pri_queue_node->pri, priority, pri_size);
     } else {
         errno = ENOMEM;
@@ -187,15 +201,31 @@ static pri_node* create_priority_queue_node(const void *data, const void *priori
     return new_pri_queue_node;
 }
 
-priority_queue* heapify(const void *data, const void *priority, size_t data_size, size_t pri_size, size_t number_of_data, int (*compare_priority)(const void *, const void *)) {
-    if (data == NULL || priority == NULL || data_size == 0 || pri_size == 0 || number_of_data == 0 || compare_priority == NULL)
+priority_queue* heapify(
+    const void *data,
+    const void *priority,
+    size_t data_size,
+    size_t pri_size,
+    size_t number_of_data,
+    int (*compare_data)(const void *, const void *),
+    int (*compare_priority)(const void *, const void *),
+    void (*free_data)(void *),
+    void (*free_priority)(void *)
+) {
+    if (priority == NULL || pri_size == 0 || number_of_data == 0 || compare_priority == NULL)
         return NULL;
 
-    priority_queue *new_pqueue = create_priority_queue(number_of_data, compare_priority);
+    priority_queue *new_pqueue = create_priority_queue(number_of_data, compare_data, compare_priority, free_data, free_priority);
 
     if (new_pqueue) {
         for (size_t iter = 0; iter < new_pqueue->capacity; ++iter) {
-            pri_node *new_pqueue_node = create_priority_queue_node(data + iter * data_size, priority + iter * pri_size, data_size, pri_size);
+            pri_node *new_pqueue_node = NULL;
+
+            if (data != NULL && data_size != 0) {
+                new_pqueue_node = create_priority_queue_node(data + iter * data_size, priority + iter * pri_size, data_size, pri_size);
+            } else {
+                new_pqueue_node = create_priority_queue_node(NULL, priority + iter * pri_size, 0, pri_size);
+            }
 
             if (new_pqueue_node == NULL)
                 return NULL;
@@ -213,58 +243,56 @@ priority_queue* heapify(const void *data, const void *priority, size_t data_size
 }
 
 int change_node_priority(priority_queue *pqueue, size_t node_index, const void *new_pri, size_t pri_size) {
-    if (pqueue == NULL || pqueue->nodes == NULL || node_index >= pqueue->size || pqueue->nodes[node_index] == NULL || new_pri == NULL || pri_size == 0)
+    if (pqueue == NULL || pqueue->nodes == NULL || pqueue->nodes[node_index] == NULL || new_pri == NULL || pri_size == 0)
         return 1;
 
-    if (pqueue->nodes[node_index]->pri == NULL)
+    if (node_index == __SIZE_MAX__ || node_index >= pqueue->size)
+        return 1;
+
+    if (pqueue->nodes[node_index]->pri == NULL || pqueue->compare_priority == NULL)
         return 1;
 
     if (pqueue->compare_priority(pqueue->nodes[node_index]->pri, new_pri) >= 1) {
-        printf("Going down\n");
         memmove(pqueue->nodes[node_index]->pri, new_pri, pri_size);
 
         return sift_node_down(pqueue, node_index);
     }
 
     if (pqueue->compare_priority(pqueue->nodes[node_index]->pri, new_pri) <= -1) {
-        printf("Going up\n");
         memmove(pqueue->nodes[node_index]->pri, new_pri, pri_size);
 
         return sift_node_up(pqueue, node_index);
     }
 
-    return 1;
+    return 0;
 }
 
-int pri_find_data_index(priority_queue *pqueue, const void *data, int (*compare_data)(const void *, const void *)) {
-    if (pqueue == NULL || pqueue->size == 0 || pqueue->nodes == NULL || data == NULL || compare_data == NULL)
-        return -1;
+size_t pri_find_data_index(priority_queue *pqueue, const void *data) {
+    if (pqueue == NULL || pqueue->size == 0 || pqueue->nodes == NULL || data == NULL || pqueue->compare_data == NULL)
+        return __SIZE_MAX__;
 
     for (size_t iter = 0; iter < pqueue->size; ++iter)
         if (pqueue->nodes[iter] != NULL)
-            if (compare_data(pqueue->nodes[iter]->data, data) == 0)
+            if (pqueue->compare_data(pqueue->nodes[iter]->data, data) == 0)
                 return iter;
 
-    return -1;
+    return __SIZE_MAX__;
 }
 
 size_t pri_find_pri_index(priority_queue *pqueue, const void *priority) {
     if (pqueue == NULL || pqueue->size == 0 || pqueue->nodes == NULL || priority == NULL || pqueue->compare_priority == NULL)
-        return -1;
+        return __SIZE_MAX__;
 
     for (size_t iter = 0; iter < pqueue->size; ++iter)
         if (pqueue->nodes[iter] != NULL)
             if (pqueue->compare_priority(pqueue->nodes[iter]->pri, priority) == 0)
                 return iter;
 
-    return -1;
+    return __SIZE_MAX__;
 }
 
 int pri_queue_push(priority_queue *pqueue, const void *data, const void *priority, size_t data_size, size_t pri_size) {
-    if (pqueue == NULL || pqueue->nodes == NULL || pqueue->capacity == 0)
-        return 1;
-
-    if (data == NULL || data_size == 0 || priority == NULL || pri_size == 0)
+    if (pqueue == NULL || pqueue->nodes == NULL || pqueue->capacity == 0 || priority == NULL || pri_size == 0)
         return 1;
 
     if (pqueue->size >= pqueue->capacity) {
@@ -282,33 +310,32 @@ int pri_queue_push(priority_queue *pqueue, const void *data, const void *priorit
         }
 
         pqueue->nodes = try_realloc;
-
-        for (size_t iter = pqueue->size; iter < pqueue->capacity; ++iter)
-            pqueue->nodes[iter] = NULL;
     }
 
-    if (pqueue->nodes[pqueue->size] != NULL) {
-        memmove(pqueue->nodes[pqueue->size]->data, data, data_size);
-        memmove(pqueue->nodes[pqueue->size]->pri, priority, pri_size);
-    } else {
-        pri_node *add_node = create_priority_queue_node(data, priority, data_size, pri_size);
+    pri_node *add_node = create_priority_queue_node(data, priority, data_size, pri_size);
 
-        if (add_node == NULL)
-            return 1;
+    if (add_node == NULL)
+        return 1;
 
-        pqueue->nodes[pqueue->size] = add_node;
-    }
+    pqueue->nodes[pqueue->size] = add_node;
 
     ++(pqueue->size);
 
     return sift_node_up(pqueue, (pqueue->size - 1));
 }
 
-void* pri_queue_top(priority_queue *pqueue) {
+const void* pri_queue_top_data(priority_queue *pqueue) {
     if (pqueue == NULL || pqueue->nodes == NULL || pqueue->nodes[0] == NULL)
         return NULL;
 
     return pqueue->nodes[0]->data;
+}
+
+const void* pri_queue_top_pri(priority_queue *pqueue) {
+    if (pqueue == NULL || pqueue->nodes == NULL || pqueue->nodes[0] == NULL)
+        return NULL;
+
+    return pqueue->nodes[0]->pri;
 }
 
 int pri_queue_pop(priority_queue *pqueue) {
@@ -317,14 +344,16 @@ int pri_queue_pop(priority_queue *pqueue) {
 
     swap_pri_queue_nodes(&pqueue->nodes[0], &pqueue->nodes[pqueue->size - 1]);
 
+    free_priority_queue_node(pqueue, &pqueue->nodes[pqueue->size - 1]);
+
     --(pqueue->size);
 
     return sift_node_down(pqueue, 0);
 }
 
-int pri_queue_size(priority_queue *pqueue) {
+size_t pri_queue_size(priority_queue *pqueue) {
     if (pqueue == NULL)
-        return -1;
+        return __SIZE_MAX__;
     return pqueue->size;
 }
 
@@ -341,4 +370,18 @@ void pri_queue_traverse(priority_queue *pqueue, void (*action)(const pri_node *)
 
     for (size_t iter = 0; iter < pqueue->size; ++iter)
         action(pqueue->nodes[iter]);
+}
+
+void heap_sort(void *arr, size_t number_of_arr, size_t arr_elem_size, int (*compare_arr)(const void *, const void *)) {
+    if (arr == NULL || number_of_arr == 0 || arr_elem_size == 0 || compare_arr == NULL)
+        return;
+
+    priority_queue *heap = heapify(NULL, arr, 0, arr_elem_size, number_of_arr, NULL, compare_arr, NULL, NULL);
+
+    for (size_t iter = 0; iter < number_of_arr; ++iter) {
+        memcpy(arr + iter * arr_elem_size, pri_queue_top_pri(heap), arr_elem_size);
+        pri_queue_pop(heap);
+    }
+
+    free_priority_queue(heap);
 }

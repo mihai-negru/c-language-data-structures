@@ -76,10 +76,9 @@ int change_node_priority(
     size_t pri_size
 );
 
-int pri_find_data_index(
+size_t pri_find_data_index(
     priority_queue *pqueue,
-    const void *data,
-    int (*compare_data)(const void *, const void *)
+    const void *data
 );
 
 size_t pri_find_pri_index(
@@ -95,7 +94,11 @@ int pri_queue_push(
     size_t pri_size
 );
 
-void* pri_queue_top(
+const void* pri_queue_top_data(
+    priority_queue *pqueue
+);
+
+const void* pri_queue_top_pri(
     priority_queue *pqueue
 );
 
@@ -103,7 +106,7 @@ int pri_queue_pop(
     priority_queue *pqueue
 );
 
-int pri_queue_size(
+size_t pri_queue_size(
     priority_queue *pqueue
 );
 
@@ -114,6 +117,13 @@ int is_priq_empty(
 void pri_queue_traverse(
     priority_queue *pqueue,
     void (*action)(const pri_node *)
+);
+
+void heap_sort(
+    void *arr,
+    size_t number_of_arr,
+    size_t arr_elem_size,
+    int (*compare_arr)(const void *, const void *)
 );
 
 #endif // PRIORITY_QUEUE_UTILS_H_
