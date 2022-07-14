@@ -30,19 +30,27 @@
 #include <string.h>
 #include <errno.h>
 
+/**
+ * @brief Priority Queue Node Object definition
+ * 
+ */
 typedef struct {
-    void *pri;
-    void *data;
+    void *pri;                                              // priority element definition
+    void *data;                                             // data type element definition
 } pri_node;
 
+/**
+ * @brief Priority Queue Object definition
+ * 
+ */
 typedef struct {
-    pri_node **nodes;
-    int (*compare_data)(const void *, const void *);
-    int (*compare_priority)(const void *, const void *);
-    void (*free_data)(void *);
-    void (*free_priority)(void *);
-    size_t capacity;
-    size_t size;
+    pri_node **nodes;                                       // array of binary-heap nodes
+    int (*compare_data)(const void *, const void *);        // function to compare two sets of data
+    int (*compare_priority)(const void *, const void *);    // function to compare two sets of priority
+    void (*free_data)(void *);                              // function to free memory of a single data element
+    void (*free_priority)(void *);                          // function to free memory of a single priority element
+    size_t capacity;                                        // maximum capacity of the priority queue
+    size_t size;                                            // current size of the priority queue
 } priority_queue;
 
 priority_queue* create_priority_queue(
@@ -94,7 +102,7 @@ int pri_queue_push(
     size_t pri_size
 );
 
-const void* pri_queue_top_data(
+const void* pri_queue_top(
     priority_queue *pqueue
 );
 
