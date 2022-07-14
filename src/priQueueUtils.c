@@ -27,7 +27,7 @@
 #define DEFAULT_CAPACITY 10
 #define DEFAULT_REALLOC_RATIO 2
 
-priority_queue* create_priority_queue(size_t init_capacity, int (*compare_priority)(const void *, const void *)) {
+priority_queue* create_priority_queue(size_t init_capacity, int (*compare_data)(const void *, const void *), int (*compare_priority)(const void *, const void *), void (*free_data)(void *), void (*free_priority)(void *)) {
     if (compare_priority == NULL) {
         errno = EINVAL;
         perror("Compare function undefined for priority queue");
@@ -41,7 +41,10 @@ priority_queue* create_priority_queue(size_t init_capacity, int (*compare_priori
 
     if (new_pri_queue) {
         new_pri_queue->capacity = init_capacity;
+        new_pri_queue->compare_data = compare_data;
         new_pri_queue->compare_priority = compare_priority;
+        new_pri_queue->free_data = free_data;
+        new_pri_queue->free_priority = free_priority;
 
         new_pri_queue->size = 0;
 
@@ -59,21 +62,21 @@ priority_queue* create_priority_queue(size_t init_capacity, int (*compare_priori
     return new_pri_queue;
 }
 
-void free_priority_queue(priority_queue *pqueue, void (*free_data)(void *), void (*free_priority)(void *)) {
+void free_priority_queue(priority_queue *pqueue) {
     if (pqueue != NULL) {
         if (pqueue->nodes != NULL) {
             for (size_t iter = 0; iter < pqueue->capacity; ++iter) {
                 if (pqueue->nodes[iter] != NULL) {
-                    if (free_data != NULL && pqueue->nodes[iter]->data != NULL)
-                        free_data(pqueue->nodes[iter]->data);
+                    if (pqueue->free_data != NULL && pqueue->nodes[iter]->data != NULL)
+                        pqueue->free_data(pqueue->nodes[iter]->data);
 
                     if (pqueue->nodes[iter]->data != NULL)
                         free(pqueue->nodes[iter]->data);
 
                     pqueue->nodes[iter]->data = NULL;
 
-                    if (free_priority != NULL && pqueue->nodes[iter]->pri != NULL)
-                        free_priority(pqueue->nodes[iter]->pri);
+                    if (pqueue->free_priority != NULL && pqueue->nodes[iter]->pri != NULL)
+                        pqueue->free_priority(pqueue->nodes[iter]->pri);
 
                     if (pqueue->nodes[iter]->pri != NULL)
                         free(pqueue->nodes[iter]->pri);
@@ -111,7 +114,7 @@ static int sift_node_up(priority_queue *pqueue, size_t start_index) {
     if (pqueue == NULL || pqueue->nodes == NULL || pqueue->compare_priority == NULL)
         return 1;
 
-    while (start_index > 0 && pqueue->compare_priority(pqueue->nodes[start_index]->pri, pqueue->nodes[get_node_parent_pos(start_index)]) <= -1) {
+    while (start_index > 0 && pqueue->compare_priority(pqueue->nodes[start_index]->pri, pqueue->nodes[get_node_parent_pos(start_index)]->pri) >= 1) {
         swap_pri_queue_nodes(&pqueue->nodes[start_index], &pqueue->nodes[get_node_parent_pos(start_index)]);
         
         start_index = get_node_parent_pos(start_index);
@@ -224,13 +227,37 @@ int change_node_priority(priority_queue *pqueue, size_t node_index, const void *
     }
 
     if (pqueue->compare_priority(pqueue->nodes[node_index]->pri, new_pri) <= -1) {
-        printf("Going Up\n");
+        printf("Going up\n");
         memmove(pqueue->nodes[node_index]->pri, new_pri, pri_size);
 
         return sift_node_up(pqueue, node_index);
     }
 
     return 1;
+}
+
+int pri_find_data_index(priority_queue *pqueue, const void *data, int (*compare_data)(const void *, const void *)) {
+    if (pqueue == NULL || pqueue->size == 0 || pqueue->nodes == NULL || data == NULL || compare_data == NULL)
+        return -1;
+
+    for (size_t iter = 0; iter < pqueue->size; ++iter)
+        if (pqueue->nodes[iter] != NULL)
+            if (compare_data(pqueue->nodes[iter]->data, data) == 0)
+                return iter;
+
+    return -1;
+}
+
+size_t pri_find_pri_index(priority_queue *pqueue, const void *priority) {
+    if (pqueue == NULL || pqueue->size == 0 || pqueue->nodes == NULL || priority == NULL || pqueue->compare_priority == NULL)
+        return -1;
+
+    for (size_t iter = 0; iter < pqueue->size; ++iter)
+        if (pqueue->nodes[iter] != NULL)
+            if (pqueue->compare_priority(pqueue->nodes[iter]->pri, priority) == 0)
+                return iter;
+
+    return -1;
 }
 
 int pri_queue_push(priority_queue *pqueue, const void *data, const void *priority, size_t data_size, size_t pri_size) {
