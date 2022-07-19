@@ -2,7 +2,7 @@ CFLAGS = -c -g -Wextra -Werror -Wall
 
 FILES = ./avlTreeUtils.c ./bstUtils.c \
 		./weightedGraphsAlgo.c ./listUtils.c \
-		./doubleListUtils.c ./priQueueUtils.c \
+		./doubleListUtils.c ./scl_priority_queue.c \
 		./hashTableUtils.c ./sortAlgorithms.c \
 		./ordGraphUtils.c ./redBlackTreeUtils.c \
 		./queueUtils.c ./stackUtils.c \
@@ -10,7 +10,7 @@ FILES = ./avlTreeUtils.c ./bstUtils.c \
 
 OUTFILES = avlTreeUtils.o bstUtils.o weightedGraphsAlgo.o \
 		 doubleListUtils.o hashTableUtils.o \
-		 priQueueUtils.o listUtils.o ordGraphUtils.o \
+		 scl_priority_queue.o listUtils.o ordGraphUtils.o \
 		 redBlackTreeUtils.o queueUtils.o sortAlgorithms.o \
 		 stackUtils.o unordGraphUtils.o functionTypes.o \
 		 
