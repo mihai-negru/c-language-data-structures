@@ -1,5 +1,5 @@
 /**
- * @file queueUtils.h
+ * @file scl_queue.h
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2022-06-21
@@ -34,59 +34,32 @@
  * @brief queue Node object definition
  * 
  */
-typedef struct queueNode {
-    void *data;                 // Pointer to data
-    struct queueNode *next;     // Pointer to next data node
-} TQueueNode;
+typedef struct queue_node {
+    void* data;                     /* Pointer to data */
+    struct queue_node* next;        /* Pointer to next data node */
+} queue_node_t;
 
 /**
  * @brief queue object definition
  * 
  */
 typedef struct {
-    TQueueNode *front;          // Pointer to beginning of queue
-    TQueueNode *back;           // Pointer to end of queue
-    void (*freeData)(void *);   // Function to free one data
-    size_t size;                // Size of the queue
-} TQueue;
+    queue_node_t* front;            /* Pointer to beginning of queue */
+    queue_node_t* back;             /* Pointer to end of queue */
+    void (*free_data)(void*);       /* Function to free one data */
+    size_t size;                    /* Size of the queue */
+} queue_t;
 
-TQueue* create_queue(
-    void (*freeData)(void *)
-);
+queue_t*    create_queue        (void (*free_data)(void*));
+void        free_queue          (queue_t* queue);
+void        print_queue         (queue_t* queue, void (*print_data)(const void*));
 
-void free_queue(
-    TQueue *queue
-);
+int         is_queue_empty      (queue_t* queue);
+int         get_queue_size      (queue_t* queue);
 
-void print_queue(
-    TQueue *queue,
-    void (*printData)(const void *)
-);
+void*       queue_front         (queue_t* queue);
+void*       queue_back          (queue_t* queue);
+int         queue_push          (queue_t* queue, const void* data, size_t data_size);
+int         queue_pop           (queue_t* queue);
 
-int is_queue_empty(
-    TQueue *queue
-);
-
-int get_queue_size(
-    TQueue *queue
-);
-
-void* queue_front(
-    TQueue *queue
-);
-
-void* queue_back(
-    TQueue *queue
-);
-
-int queue_push(
-    TQueue *queue,
-    const void *data,
-    size_t dataSize
-);
-
-int queue_pop(
-    TQueue *queue
-);
-
-#endif // QUEUE_UTILS_H_
+#endif /* QUEUE_UTILS_H_ */

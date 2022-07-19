@@ -43,7 +43,7 @@
  * @param compare_priority a pointer to a function to compare two sets of priorities
  * @param free_data a pointer to a function to free memory of one data set
  * @param free_priority a pointer to a function to free memory of one priority set
- * @return priority_queue* a new allocated priority queue object or `NULL` if function fails
+ * @return priority_queue_t* a new allocated priority queue object or `NULL` if function fails
  */
 priority_queue_t* create_priority_queue(
     size_t init_capacity,
@@ -296,7 +296,7 @@ static int sift_node_down(priority_queue_t* pqueue, size_t start_index) {
  * @param priority pointer to a set of generic data type to represent priority in queue
  * @param data_size size of one element of data type
  * @param pri_size size of one element of priority type
- * @return pri_node* an allocated priority queue node object or `NULL` in case function fails
+ * @return pri_node_t* an allocated priority queue node object or `NULL` in case function fails
  */
 static pri_node_t* create_priority_queue_node(const void* data, const void* priority, size_t data_size, size_t pri_size) {
     /* Check if input data is valid */
@@ -378,7 +378,7 @@ static pri_node_t* create_priority_queue_node(const void* data, const void* prio
  * @param compare_priority pointer to a function two compare two sets of priority
  * @param free_data a pointer to a function to free memory of one data set
  * @param free_priority a pointer to a function to free memory of one priority set
- * @return priority_queue* an allocated priority queue object or `NULL` if function fails
+ * @return priority_queue_t* an allocated priority queue object or `NULL` if function fails
  */
 priority_queue_t* heapify(
     const void* data,
@@ -681,6 +681,32 @@ int pri_queue_pop(priority_queue_t* pqueue) {
 }
 
 /**
+ * @brief Function that will traverse all nodes in priority queue
+ * and will perform any action according to "action" function.
+ * Usually action will be a printing function, however you
+ * can define a map function to map every node data to another
+ * node data (the mapping proccess has to be injective to preserve
+ * heap prorpeties)
+ * 
+ * @param pqueue an allocated priority queue object
+ * @param action a pointer to a function that will perform an action
+ */
+void pri_queue_traverse(priority_queue_t* pqueue, void (*action)(const pri_node_t*)) {
+    /* Check if input data value is valid */
+    if ((NULL == pqueue) || (NULL == pqueue->nodes) || (NULL == action)) {
+        return;
+    }
+
+    /*
+     * Traverse every single node and make an action to node
+     * according with input function
+     */
+    for (size_t iter = 0; iter < pqueue->size; ++iter) {
+        action(pqueue->nodes[iter]);
+    }
+}
+
+/**
  * @brief Function will return the size of the priority queue
  * object. If priority queue is not allocated than `__SIZE_MAX__`
  * will be returned as an warning.
@@ -714,32 +740,6 @@ int is_priq_empty(priority_queue_t* pqueue) {
 
     /* Priority queue is not empty */
     return 0;
-}
-
-/**
- * @brief Function that will traverse all nodes in priority queue
- * and will perform any action according to "action" function.
- * Usually action will be a printing function, however you
- * can define a map function to map every node data to another
- * node data (the mapping proccess has to be injective to preserve
- * heap prorpeties)
- * 
- * @param pqueue an allocated priority queue object
- * @param action a pointer to a function that will perform an action
- */
-void pri_queue_traverse(priority_queue_t* pqueue, void (*action)(const pri_node_t*)) {
-    /* Check if input data value is valid */
-    if ((NULL == pqueue) || (NULL == pqueue->nodes) || (NULL == action)) {
-        return;
-    }
-
-    /*
-     * Traverse every single node and make an action to node
-     * according with input function
-     */
-    for (size_t iter = 0; iter < pqueue->size; ++iter) {
-        action(pqueue->nodes[iter]);
-    }
 }
 
 /**

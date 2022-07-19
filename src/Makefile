@@ -5,14 +5,14 @@ FILES = ./avlTreeUtils.c ./bstUtils.c \
 		./doubleListUtils.c ./scl_priority_queue.c \
 		./hashTableUtils.c ./sortAlgorithms.c \
 		./ordGraphUtils.c ./redBlackTreeUtils.c \
-		./queueUtils.c ./stackUtils.c \
-		./unordGraphUtils.c ./functionTypes.c \
+		./scl_queue.c ./scl_stack.c \
+		./unordGraphUtils.c ./scl_func_types.c \
 
 OUTFILES = avlTreeUtils.o bstUtils.o weightedGraphsAlgo.o \
 		 doubleListUtils.o hashTableUtils.o \
 		 scl_priority_queue.o listUtils.o ordGraphUtils.o \
-		 redBlackTreeUtils.o queueUtils.o sortAlgorithms.o \
-		 stackUtils.o unordGraphUtils.o functionTypes.o \
+		 redBlackTreeUtils.o scl_queue.o sortAlgorithms.o \
+		 scl_stack.o unordGraphUtils.o scl_func_types.o \
 		 
 
 LIBNAME = libdatastruc.a

@@ -1,5 +1,5 @@
 /**
- * @file stackUtils.c
+ * @file scl_stack.c
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2022-06-21
@@ -22,35 +22,36 @@
  * 
  */
 
-#include "./include/stackUtils.h"
+#include "./include/scl_stack.h"
 
 /**
  * @brief Create a stack object. Allocation may fail
  * if there is not enough memory on heap, in this case
  * an exception will be thrown
  * 
- * @param freeData pointer to a function to free content of one data
- * @return TStack* a new allocated stack object or NULL (if function failed)
+ * @param free_data pointer to a function to free content of one data
+ * @return stack_t* a new allocated stack object or NULL (if function failed)
  */
-TStack* create_stack(void (*freeData)(void *)) {
-    // Allocate a new stack on the heap
-    TStack *newStack = (TStack *)malloc(sizeof(TStack));
+stack_t* create_stack(void (*free_data)(void*)) {
+    /* Allocate a new stack on the heap */
+    stack_t* new_stack = malloc(sizeof(*new_stack));
 
-    // Check if stack allocation went right
-    if (newStack) {
-        // Set function pointers
-        newStack->freeData = freeData;
+    /* Check if stack allocation went right */
+    if (NULL != new_stack) {
 
-        // Set top and size of an empty stack
-        newStack->top = NULL;
-        newStack->size = 0;
+        /* Set function pointers */
+        new_stack->free_data = free_data;
+
+        /* Set top and size of an empty stack */
+        new_stack->top = NULL;
+        new_stack->size = 0;
     } else {
         errno = ENOMEM;
         perror("Not enough memory for stack allocation");
     }
 
-    // Return a new allocated stack or NULL
-    return newStack;
+    /* Return a new allocated stack or NULL */
+    return new_stack;
 }
 
 /**
@@ -60,30 +61,33 @@ TStack* create_stack(void (*freeData)(void *)) {
  * and an exception will be thrown
  * 
  * @param data pointer to an address of a generic data
- * @param dataSize size of one generic data
- * @return TStackNode* new allocated stack node object or NULL
+ * @param data_size size of one generic data
+ * @return stack_node_t* new allocated stack node object or NULL
  */
-static TStackNode* create_stack_node(const void *data, size_t dataSize) {
-    // Check if data address is valid
-    if (data == NULL)
+static stack_node_t* create_stack_node(const void* data, size_t data_size) {
+    /* Check if data address is valid */
+    if (NULL == data) {
         return NULL;
+    }
 
-    // Allocate a new node on the heap
-    TStackNode *newNode = (TStackNode *)malloc(sizeof(TStackNode));
+    /* Allocate a new node on the heap */
+    stack_node_t* new_node = malloc(sizeof(*new_node));
 
-    // Check if node allocation went successfully
-    if (newNode) {
-        // Set default next pointer
-        newNode->next = NULL;
+    /* Check if node allocation went successfully */
+    if (NULL != new_node) {
 
-        // Allocate heap memory for data
-        newNode->data = malloc(dataSize);
+        /* Set default next pointer */
+        new_node->next = NULL;
 
-        // Check if memory allocation went right
-        if (newNode->data)
-            // Copy all bytes from data address to new node's data
-            memcpy(newNode->data, data, dataSize);
-        else {
+        /* Allocate heap memory for data */
+        new_node->data = malloc(data_size);
+
+        /* Check if memory allocation went right */
+        if (NULL != new_node->data) {
+
+            /* Copy all bytes from data address to new node's data */
+            memcpy(new_node->data, data, data_size);
+        } else {
             errno = ENOMEM;
             perror("Not enough memory for node stack allocation");
         }
@@ -92,8 +96,8 @@ static TStackNode* create_stack_node(const void *data, size_t dataSize) {
         perror("Not enough memory for node list allocation");
     }
 
-    // Return a new stack node object or NULL
-    return newNode;
+    /* Return a new stack node object or NULL */
+    return new_node;
 }
 
 /**
@@ -105,39 +109,43 @@ static TStackNode* create_stack_node(const void *data, size_t dataSize) {
  * 
  * @param stack an allocated stack object
  */
-void free_stack(TStack *stack) {
-    // Check if stack needs to be freed
-    if (stack) {
-        // Iterate through every node from stack
-        while (stack->top != NULL) {
-            TStackNode *iterator = stack->top;
+void free_stack(stack_t* stack) {
+    /* Check if stack needs to be freed */
+    if (NULL != stack) {
 
-            // Update new top of the stack
+        /* Iterate through every node from stack */
+        while (NULL != stack->top) {
+            stack_node_t* iterator = stack->top;
+
+            /* Update new top of the stack */
             stack->top = stack->top->next;
 
-            // Free content of data if necessary
-            if (stack->freeData != NULL && iterator->data != NULL)
-                stack->freeData(iterator->data);
+            /* Free content of data if necessary */
+            if ((NULL != stack->free_data) && (NULL != iterator->data)) {
+                stack->free_data(iterator->data);
+            }
 
-            // Free node pointer to data
-            if (iterator->data != NULL)
+            /* Free node pointer to data */
+            if (NULL != iterator->data) {
                 free(iterator->data);
+            }
 
-            // Set node pointer to data as NULL
+            /* Set node pointer to data as NULL */
             iterator->data = NULL;
 
-            // Free node pointer
-            if (iterator != NULL)
+            /* Free node pointer */
+            if (NULL != iterator) {
                 free(iterator);
+            }
 
-            // Set node pointer as NULL
+            /* Set node pointer as NULL */
             iterator = NULL;
         }
 
-        // Free stack object
+        /* Free stack object */
         free(stack);
 
-        // Set stack pointer as NULL
+        /* Set stack pointer as NULL */
         stack = NULL;
     }
 }
@@ -150,21 +158,25 @@ void free_stack(TStack *stack) {
  * then a set of paired square brakets will be printed on output.
  * 
  * @param stack a stack object
- * @param printData a pointer to a function to print content of data pointer
+ * @param print_data a pointer to a function to print content of data pointer
  */
-void print_stack(TStack *stack, void (*printData)(const void *)) {
-    // Check is stack is allocated
-    if (stack) {
-        // Stack is empty, print []
-        if (stack->top == NULL)
+void print_stack(stack_t* stack, void (*print_data)(const void*)) {
+    /* Check is stack is allocated */
+    if (NULL != stack) {
+
+        /* Stack is empty, print [] */
+        if (NULL == stack->top) {
             printf("[ ]");
+        }
 
-        TStackNode *iterator = stack->top;
+        stack_node_t* iterator = stack->top;
 
-        // Print every node according
-        // to printData function
-        while (iterator != NULL) {
-            printData(iterator->data);
+        /*
+         * Print every node according
+         * to printData function
+         */
+        while (NULL != iterator) {
+            print_data(iterator->data);
             iterator = iterator->next;
         }
     }
@@ -180,9 +192,10 @@ void print_stack(TStack *stack, void (*printData)(const void *)) {
  * @param stack a stack obecjt
  * @return int 1(True) if stack is not allocated or empty and 0(False) otherwise
  */
-int is_stack_empty(TStack *stack) {
-    if (stack == NULL || stack->top == NULL)
+int is_stack_empty(stack_t* stack) {
+    if ((NULL == stack) || (NULL == stack->top)) {
         return 1;
+    }
     
     return 0;
 }
@@ -195,9 +208,10 @@ int is_stack_empty(TStack *stack) {
  * @return int -1 if stack is not allocated or
  * stack size
  */
-int get_stack_size(TStack *stack) {
-    if (stack == NULL)
+int get_stack_size(stack_t* stack) {
+    if (NULL == stack) {
         return -1;
+    }
 
     return stack->size;
 }
@@ -211,9 +225,10 @@ int get_stack_size(TStack *stack) {
  * @param stack a stack object
  * @return void* a pointer to top element data
  */
-void* stack_top(TStack *stack) {
-    if (stack == NULL || stack->top == NULL)
+void* stack_top(stack_t* stack) {
+    if ((NULL == stack) || (NULL == stack->top)) {
         return NULL;
+    }
 
     return stack->top->data;
 }
@@ -227,36 +242,40 @@ void* stack_top(TStack *stack) {
  * 
  * @param stack a stack object
  * @param data pointer to an address of a generic data type
- * @param dataSize size of a generic data type element
+ * @param data_size size of a generic data type element
  * @return int 1(Fail) if function failed or 0(Success) if
  * pushing on the stack went successfully
  */
-int stack_push(TStack *stack, const void *data, size_t dataSize) {
-    // Check if stack and data addresses are valid
-    if (stack == NULL || data == NULL)
+int stack_push(stack_t* stack, const void* data, size_t data_size) {
+    /* Check if stack and data addresses are valid */
+    if ((NULL == stack) || (NULL == data)) {
         return 1;
-
-    // Create a new stack node
-    TStackNode *newNode = create_stack_node(data, dataSize);
-
-    // Check if new node was allocated
-    if (newNode == NULL)
-        return 1;
-
-    // Insert node into stack
-    if (stack->top == NULL) {
-        // Stack is empty
-        stack->top = newNode;
-    } else {
-        // Update top links
-        newNode->next = stack->top;
-        stack->top = newNode;
     }
 
-    // Increase stack size
+    /* Create a new stack node */
+    stack_node_t* new_node = create_stack_node(data, data_size);
+
+    /* Check if new node was allocated */
+    if (NULL == new_node) {
+        return 1;
+    }
+
+    /* Insert node into stack */
+    if (NULL == stack->top) {
+        
+        /* Stack is empty */
+        stack->top = new_node;
+    } else {
+
+        /* Update top links */
+        new_node->next = stack->top;
+        stack->top = new_node;
+    }
+
+    /* Increase stack size */
     ++(stack->size);
 
-    // Pushing went successfully
+    /* Pushing went successfully */
     return 0;
 }
 
@@ -271,38 +290,41 @@ int stack_push(TStack *stack, const void *data, size_t dataSize) {
  * @return int 1(Fail) if function failed or 0(Success) if
  * popping on the stack went successfully
  */
-int stack_pop(TStack *stack) {
-    // Check if stack is allocated and it is not empty
-    if (stack == NULL || stack->top == NULL || stack->size == 0)
+int stack_pop(stack_t* stack) {
+    /* Check if stack is allocated and it is not empty */
+    if ((NULL == stack) || (NULL == stack->top) || (0 == stack->size))
         return 1;
 
-    // Pointer to current wipe node
-    TStackNode *delete_node = stack->top;
+    /* Pointer to current wipe node */
+    stack_node_t* delete_node = stack->top;
 
-    // Update the top pointer of the stack
+    /* Update the top pointer of the stack */
     stack->top = stack->top->next;
 
-    // Decrease stack size
+    /* Decrease stack size */
     --(stack->size);
 
-    // Free content of the data if necessary
-    if (stack->freeData != NULL && delete_node->data != NULL)
-        stack->freeData(delete_node->data);
+    /* Free content of the data if necessary */
+    if ((NULL != stack->free_data) && (NULL != delete_node->data)) {
+        stack->free_data(delete_node->data);
+    }
 
-    // Free pointer to data memory location
-    if (delete_node->data != NULL)
+    /* Free pointer to data memory location */
+    if (NULL != delete_node->data) {
         free(delete_node->data);
+    }
 
-    // Set data pointer to default value
+    /* Set data pointer to default value */
     delete_node->data = NULL;
 
-    // Free node memory
-    if (delete_node != NULL)
+    /* Free node memory */
+    if (NULL != delete_node) {
         free(delete_node);
+    }
 
-    // Set node poiner to default value
+    /* Set node poiner to default value */
     delete_node = NULL;
 
-    // Popping went successfully
+    /* Popping went successfully */
     return 0;
 }

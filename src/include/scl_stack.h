@@ -1,5 +1,5 @@
 /**
- * @file stackUtils.h
+ * @file scl_stack.h
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2022-06-21
@@ -34,54 +34,30 @@
  * @brief stack Node object definition
  * 
  */
-typedef struct stackNode {
-    void *data;                 // Pointer to data
-    struct stackNode *next;     // Pointer to next data node
-} TStackNode;
+typedef struct stack_node {
+    void* data;                     /* Pointer to data */
+    struct stack_node* next;        /* Pointer to next data node */
+} stack_node_t;
 
 /**
  * @brief stack object definition
  * 
  */
 typedef struct {
-    TStackNode *top;            // Pointer to top data node
-    void (*freeData)(void *);   // Function to free one data
-    size_t size;                // Size of the stack
-} TStack;
+    stack_node_t* top;              /* Pointer to top data node */
+    void (*free_data)(void*);       /* Function to free one data */
+    size_t size;                    /* Size of the stack */
+} stack_t;
 
-TStack* create_stack(
-    void (*freeData)(void *)
-);
+stack_t*    create_stack        (void (*free_data)(void*));
+void        free_stack          (stack_t* stack);
+void        print_stack         (stack_t* stack, void (*print_data)(const void*));
 
-void free_stack(
-    TStack *stack
-);
+int         is_stack_empty      (stack_t* stack);
+int         get_stack_size      (stack_t* stack);
 
-void print_stack(
-    TStack *stack,
-    void (*printData)(const void *)
-);
+void*       stack_top           (stack_t* stack);
+int         stack_push          (stack_t* stack, const void* data, size_t data_size);
+int         stack_pop           (stack_t* stack);
 
-int is_stack_empty(
-    TStack *stack
-);
-
-int get_stack_size(
-    TStack *stack
-);
-
-void* stack_top(
-    TStack *stack
-);
-
-int stack_push(
-    TStack *stack,
-    const void *data,
-    size_t dataSize
-);
-
-int stack_pop(
-    TStack *stack
-);
-
-#endif // STACK_UTILS_H_
+#endif /* STACK_UTILS_H_ */

@@ -23,7 +23,7 @@
  */
 
 #include "./include/bstUtils.h"
-#include "./include/queueUtils.h"
+#include "./include/scl_queue.h"
 
 /**
  * @brief Create a bst object. Allocation may fail if there
@@ -989,7 +989,7 @@ void bst_traverse_level(bstTree *tree, void (*action)(const bstTreeNode *)) {
         printf("(Null)\n");
     else {
         // Create a queue for bfs tree traversal
-        TQueue *level_queue = create_queue(0);
+        queue_t *level_queue = create_queue(0);
 
         // Check if queue was created successfully
         if (level_queue) {

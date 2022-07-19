@@ -23,7 +23,7 @@
  */
 
 #include "./include/avlTreeUtils.h"
-#include "./include/queueUtils.h"
+#include "./include/scl_queue.h"
 
 /**
  * @brief Max function directive for countable numbers
@@ -1263,7 +1263,7 @@ void avl_traverse_level(avlTree *tree, void (*action)(const avlTreeNode *)) {
         printf("(Null)\n");
     else {
         // Create a queue for bfs tree traversal
-        TQueue *level_queue = create_queue(0);
+        queue_t *level_queue = create_queue(0);
 
         // Check if queue was created successfully
         if (level_queue) {
