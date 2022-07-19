@@ -33,14 +33,17 @@
 #define DEFAULT_REALLOC_RATIO 2
 
 /**
- * @brief Create a priority queue object
+ * @brief Create a priority queue object. Function will create
+ * a new priority queue object . Function may fail if `compare_priority`
+ * function is not specified in input data, also if not enough memory is left
+ * on heap for priority queue the function will fail.
  * 
- * @param init_capacity 
- * @param compare_data 
- * @param compare_priority 
- * @param free_data 
- * @param free_priority 
- * @return priority_queue* 
+ * @param init_capacity initial size allocated for a priority queue
+ * @param compare_data a pointer to a function to compare two sets of data
+ * @param compare_priority a pointer to a function to compare two sets of priorities
+ * @param free_data a pointer to a function to free memory of one data set
+ * @param free_priority a pointer to a function to free memory of one priority set
+ * @return priority_queue* a new allocated priority queue object or `NULL` if function fails
  */
 priority_queue* create_priority_queue(
     size_t init_capacity,
@@ -94,10 +97,12 @@ priority_queue* create_priority_queue(
 }
 
 /**
- * @brief 
+ * @brief Function to free memory allocated for one priority queue
+ * node object. Function may fail if priority queue is not allocated
+ * or node does not exist.
  * 
- * @param pqueue 
- * @param free_node 
+ * @param pqueue an allocated priority queue object
+ * @param free_node an allocated priority queue node object
  */
 static void free_priority_queue_node(priority_queue *pqueue, pri_node **free_node) {
     // Check if node needs to be freed
@@ -133,9 +138,10 @@ static void free_priority_queue_node(priority_queue *pqueue, pri_node **free_nod
 }
 
 /**
- * @brief 
+ * @brief Function to free the entire priority queue from heap
+ * memory. Function will process just allocated priority queues
  * 
- * @param pqueue 
+ * @param pqueue an allocated priority queue object
  */
 void free_priority_queue(priority_queue *pqueue) {
     // Check if priority queue is valid
@@ -158,28 +164,28 @@ void free_priority_queue(priority_queue *pqueue) {
 }
 
 /**
- * @brief 
+ * @brief MACRO to get index of the left child of selected node
  * 
  */
 #define get_node_left_child_pos(node_index) (2 * (node_index) + 1)
 
 /**
- * @brief 
+ * @brief MACRO to get index of the right child of selected node
  * 
  */
 #define get_node_right_child_pos(node_index) (2 * (node_index) + 2)
 
 /**
- * @brief 
+ * @brief MACRO to get index of the parent of selected node
  * 
  */
 #define get_node_parent_pos(node_index) (((node_index) - 1) / 2)
 
 /**
- * @brief 
+ * @brief Function to swap data between two sets of data
  * 
- * @param first_node 
- * @param second_node 
+ * @param first_node priority queue node object
+ * @param second_node priority queue node object
  */
 static void swap_pri_queue_nodes(pri_node **first_node, pri_node **second_node) {
     // Check if nodes can be swapped
@@ -193,11 +199,14 @@ static void swap_pri_queue_nodes(pri_node **first_node, pri_node **second_node) 
 }
 
 /**
- * @brief 
+ * @brief Function to sift one node up to repair the
+ * proprieties of a heap structure. Function may fail if
+ * priority queue is not allocated, if nodes are not allocated
+ * or if function to compare priority is `NULL`.
  * 
- * @param pqueue 
- * @param start_index 
- * @return int 
+ * @param pqueue an allocated priority queue object
+ * @param start_index starting index from priority queue
+ * @return int 1 if function fails and 0 otherwise
  */
 static int sift_node_up(priority_queue *pqueue, size_t start_index) {
     // Check if input data is valid
@@ -218,11 +227,14 @@ static int sift_node_up(priority_queue *pqueue, size_t start_index) {
 }
 
 /**
- * @brief 
+ * @brief Function to sift one node down to repair the
+ * proprieties of a heap structure. Function may fail if
+ * priority queue is not allocated, if nodes are not allocated
+ * or if function to compare priority is `NULL`.
  * 
- * @param pqueue 
- * @param start_index 
- * @return int 
+ * @param pqueue an allocated priority queue object
+ * @param start_index starting index from priority queue
+ * @return int 1 if function fails and 0 otherwise
  */
 static int sift_node_down(priority_queue *pqueue, size_t start_index) {
     // Check if input data is valid
@@ -260,13 +272,15 @@ static int sift_node_down(priority_queue *pqueue, size_t start_index) {
 }
 
 /**
- * @brief Create a priority queue node object
+ * @brief Create a priority queue node object. Function may fail if priority pointer
+ * is `NULL` or if its size is 0. One priority queue node may have NO data (NULL), but
+ * it must have a valid priority.
  * 
- * @param data 
- * @param priority 
- * @param data_size 
- * @param pri_size 
- * @return pri_node* 
+ * @param data pointer to a set of generic data type to insert in priority queue
+ * @param priority pointer to a set of generic data type to represent priority in queue
+ * @param data_size size of one element of data type
+ * @param pri_size size of one element of priority type
+ * @return pri_node* an allocated priority queue node object or `NULL` in case function fails
  */
 static pri_node* create_priority_queue_node(const void *data, const void *priority, size_t data_size, size_t pri_size) {
     // Check if input data is valid
@@ -328,18 +342,22 @@ static pri_node* create_priority_queue_node(const void *data, const void *priori
 }
 
 /**
- * @brief 
+ * @brief Function to create a priority queue starting from an array.
+ * Function will take O(N) time to create the priority queue, which is
+ * faster than O(NlogN) time. However function may fail and return NULL
+ * if priority array is not allocated or an priority element is not allocated,
+ * also a valid priority compare function.
  * 
- * @param data 
- * @param priority 
- * @param data_size 
- * @param pri_size 
- * @param number_of_data 
- * @param compare_data 
- * @param compare_priority 
- * @param free_data 
- * @param free_priority 
- * @return priority_queue* 
+ * @param data an array of elements to insert into a priority queue
+ * @param priority an array of priorities to insert into a priority queue
+ * @param data_size size of one data element from priority queue
+ * @param pri_size size of one priority element from priority queue
+ * @param number_of_data number of elements into data and priority array
+ * @param compare_data pointer to a function two compare two sets of data
+ * @param compare_priority pointer to a function two compare two sets of priority
+ * @param free_data a pointer to a function to free memory of one data set
+ * @param free_priority a pointer to a function to free memory of one priority set
+ * @return priority_queue* an allocated priority queue object or `NULL` if function fails
  */
 priority_queue* heapify(
     const void *data,
@@ -394,13 +412,17 @@ priority_queue* heapify(
 }
 
 /**
- * @brief 
+ * @brief Function to change the priority of one node in the
+ * priority queue object. After the priority of the selected
+ * node is changed, function will update by itself the new
+ * location of the selected node so the heap propreties are
+ * preserved.
  * 
- * @param pqueue 
- * @param node_index 
- * @param new_pri 
- * @param pri_size 
- * @return int 
+ * @param pqueue an allocaetd priority queue object
+ * @param node_index index of the node to change it's priority
+ * @param new_pri pointer to a new set of priority data type
+ * @param pri_size size of the new priority element
+ * @return int 1 if function fails, 0 otherwise
  */
 int change_node_priority(priority_queue *pqueue, size_t node_index, const void *new_pri, size_t pri_size) {
     // Check if input data is valid
@@ -440,11 +462,13 @@ int change_node_priority(priority_queue *pqueue, size_t node_index, const void *
 }
 
 /**
- * @brief 
+ * @brief Function to find the index of one data element. Function
+ * will fail if priority queue is empty or if data was not found.
  * 
- * @param pqueue 
- * @param data 
- * @return size_t 
+ * @param pqueue priority queue object
+ * @param data pointer to a generic data type
+ * @return size_t index of the found data from input or `__SIZE_MAX__` in case
+ * data was not found in priority queue
  */
 size_t pri_find_data_index(priority_queue *pqueue, const void *data) {
     // Check if input data is valid
@@ -462,11 +486,13 @@ size_t pri_find_data_index(priority_queue *pqueue, const void *data) {
 }
 
 /**
- * @brief 
+ * @brief Function to find the index of one priority element. Function
+ * will fail if priority queue is empty or if priority was not found.
  * 
- * @param pqueue 
- * @param priority 
- * @return size_t 
+ * @param pqueue priority queue object
+ * @param priority pointer to a generic priority type
+ * @return size_t index of the found priority from input or
+ * `__SIZE_MAX__` in case priority was not found in priority queue
  */
 size_t pri_find_pri_index(priority_queue *pqueue, const void *priority) {
     // Check if input data is valid
@@ -484,14 +510,16 @@ size_t pri_find_pri_index(priority_queue *pqueue, const void *priority) {
 }
 
 /**
- * @brief 
+ * @brief Function to push one element in priority queue object.
+ * Function may fail if reallocation of the array fails or if
+ * node is not created successfully.
  * 
- * @param pqueue 
- * @param data 
- * @param priority 
- * @param data_size 
- * @param pri_size 
- * @return int 
+ * @param pqueue priority queue object
+ * @param data pointer to one data element
+ * @param priority pointer to one priority element
+ * @param data_size size of one data element
+ * @param pri_size size of one priority element
+ * @return int 1 if function failed or 0 otherwise
  */
 int pri_queue_push(priority_queue *pqueue, const void *data, const void *priority, size_t data_size, size_t pri_size) {
     // Check if input data is valid
@@ -540,10 +568,12 @@ int pri_queue_push(priority_queue *pqueue, const void *data, const void *priorit
 }
 
 /**
- * @brief 
+ * @brief Function to get the data element with the highest
+ * rank from current priority queue object.
  * 
- * @param pqueue 
- * @return const void* 
+ * @param pqueue priority queue object
+ * @return const void* pointer to first data element
+ * from priority queue, user should not modify this pointer.
  */
 const void* pri_queue_top(priority_queue *pqueue) {
     // Check if input data is valid
@@ -555,10 +585,12 @@ const void* pri_queue_top(priority_queue *pqueue) {
 }
 
 /**
- * @brief 
+ * @brief Function to get the priority element with the highest
+ * rank from current priority queue object.
  * 
- * @param pqueue 
- * @return const void* 
+ * @param pqueue priority queue object
+ * @return const void* pointer to first priority element
+ * from priority queue, user should not modify this pointer.
  */
 const void* pri_queue_top_pri(priority_queue *pqueue) {
     // Check if input data is valid
@@ -570,10 +602,12 @@ const void* pri_queue_top_pri(priority_queue *pqueue) {
 }
 
 /**
- * @brief 
+ * @brief Function to remove the highest rank node from
+ * current specified priority queue object. Function may
+ * fail if queue is empty or not allocated.
  * 
- * @param pqueue 
- * @return int 
+ * @param pqueue priority queue object
+ * @return int 1 if function fails or 0 otherwise
  */
 int pri_queue_pop(priority_queue *pqueue) {
     // Check if input data is valid and if there are nodes to pop from priority queue
@@ -594,10 +628,12 @@ int pri_queue_pop(priority_queue *pqueue) {
 }
 
 /**
- * @brief 
+ * @brief Function will return the size of the priority queue
+ * object. If priority queue is not allocated than `__SIZE_MAX__`
+ * will be returned as an warning.
  * 
- * @param pqueue 
- * @return size_t 
+ * @param pqueue an allocated priority queue object
+ * @return size_t current size of the priority queue object
  */
 size_t pri_queue_size(priority_queue *pqueue) {
     // Check if priority queue is valid
@@ -609,10 +645,12 @@ size_t pri_queue_size(priority_queue *pqueue) {
 }
 
 /**
- * @brief 
+ * @brief Function to check if a priority queue object is
+ * empty or not. A not allocated object is also an empty object
  * 
- * @param pqueue 
- * @return int 
+ * @param pqueue an allocated priority queue object
+ * @return int 1 if priority queue object is not allocated or empty, 0 if
+ * priority queue is not empty
  */
 int is_priq_empty(priority_queue *pqueue) {
     // Check fi priority queue is valid and if it is empty
@@ -624,10 +662,15 @@ int is_priq_empty(priority_queue *pqueue) {
 }
 
 /**
- * @brief 
+ * @brief Function that will traverse all nodes in priority queue
+ * and will perform any action according to "action" function.
+ * Usually action will be a printing function, however you
+ * can define a map function to map every node data to another
+ * node data (the mapping proccess has to be injective to preserve
+ * heap prorpeties)
  * 
- * @param pqueue 
- * @param action 
+ * @param pqueue an allocated priority queue object
+ * @param action a pointer to a function that will perform an action
  */
 void pri_queue_traverse(priority_queue *pqueue, void (*action)(const pri_node *)) {
     // Check if input data value is valid
@@ -641,12 +684,14 @@ void pri_queue_traverse(priority_queue *pqueue, void (*action)(const pri_node *)
 }
 
 /**
- * @brief 
+ * @brief Function to sort elements of an array by heap sort
+ * method. Function will call heapify function to make a priority queue
+ * where array elements will be priorities and data will be set as NULL.
  * 
- * @param arr 
- * @param number_of_arr 
- * @param arr_elem_size 
- * @param compare_arr 
+ * @param arr an array of any typeto sort its elements
+ * @param number_of_arr number of elements within the selected array
+ * @param arr_elem_size size of one element from selected array
+ * @param compare_arr pointer to a function to compare two sets of data from array
  */
 void heap_sort(void *arr, size_t number_of_arr, size_t arr_elem_size, int (*compare_arr)(const void *, const void *)) {
     // Check if input data is valid
