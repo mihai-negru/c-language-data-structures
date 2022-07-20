@@ -25,10 +25,10 @@
 #ifndef DATA_STRUCTURES_H_
 #define DATA_STRUCTURES_H_
 
-#include "avlTreeUtils.h"
+#include "scl_avl_tree.h"
 #include "bstUtils.h"
 #include "weightedGraphsAlgo.h"
-#include "doubleListUtils.h"
+#include "scl_dlist.h"
 #include "hashTableUtils.h"
 #include "scl_list.h"
 #include "ordGraphUtils.h"

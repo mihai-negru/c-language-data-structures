@@ -1395,22 +1395,22 @@ void avl_traverse_level(avl_tree_t* tree, void (*action)(const avl_tree_node_t*)
             while (!is_queue_empty(level_queue)) {
 
                 /* Get front node from queue */
-                avl_tree_node_t** front_node = queue_front(level_queue);
+                avl_tree_node_t* front_node = *(avl_tree_node_t **)queue_front(level_queue);
 
                 /* Remove front node from queue */
                 queue_pop(level_queue);
 
                 /* Call action function on front node */
-                action(*front_node);
+                action(front_node);
 
                 /* Push on queue front left child if it exists */
-                if (NULL != (*front_node)->left) {
-                    queue_push(level_queue, &(*front_node)->left, sizeof((*front_node)->left));
+                if ((NULL != front_node) && (NULL != front_node->left)) {
+                    queue_push(level_queue, &front_node->left, sizeof(front_node->left));
                 }
                 
                 /* Push on queue front right child if it exists */
-                if (NULL != (*front_node)->right) {
-                    queue_push(level_queue, &(*front_node)->right, sizeof((*front_node)->right));
+                if ((NULL != front_node) && (NULL != front_node->right)) {
+                    queue_push(level_queue, &front_node->right, sizeof(front_node->right));
                 }
             }
 
