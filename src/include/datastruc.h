@@ -30,13 +30,13 @@
 #include "weightedGraphsAlgo.h"
 #include "doubleListUtils.h"
 #include "hashTableUtils.h"
-#include "listUtils.h"
+#include "scl_list.h"
 #include "ordGraphUtils.h"
 #include "scl_priority_queue.h"
 #include "scl_queue.h"
 #include "sortAlgorithms.h"
 #include "scl_stack.h"
 #include "unordGraphUtils.h"
-#include "functionTypes.h"
+#include "scl_func_types.h"
 
 #endif /* DATA_STRUCTURES_H_ */
