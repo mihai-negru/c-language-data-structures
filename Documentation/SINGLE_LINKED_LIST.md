@@ -1,20 +1,20 @@
-# Documentation for linked list object (listUtils.h)
+# Documentation for linked list object (scl_list.h)
 
 ## How to create a linked list and how to destroy it?
 
-In the listUtils.h file you have three functions that helps you to create and delete a linked list.
+In the scl_list.h file you have two functions that helps you to create and delete a linked list.
 
 ```C
-    linkedList* createLinkedList(
-        int (*compareData)(void *, void *),
-        void (*printData)(void *),
-        void (*freeData)(void *))
+    list_t* create_list(
+        int (*compare_data)(const void *, const void *),
+        void (*print_data)(const void *),
+        void (*free_data)(void *))
 ```
 
-createLinkedList function will allocate a list on heap and will return a pointer to its location. However you should provide 3 function that are neccessary for maintaing the linked list.
+create_list function will allocate a list on heap and will return a pointer to its location. However you should provide 3 function that are neccessary for maintaing the linked list.
 
 ```C
-    int compareData(void *elem1, void *elem2)
+    int compare_data(const void *elem1, const void *elem2)
 ```
 
 Function will take 2 generic pointers and according to user needs will return:
@@ -23,30 +23,30 @@ Function will take 2 generic pointers and according to user needs will return:
     2. -1 - if elem1 < elem2
     3.  0 - if elem1 == elem2
 
-Example of compareData function for **int** data type:
+Example of compare_data function for **int** data type:
 
 ```C
-    int compareData(void *elem1, void *elem2) {
-        int *fa = (int *)elem1;
-        int *fb = (int *)elem2;
+    int compare_data(const void *elem1, const void *elem2) {
+        const int *fa = elem1;
+        const int *fb = elem2;
 
         return *fa - *fb;
     }
 ```
 
-printData function will display output on **stdout**, hovewer you cannot print a data by using a filestream. The single solution is to declare a globale scope **FILE** variable and use *fprintf*s or *fwrite* instead of *printf*.
+print_data function will display output on **stdout**, hovewer you cannot print a data by using a filestream. The single solution is to declare a globale scope **FILE** variable and use *fprintf*s or *fwrite* instead of *printf*. You also can use freopen on stdout to redirect output to another stream.
 
 ```C
     FILE *fin = NULL; // Allocate in main function
-    void printData(void *elem) {
-        fprintf(fin, "%d ", *(int *)elem);
+    void print_data(const void *elem) {
+        fprintf(fin, "%d ", *(const int *)elem);
         // Instead of printf("%d", *(int *)elem);
         // For int data type
     }
 ```
 
-freeData function is optional if you do not use basic data types such as int, float, double, or static arrays you should provide a function to remove a parameter. Evrery thing that you allocate on heap by yourslef must be specified in **freeData** function.
-If no free is needed that NULL should be passed in `createLinkedList` function.
+free_data function is optional if you do not use basic data types such as int, float, double, or static arrays you should provide a function to remove a parameter. Evrery thing that you allocate on heap by yourslef must be specified in **free_data** function.
+If no free is needed that NULL should be passed in `create_list` function.
 
 Exaple of type:
 ```C
@@ -59,35 +59,35 @@ Exaple of type:
     } student;
 ```
 
-An example of `freeData` function for this structure should be:
+An example of `free_data` function for this structure should be:
 
 ```C
-    void freeData(void *elem1) {
-        student *fa = (student *)elem1;
+    void free_data(void *elem1) {
+        student *fa = elem1;
 
-        if (fa->name)
+        if (NULL != fa->name)
             free(fa->name);
 
-        if (fa->marks)
+        if (NULL != fa->marks)
             free(fa->marks);
     }
 ```
 
-> **NOTE:** If any proccess of `createLinkedList` fails than an exception will be thrown.
+> **NOTE:** If any proccess of `create_list` fails than an exception will be thrown.
 
-**If you want to print the entire list** than you should call `list_print` function.
+**If you want to print the entire list** than you should call `print_list` function.
 
-> **NOTE:** If list is not allocated than nothing will be printed. If list is empty that a set of square paired brackets will be printed **[ ]** and if list is not empty than every element from the list will be printed according to **printData** function provided by the user.
+> **NOTE:** If list is not allocated than nothing will be printed. If list is empty that a set of square paired brackets will be printed **[ ]** and if list is not empty than every element from the list will be printed according to **print_data** function provided by the user.
 
 The last function is for freeing memory from heap allocated for the list.
 
-**`list_free_all`** will take a list as input and will free every element according to **freeData** function provided by user. If freeData function is NULL than content of one data will be not removed (because is allocated on stack not on the heap -- No memory leaks will be generated). Evry pointer that is freed is also set to NULL pointer.
+**`free_list`** will take a list as input and will free every element according to **free_data** function provided by user. If freeData function is NULL than content of one data will be not removed (because is allocated on stack not on the heap -- No memory leaks will be generated). Evry pointer that is freed is also set to NULL pointer.
 
 Example of creating a linked list containing int data types:
 ```C
-    linkedList *list = createLinkedList(&compareInt, &printInt, NULL);
-    list_print(list);
-    list_free_all(list);
+    list_t *list = create_list(&compare_int, &print_int, NULL);
+    print_list(list);
+    free_list(list);
 ```
 
 ## How to insert and how to remove elements from linked list ?
@@ -107,12 +107,12 @@ Let's assume that we works with integers and we would like to mantain a linked l
 insertion would show like:
 
 ```C
-    linkedList *list = createLinkedList(...);
+    list_t *list = create_list(...);
     int data = 0; // Dummy value not necessary
 
     for (int i = 0; i < 10; ++i) {
         scanf("%d", &data); // You could replace with fscanf
-        list_insert(list, &data, sizeof(int));
+        list_insert(list, &data, sizeof(data));
     }
 ```
 
@@ -126,24 +126,24 @@ If you have dynamic elements in a structure and want to store the strucutre in t
 
     ....
 
-    linkedList *list = createLinkedList(...);
+    list_t *list = create_list(...);
     person data;
 
     for (int i = 0; i < 10; ++i) {
         data.name = malloc(SET_A_WORD_SIZE);
         scanf("%d", &data.age);
         scanf("%s", data.name);
-        list_insert(list, &data, sizeof(person));
+        list_insert(list, &data, sizeof(data));
     }
 
     // It is very important not to free manually data.name
     // This will be done in freeing the entire list
 
-    list_free_all(list);
+    free_list(list);
     // Will free every allocation made for list including data.name
 ```
 
-> **NOTE:** In this case if no freeData function is provided the program will result in memory leaks. If we change from `char *name`, into `char name[SIZE_OF_A_WORD]` then no freeData should be provided.
+> **NOTE:** In this case if no free_data function is provided the program will result in memory leaks. If we change from `char *name`, into `char name[SIZE_OF_A_WORD]` then no free_data should be provided.
 
 > **NOTE:** list_insert_front, list_insert_order and list_insert_index works just like list_insert, but have different proprieties.
 
@@ -199,10 +199,10 @@ Example of using list finds:
     int data = 3;
 
     // By data
-    TListNode *node1 = list_find_data(list, &data);
+    list_node_t* node1 = list_find_data(list, &data);
 
     // By index
-    TListNode *node2 = list_find_index(list, 4);
+    list_node_t* node2 = list_find_index(list, 4);
 
     // Now you cand do stuff with nodes for example swap them 
 ```
@@ -222,13 +222,13 @@ Example of changing and swapping two data:
 
 ```C
     // list = 1 -> 2 -> 3 -> 4 -> 5
-    TListNode *node1 = list_find_index(list, 0);
-    TListNode *node2 = list_find_index(list, list->size - 1);
+    list_node_t* node1 = list_find_index(list, 0);
+    list_node_t* node2 = list_find_index(list, list->size - 1);
 
     list_swap_data(list, node1, node2);
     
     data = 20;
-    list_change_data(list, node1, &data, sizeof(int));
+    list_change_data(list, node1, &data, sizeof(data));
 
     // list = 20 -> 2 -> 3 -> 4 -> 5
 ```
@@ -237,7 +237,7 @@ Example of changing and swapping two data:
 
 ## Some special functions
 
-Two important functions provided in **listUtils.h** are:
+Two important functions provided in **scl_list.h** are:
 
 * Filter function - creates a new list and selects some elements based of filterFunction rule
 * Map function - modifies in-place the current list by mapping evry element into a new element of the same type
@@ -247,16 +247,16 @@ Two important functions provided in **listUtils.h** are:
 Examples of list filter and mapping
 
 ```C
-    int filterFunction(void *elem) {
-        int *fa = (int *)elem;
+    int filter(const void *elem) {
+        const int *fa = elem;
 
-        if (*fa == 1) return 1;
+        if (1 == *fa) return 1;
 
         return 0;
     }
 
-    void* mapFunction(void *elem) {
-        int *fa = (int *)elem;
+    const void* map(void *elem) {
+        int *fa = elem;
 
         *fa = (*fa) % 2;
 
@@ -267,22 +267,22 @@ Examples of list filter and mapping
 
     // list = 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
-    list_map(list, &mapFunction, sizeof(int));
+    list_map(list, &map, sizeof(int));
 
     // list = 1 -> 0 -> 1 -> 0 -> 1 -> 0 -> 1 -> 0 -> 1 -> 0
 
-    linkedList *newList = list_filter(list, &filterFunction, sizeof(int));
+    list_t* new_list = list_filter(list, &filter, sizeof(int));
 
     // newList = 1 -> 1 -> 1 -> 1 -> 1 -> NULL
 
-    printf("We have %d odd numbers\n", newList->size);
+    printf("We have %d odd numbers\n", new_list->size);
 
     // Do not forget to free space
-    list_free_all(newList);
-    list_free_all(list);
+    free_list(new_list);
+    free_list(list);
 ```
 
-> **NOTE:** If filter function return **0** for every element then NULL pointer will be returned and no newList will be created, however you can pass a NULL linked list pointer to **list_free_all**, but it will have no effect.
+> **NOTE:** If filter function return **0** for every element then NULL pointer will be returned and no newList will be created, however you can pass a NULL linked list pointer to **free_list**, but it will have no effect.
 
-## For some other examples of using linked lists you can look up at /examples/singleLists
+## For some other examples of using linked lists you can look up at /examples/list
 

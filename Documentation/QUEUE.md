@@ -1,15 +1,15 @@
-# Documentation for queue object (queueUtils.h)
+# Documentation for queue object (scl_queue)
 
 ## How to create a queue and how to destroy it?
 
-In the queueUtils.h you have two functions that will help you by creating a queue and destroying it.
+In the scl_queue you have two functions that will help you by creating a queue and destroying it.
 
 ```C
-    TQueue* create_queue(void (*freeData)(void *));
-    void free_queue(TQueue *queue);
+    queue_t* create_queue(void (*free_data)(void *));
+    void free_queue(queue_t* queue);
 ```
 
-First function will take a pointer to a function that will free the content of the actual data. However you can send NULL(0) instead of a pointer. For base types as **int**, **float**, **double**, **char**, **static arrays**, **static structures**, `freeData` function should be **NULL**, if a structure that contains a pointer (and it is allocated with malloc or calloc) then a freeData function (*not NULL*) should be provided.
+First function will take a pointer to a function that will free the content of the actual data. However you can send NULL(0) instead of a pointer. For base types as **int**, **float**, **double**, **char**, **static arrays**, **static structures**, `free_data` function should be **NULL**, if a structure that contains a pointer (and it is allocated with malloc or calloc) then a free_data function (*not NULL*) should be provided.
 
 Example of creating a queue:
 
@@ -19,14 +19,14 @@ Example of creating a queue:
         int age;
     } person;
 
-    void freePerson(void *a) {
-        person *fa = (person *)a;
+    void free_person(void *a) {
+        person *fa = a;
 
         free(fa->name);
     }
 
     int main() {
-        TQueue *queue = create_queue(&freePerson);
+        queue_t* queue = create_queue(&free_person);
         free_queue(queue);
 
         return 0;
@@ -57,21 +57,21 @@ Example of creating a queue:
 
     // One way to print it would be:
 
-    void printData(void *a) {
+    void print_data(void *a) {
         if (a == NULL) return;
 
         int check = *(int *)a;
 
         if (check == 0) {
-            Int *fb = (Int *)a;
+            Int *fb = a;
 
             printf("%d ", fb->elem);
         } else if (check == 1) {
-            Float *fb = (Float *)a;
+            Float *fb = a;
 
             printf("%f ", fb->elem);
         } else if (check == 2) {
-            Char *fb = (Char *)a;
+            Char *fb = a;
 
             printf("%c ", fb->elem);
         } else {
@@ -82,17 +82,17 @@ Example of creating a queue:
 
 >**NOTE:** It is very **IMPORTANT** in this situation for the **check** variable to be the first member of the structure, otherwise it is posibble to access different memory locations which will fail into a Segmentation Fault.
 
->**NOTE:** Some types of structures as above and functions to print different classes of data types are described in **functionTypes.h/.md** section.
+>**NOTE:** Some types of structures as above and functions to print different classes of data types are described in **scl_func_types.h/.md** section.
 
 ## How to insert and how to remove elements from queue?
 
 You have 4 function that will maintain a queue:
 
 ```C
-    int queue_push(TQueue *queue, void *data, size_t dataSize);
-    void* queue_front(TQueue *queue);
-    void* queue_back(TQueue *queue);
-    int queue_pop(Tqueue *queue);
+    int queue_push(queue_t* queue, const void* data, size_t data_size);
+    const void* queue_front(queue_t* queue);
+    const void* queue_back(queue_t* queue);
+    int queue_pop(queue_t* queue);
 ```
 
 Function `queue_push` will insert one element into the queue. You should pass an allocated queue into push function, however if queue pointer is NULL than no operation will be executed. As we mentioned above you can insert different data types into the queue, but you will have to provide your functions to maintain the queue (for printing elements).
@@ -100,19 +100,19 @@ Function `queue_push` will insert one element into the queue. You should pass an
 Function `queue_front(back` will return a pointer to the data content of the first(back) element from the queue. You will have to manually convert the return pointer to your working pointer, or to print int using a printData function, as follows:
 
 ```C
-    void printInt(void *a) {
+    void print_int(const void *a) {
         if (a == NULL) return;
 
-        int *fa = (int *)a;
+        const int *fa = a;
 
         printf("%d\n", *fa);
     }
 
     int main() {
-        TQueue *queue = create_queue(0);
+        queue_t* queue = create_queue(NULL);
 
         for (int i = 0; i < 10; ++i)
-            queue_push(queue, &i, sizeof(int));
+            queue_push(queue, &i, sizeof(i));
 
         int top = *(int *)queue_front(queue);
         // Or queue_back(queue);
@@ -120,22 +120,22 @@ Function `queue_front(back` will return a pointer to the data content of the fir
 
         // or using the print function
 
-        printInt(queue_top(queue));
+        print_int(queue_top(queue));
     }
 ```
 
 >**NOTE:** If you are using a print function to print data than you also should check if returned pointer is not NULL. If queue is empty or it does not exists then queue_front(back) will return a NULL pointer and it will break the program.
 
-Function `queue_pop` will remove one element from the queue. Firstly function will free content of the data pointer if it is necessary (if freeData function is not NULL). The data content will be destroyed according to freeData function, than program will remove data pointer and node pointer and will update the new top of the queue.
+Function `queue_pop` will remove one element from the queue. Firstly function will free content of the data pointer if it is necessary (if freeData function is not NULL). The data content will be destroyed according to free_data function, than program will remove data pointer and node pointer and will update the new top of the queue.
 
 Example of using queue_pop:
 
 ```C
     int main() {
-        TQueue *queue = create_queue(0);
+        queue_t* queue = create_queue(NULL);
 
         for (int i = 0; i < 10; ++i)
-            if (queue_push(queue, &i, sizeof(int))) {
+            if (queue_push(queue, &i, sizeof(i))) {
                 printf("Something went wrong inserting &i element\n", i);
                 return EXIT_FAILURE;
             }
@@ -154,8 +154,8 @@ Example of using queue_pop:
 
 Some functions that also are important for queue maintaining are:
 ```C
-    int is_queue_empty(TQueue *queue);
-    int get_queue_size(Tqueue *queue);
+    int is_queue_empty(queue_t* queue);
+    int get_queue_size(queue_t* queue);
 ```
 
 First function will check if queue exists and if it is empty.
@@ -164,4 +164,4 @@ First function will check if queue exists and if it is empty.
 
 The second function will return the size of the queue or **-1** if queue does not exist.
 
-## For some other examples of using queues you can look up at /examples/queues
+## For some other examples of using queues you can look up at /examples/queue

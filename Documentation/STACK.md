@@ -1,15 +1,15 @@
-# Documentation for stack object (stackUtils.h)
+# Documentation for stack object (scl_stack.h)
 
 ## How to create a stack and how to destroy it?
 
-In the stackUtils.h you have two functions that will help you by creating a stack and destroying it.
+In the scl_stack.h you have two functions that will help you by creating a stack and destroying it.
 
 ```C
-    TStack* create_stack(void (*freeData)(void *));
-    void free_stack(TStack *stack);
+    stack_t* create_stack(void (*free_data)(void*));
+    void free_stack(stack_t *stack);
 ```
 
-First function will take a pointer to a function that will free the content of the actual data. However you can send NULL(0) instead of a pointer. For base types as **int**, **float**, **double**, **char**, **static arrays**, **static structures**, `freeData` function should be **NULL**, if a structure that contains a pointer (and it is allocated with malloc or calloc) then a freeData function (*not NULL*) should be provided.
+First function will take a pointer to a function that will free the content of the actual data. However you can send NULL(0) instead of a pointer. For base types as **int**, **float**, **double**, **char**, **static arrays**, **static structures**, `free_data` function should be **NULL**, if a structure that contains a pointer (and it is allocated with malloc or calloc) then a free_data function (*not NULL*) should be provided.
 
 Example of creating a stack:
 
@@ -19,14 +19,14 @@ Example of creating a stack:
         int age;
     } person;
 
-    void freePerson(void *a) {
+    void free_person(void *a) {
         person *fa = (person *)a;
 
         free(fa->name);
     }
 
     int main() {
-        TStack *stack = create_stack(&freePerson);
+        stack_t *stack = create_stack(&free_person);
         free_stack(stack);
 
         return 0;
@@ -57,21 +57,21 @@ Example of creating a stack:
 
     // One way to print it would be:
 
-    void printData(void *a) {
+    void print_data(void *a) {
         if (a == NULL) return;
 
         int check = *(int *)a;
 
         if (check == 0) {
-            Int *fb = (Int *)a;
+            Int *fb = a;
 
             printf("%d ", fb->elem);
         } else if (check == 1) {
-            Float *fb = (Float *)a;
+            Float *fb = a;
 
             printf("%f ", fb->elem);
         } else if (check == 2) {
-            Char *fb = (Char *)a;
+            Char *fb = a;
 
             printf("%c ", fb->elem);
         } else {
@@ -82,16 +82,16 @@ Example of creating a stack:
 
 >**NOTE:** It is very **IMPORTANT** in this situation for the **check** variable to be the first member of the structure, otherwise it is posibble to access different memory locations which will fail into a Segmentation Fault.
 
->**NOTE:** Some types of structures as above and functions to print different classes of data types are described in **functionTypes.h/.md** section.
+>**NOTE:** Some types of structures as above and functions to print different classes of data types are described in **scl_func_types.h/.md** section.
 
 ## How to insert and how to remove elements from stack?
 
 You have 3 function that will maintain a stack:
 
 ```C
-    int stack_push(TStack *stack, void *data, size_t dataSize);
-    void* stack_top(TStack *stack);
-    int stack_pop(Tstack *stack);
+    int stack_push(stack_t *stack, const void *data, size_t data_size);
+    const void* stack_top(stack_t *stack);
+    int stack_pop(stack_t *stack);
 ```
 
 Function `stack_push` will insert one element into the stack. You should pass an allocated stack into push function, however if stack pointer is NULL than no operation will be executed. As we mentioned above you can insert different data types into the stack, but you will have to provide your functions to maintain the stack (for printing elements).
@@ -99,7 +99,7 @@ Function `stack_push` will insert one element into the stack. You should pass an
 Function `stack_top` will return a pointer to the data content of the first element from the stack (the top of the stack). You will have to manually convert the return pointer to your working pointer, or to print int using a printData function, as follows:
 
 ```C
-    void printInt(void *a) {
+    void print_int(void *a) {
         if (a == NULL) return;
 
         int *fa = (int *)a;
@@ -108,17 +108,17 @@ Function `stack_top` will return a pointer to the data content of the first elem
     }
 
     int main() {
-        TStack *stack = create_stack(0);
+        stack_t *stack = create_stack(NULL);
 
         for (int i = 0; i < 10; ++i)
-            stack_push(stack, &i, sizeof(int));
+            stack_push(stack, &i, sizeof(i));
 
         int top = *(int *)stack_top(stack);
         printf("%d\n", top);
 
         // or using the print function
 
-        printInt(stack_top(stack));
+        print_int(stack_top(stack));
     }
 ```
 
@@ -130,10 +130,10 @@ Example of using stack_pop:
 
 ```C
     int main() {
-        TStack *stack = create_stack(0);
+        stack_t *stack = create_stack(NULL);
 
         for (int i = 0; i < 10; ++i)
-            if (stack_push(stack, &i, sizeof(int))) {
+            if (stack_push(stack, &i, sizeof(i))) {
                 printf("Something went wrong inserting &i element\n", i);
                 return EXIT_FAILURE;
             }
@@ -152,8 +152,8 @@ Example of using stack_pop:
 
 Some functions that also are important for stack maintaining are:
 ```C
-    int is_stack_empty(TStack *stack);
-    int get_stack_size(Tstack *stack);
+    int is_stack_empty(stack_t* stack);
+    int get_stack_size(stack_t* stack);
 ```
 
 First function will check if stack exists and if it is empty.
@@ -162,4 +162,4 @@ First function will check if stack exists and if it is empty.
 
 The second function will return the size of the stack or **-1** if stack does not exist.
 
-## For some other examples of using stacks you can look up at /examples/stacks
+## For some other examples of using stacks you can look up at /examples/stack
