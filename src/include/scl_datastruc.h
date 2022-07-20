@@ -1,5 +1,5 @@
 /**
- * @file datastruc.h
+ * @file scl_datastruc.h
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2022-06-21
@@ -26,7 +26,7 @@
 #define DATA_STRUCTURES_H_
 
 #include "scl_avl_tree.h"
-#include "bstUtils.h"
+#include "scl_bst_tree.h"
 #include "weightedGraphsAlgo.h"
 #include "scl_dlist.h"
 #include "hashTableUtils.h"

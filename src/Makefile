@@ -1,6 +1,6 @@
 CFLAGS = -c -g -Wextra -Werror -Wall
 
-FILES = ./scl_avl_tree.c ./bstUtils.c \
+FILES = ./scl_avl_tree.c ./scl_bst_tree.c \
 		./weightedGraphsAlgo.c ./scl_list.c \
 		./scl_dlist.c ./scl_priority_queue.c \
 		./hashTableUtils.c ./sortAlgorithms.c \
@@ -8,7 +8,7 @@ FILES = ./scl_avl_tree.c ./bstUtils.c \
 		./scl_queue.c ./scl_stack.c \
 		./unordGraphUtils.c ./scl_func_types.c \
 
-OUTFILES = scl_avl_tree.o bstUtils.o weightedGraphsAlgo.o \
+OUTFILES = scl_avl_tree.o scl_bst_tree.o weightedGraphsAlgo.o \
 		 scl_dlist.o hashTableUtils.o \
 		 scl_priority_queue.o scl_list.o ordGraphUtils.o \
 		 redBlackTreeUtils.o scl_queue.o sortAlgorithms.o \
