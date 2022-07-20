@@ -223,9 +223,9 @@ int get_stack_size(stack_t* stack) {
  * data memory location will be returned
  * 
  * @param stack a stack object
- * @return void* a pointer to top element data
+ * @return const void* a pointer to top element data
  */
-void* stack_top(stack_t* stack) {
+const void* stack_top(stack_t* stack) {
     if ((NULL == stack) || (NULL == stack->top)) {
         return NULL;
     }

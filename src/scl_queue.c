@@ -223,9 +223,9 @@ int get_queue_size(queue_t* queue) {
  * data memory location will be returned
  * 
  * @param queue a queue object
- * @return void* a pointer to front element data
+ * @return const void* a pointer to front element data
  */
-void* queue_front(queue_t* queue) {
+const void* queue_front(queue_t* queue) {
     if ((NULL == queue) || (NULL == queue->front)) {
         return NULL;
     }
@@ -240,9 +240,9 @@ void* queue_front(queue_t* queue) {
  * data memory location will be returned
  * 
  * @param queue a queue object
- * @return void* a pointer to front element data
+ * @return const void* a pointer to front element data
  */
-void* queue_back(queue_t* queue) {
+const void* queue_back(queue_t* queue) {
     if ((NULL == queue) || (NULL == queue->back)) {
         return NULL;
     }

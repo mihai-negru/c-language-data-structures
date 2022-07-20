@@ -62,7 +62,7 @@ list_node_t*    get_list_head       (list_t* list);
 list_node_t*    get_list_tail       (list_t* list);
 
 void            list_swap_data      (list_t* list, list_node_t* first_node, list_node_t* second_node);
-int             list_change_data    (list_t* list, list_node_t* base_node, const void* new_data, size_t data_size);
+int             list_change_data    (list_t* list, const list_node_t* base_node, const void* new_data, size_t data_size);
 int             list_insert         (list_t* list, const void* data, size_t data_size);
 int             list_insert_order   (list_t* list, const void* data, size_t data_size);
 int             list_insert_front   (list_t* list, const void* data, size_t data_size);
@@ -76,6 +76,6 @@ int             list_delete_index   (list_t* list, size_t data_index);
 int             list_erase          (list_t* list, size_t left_index, size_t right_index);
 
 list_t*         list_filter         (list_t* list, int (*filter)(const void*), size_t data_size);
-void            list_map            (list_t* list, void* (*mapFunction)(void*), size_t data_size);
+void            list_map            (list_t* list, const void* (*map)(void*), size_t data_size);
 
 #endif /* LIST_UTILS_H_ */

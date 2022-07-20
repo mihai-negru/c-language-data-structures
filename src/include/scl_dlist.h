@@ -53,31 +53,31 @@ typedef struct {
     size_t size;                                        /* size of linked list */
 } dlist_t;
 
-dlist_t*        create_dlist            (int (*compare_data)(const void*, const void*), void (*print_data)(const void*), void (*free_data)(void*));
-void            print_front_dlist       (dlist_t* list);
-void            print_back_dlist        (dlist_t* list);
-void            free_dlist              (dlist_t* list);
+dlist_t*          create_dlist            (int (*compare_data)(const void*, const void*), void (*print_data)(const void*), void (*free_data)(void*));
+void              print_front_dlist       (dlist_t* list);
+void              print_back_dlist        (dlist_t* list);
+void              free_dlist              (dlist_t* list);
 
-int             is_dlist_empty          (dlist_t* list);
-int             get_dlist_size          (dlist_t* list);
-dlist_node_t*   get_dlist_head          (dlist_t* list);
-dlist_node_t*   get_dlist_tail          (dlist_t* list);
+int               is_dlist_empty          (dlist_t* list);
+int               get_dlist_size          (dlist_t* list);
+dlist_node_t*     get_dlist_head          (dlist_t* list);
+dlist_node_t*     get_dlist_tail          (dlist_t* list);
 
-void            dlist_swap_data         (dlist_t* list, dlist_node_t *first_node, dlist_node_t *second_node);
-int             dlist_change_data       (dlist_t* list, dlist_node_t* base_node, const void* new_data, size_t data_size);
-int             dlist_insert            (dlist_t* list, const void* data, size_t data_size);
-int             dlist_insert_order      (dlist_t* list, const void* data, size_t data_size);
-int             dlist_insert_front      (dlist_t* list, const void* data, size_t data_size);
-int             dlist_insert_index      (dlist_t* list, const void* data, size_t data_size,size_t data_index);
+void              dlist_swap_data         (dlist_t* list, dlist_node_t *first_node, dlist_node_t *second_node);
+int               dlist_change_data       (dlist_t* list, const dlist_node_t* base_node, const void* new_data, size_t data_size);
+int               dlist_insert            (dlist_t* list, const void* data, size_t data_size);
+int               dlist_insert_order      (dlist_t* list, const void* data, size_t data_size);
+int               dlist_insert_front      (dlist_t* list, const void* data, size_t data_size);
+int               dlist_insert_index      (dlist_t* list, const void* data, size_t data_size,size_t data_index);
 
-dlist_node_t*   dlist_find_index        (dlist_t* list, size_t data_index);
-dlist_node_t*   dlist_find_data         (dlist_t* list, const void* data);
+dlist_node_t*     dlist_find_index        (dlist_t* list, size_t data_index);
+dlist_node_t*     dlist_find_data         (dlist_t* list, const void* data);
 
-int             dlist_delete_data       (dlist_t* list, void* data);
-int             dlist_delete_index      (dlist_t* list, size_t data_index);
-int             dlist_erase             (dlist_t* list, size_t left_index, size_t right_index);
+int               dlist_delete_data       (dlist_t* list, void* data);
+int               dlist_delete_index      (dlist_t* list, size_t data_index);
+int               dlist_erase             (dlist_t* list, size_t left_index, size_t right_index);
 
-dlist_t*        dlist_filter            (dlist_t* list, int (*filter)(const void*),size_t data_size);
-void            dlist_map               (dlist_t* list, void* (*map)(void*), size_t data_size);
+dlist_t*          dlist_filter            (dlist_t* list, int (*filter)(const void*),size_t data_size);
+void              dlist_map               (dlist_t* list, const void* (*map)(void*), size_t data_size);
 
 #endif /* DOUBLE_LIST_UTILS_H_ */

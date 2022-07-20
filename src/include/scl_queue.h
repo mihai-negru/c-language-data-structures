@@ -50,16 +50,16 @@ typedef struct {
     size_t size;                    /* Size of the queue */
 } queue_t;
 
-queue_t*    create_queue        (void (*free_data)(void*));
-void        free_queue          (queue_t* queue);
-void        print_queue         (queue_t* queue, void (*print_data)(const void*));
+queue_t*        create_queue        (void (*free_data)(void*));
+void            free_queue          (queue_t* queue);
+void            print_queue         (queue_t* queue, void (*print_data)(const void*));
 
-int         is_queue_empty      (queue_t* queue);
-int         get_queue_size      (queue_t* queue);
+int             is_queue_empty      (queue_t* queue);
+int             get_queue_size      (queue_t* queue);
 
-void*       queue_front         (queue_t* queue);
-void*       queue_back          (queue_t* queue);
-int         queue_push          (queue_t* queue, const void* data, size_t data_size);
-int         queue_pop           (queue_t* queue);
+const void*     queue_front         (queue_t* queue);
+const void*     queue_back          (queue_t* queue);
+int             queue_push          (queue_t* queue, const void* data, size_t data_size);
+int             queue_pop           (queue_t* queue);
 
 #endif /* QUEUE_UTILS_H_ */

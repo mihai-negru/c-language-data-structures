@@ -333,7 +333,7 @@ void dlist_swap_data(dlist_t* list, dlist_node_t* first_node, dlist_node_t* seco
  * @param data_size size of the new data
  * @return int function will return 1 if it fails and 0 otherwise
  */
-int dlist_change_data(dlist_t* list, dlist_node_t* base_node, const void* new_data, size_t data_size) {
+int dlist_change_data(dlist_t* list, const dlist_node_t* base_node, const void* new_data, size_t data_size) {
     /* Check if input is valid */
     if ((NULL == list) || (NULL == base_node) || (NULL == base_node->data) || (NULL == new_data)) {
         return 1;
@@ -944,7 +944,7 @@ dlist_t* dlist_filter(dlist_t* list, int (*filter)(const void*), size_t data_siz
  * @param map a pointer to a mapping function
  * @param data_size size of a single element
  */
-void dlist_map(dlist_t* list, void* (*map)(void*), size_t data_size) {
+void dlist_map(dlist_t* list, const void* (*map)(void*), size_t data_size) {
     /*
      * Check if list is allocated and is not empty
      * Check if user provided a valid map function

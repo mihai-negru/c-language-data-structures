@@ -302,7 +302,7 @@ void list_swap_data(list_t* list, list_node_t* first_node, list_node_t* second_n
  * @param data_size size of the new data
  * @return int function will return 1 if it fails and 0 otherwise
  */
-int list_change_data(list_t* list, list_node_t* base_node, const void* new_data, size_t data_size) {
+int list_change_data(list_t* list, const list_node_t* base_node, const void* new_data, size_t data_size) {
     /* Check if input is valid */
     if ((NULL == list) || (NULL == base_node) || (NULL == new_data)) {
         return 1;
@@ -909,7 +909,7 @@ list_t* list_filter(list_t* list, int (*filter)(const void*), size_t data_size) 
  * @param map a pointer to a mapping function
  * @param data_size size of a single element
  */
-void list_map(list_t* list, void* (*map)(void*), size_t data_size) {
+void list_map(list_t* list, const void* (*map)(void*), size_t data_size) {
     /*
      * Check if list is allocated and is not empty
      * Check if user provided a valid map function
