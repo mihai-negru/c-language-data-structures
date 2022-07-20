@@ -1,5 +1,5 @@
 /**
- * @file unordGraphUtils.h
+ * @file scl_hash_table.c
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2022-06-21
@@ -22,12 +22,4 @@
  * 
  */
 
-#ifndef UNORDERED_GRAPH_UTILS_H_
-#define UNORDERED_GRAPH_UTILS_H_
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-
-#endif // UNORDERED_GRAPH_UTILS_H_
+#include "./include/scl_hash_table.h"

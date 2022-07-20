@@ -1,5 +1,5 @@
 /**
- * @file ordGraphUtils.c
+ * @file scl_weighted_graph.h
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2022-06-21
@@ -22,4 +22,12 @@
  * 
  */
 
-#include "./include/ordGraphUtils.h"
+#ifndef WEIGHTED_GRAPH_ALGO_H_
+#define WEIGHTED_GRAPH_ALGO_H_
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
+#endif /* WEIGHTED_GRAPH_ALGO_H_ */

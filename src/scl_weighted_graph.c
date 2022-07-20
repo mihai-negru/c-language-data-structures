@@ -1,5 +1,5 @@
 /**
- * @file redBlackTreeUtils.h
+ * @file scl_weighted_graph.c
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2022-06-21
@@ -22,12 +22,4 @@
  * 
  */
 
-#ifndef _RED_BLACK_TREE_UTILS_H_
-#define _RED_BLACK_TREE_UTILS_H_
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-
-#endif // _RED_BLACK_TREE_UTILS_H_
+#include "./include/scl_weighted_graph.h"

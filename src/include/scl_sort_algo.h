@@ -1,5 +1,5 @@
 /**
- * @file weightedGraphsAlgo.h
+ * @file scl_sort_algo.h
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2022-06-21
@@ -22,12 +22,12 @@
  * 
  */
 
-#ifndef WEIGHTED_GRAPH_ALGO_H_
-#define WEIGHTED_GRAPH_ALGO_H_
+#ifndef SORT_ALGORITHMS_H_
+#define SORT_ALGORITHMS_H_
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 
-#endif // WEIGHTED_GRAPH_ALGO_H_
+#endif /* SORT_ALGORITHMS_H_ */

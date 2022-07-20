@@ -1,5 +1,5 @@
 /**
- * @file sortAlgorithms.c
+ * @file scl_red_black_tree.c
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2022-06-21
@@ -22,4 +22,4 @@
  * 
  */
 
-#include "./include/sortAlgorithms.h"
+#include "./include/scl_red_black_tree.h"

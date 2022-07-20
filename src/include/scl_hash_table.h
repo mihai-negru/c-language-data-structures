@@ -1,5 +1,5 @@
 /**
- * @file ordGraphUtils.h
+ * @file scl_hash_table.h
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2022-06-21
@@ -22,12 +22,12 @@
  * 
  */
 
-#ifndef ORDERED_GRAPH_UTILS_H_
-#define ORDERED_GRAPH_UTILS_H_
+#ifndef HASH_TABLE_UTILS_H_
+#define HASH_TABLE_UTILS_H_
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 
-#endif // ORDERED_GRAPH_UTILS_H_
+#endif /* HASH_TABLE_UTILS_H_ */

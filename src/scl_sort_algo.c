@@ -1,5 +1,5 @@
 /**
- * @file sortAlgorithms.h
+ * @file scl_sort_algo.c
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2022-06-21
@@ -22,12 +22,4 @@
  * 
  */
 
-#ifndef SORT_ALGORITHMS_H_
-#define SORT_ALGORITHMS_H_
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-
-#endif // SORT_ALGORITHMS_H_
+#include "./include/scl_sort_algo.h"
