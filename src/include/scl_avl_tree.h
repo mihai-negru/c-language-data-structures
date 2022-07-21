@@ -36,9 +36,9 @@
  */
 typedef struct avl_tree_node {
     void* data;                                                 /* Pointer to data */
-    struct avl_tree_node* parent;                             /* Pointer to parent node */
-    struct avl_tree_node* left;                               /* Pointer to left child node */
-    struct avl_tree_node* right;                              /* Pointer to right child node */
+    struct avl_tree_node* parent;                               /* Pointer to parent node */
+    struct avl_tree_node* left;                                 /* Pointer to left child node */
+    struct avl_tree_node* right;                                /* Pointer to right child node */
     int count;                                                  /* Number of nodes with the same data value */
     int height;                                                 /* Height of a node */
 } avl_tree_node_t;
