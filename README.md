@@ -1,6 +1,5 @@
 # Taskuri
 * redBlackTree
-* priQueues
 * unordGraph
 * ordGraph
 * costGraphs

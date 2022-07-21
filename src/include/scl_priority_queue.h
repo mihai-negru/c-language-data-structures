@@ -35,8 +35,8 @@
  * 
  */
 typedef struct pri_node{
-    void* pri;                                              /* priority element definition */
-    void* data;                                             /* data type element definition */
+    void* pri;                                              /* Priority element definition */
+    void* data;                                             /* Data type element definition */
 } pri_node_t;
 
 /**
@@ -44,13 +44,13 @@ typedef struct pri_node{
  * 
  */
 typedef struct priority_queue{
-    pri_node_t** nodes;                                     /* array of binary-heap nodes */
-    int (*compare_data)(const void*, const void*);          /* function to compare two sets of data */
-    int (*compare_priority)(const void*, const void*);      /* function to compare two sets of priority */
-    void (*free_data)(void*);                               /* function to free memory of a single data element */
-    void (*free_priority)(void*);                           /* function to free memory of a single priority element */
-    size_t capacity;                                        /* maximum capacity of the priority queue */
-    size_t size;                                            /* current size of the priority queue */
+    pri_node_t** nodes;                                     /* Array of binary-heap nodes */
+    int (*compare_data)(const void*, const void*);          /* Function to compare two sets of data */
+    int (*compare_priority)(const void*, const void*);      /* Function to compare two sets of priority */
+    void (*free_data)(void*);                               /* Function to free memory of a single data element */
+    void (*free_priority)(void*);                           /* Function to free memory of a single priority element */
+    size_t capacity;                                        /* Maximum capacity of the priority queue */
+    size_t size;                                            /* Current size of the priority queue */
 } priority_queue_t;
 
 priority_queue_t*   create_priority_queue       (size_t init_capacity, int (*compare_data)(const void*, const void*), int (*compare_priority)(const void*, const void*), void (*free_data)(void*), void (*free_priority)(void*));
@@ -58,6 +58,7 @@ void                free_priority_queue         (priority_queue_t* pqueue);
 priority_queue_t*   heapify                     (const void* data, const void* priority, size_t data_size, size_t pri_size, size_t number_of_data, int (*compare_data)(const void*, const void*), int (*compare_priority)(const void*, const void*), void (*free_data)(void*), void (*free_priority)(void*));
 
 int                 change_node_priority        (priority_queue_t* pqueue, size_t node_index, const void* new_pri, size_t pri_size);
+int                 change_node_data            (priority_queue_t* pqueue, size_t node_index, const void* new_data, size_t data_size);
 
 size_t              pri_find_data_index         (priority_queue_t* pqueue, const void* data);
 size_t              pri_find_pri_index          (priority_queue_t* pqueue, const void* priority);

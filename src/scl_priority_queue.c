@@ -497,6 +497,37 @@ int change_node_priority(priority_queue_t* pqueue, size_t node_index, const void
 }
 
 /**
+ * @brief Function to change the data of one node in the
+ * priority queue object. After the data of the selected
+ * node is changed, the priority queue proprietis will be
+ * preserved because data does not contribue in the arrangement
+ * of the priority queue.
+ * 
+ * @param pqueue an allocaetd priority queue object
+ * @param node_index index of the node to change it's data
+ * @param new_data pointer to a new set of data type
+ * @param data_size size of the new data element
+ * @return int 1 if function fails, 0 otherwise
+ */
+int change_node_data(priority_queue_t* pqueue, size_t node_index, const void* new_data, size_t data_size) {
+    /* Check if input data is valid */
+    if ((NULL == pqueue) || (__SIZE_MAX__ == node_index) || (NULL == new_data) || (0 == data_size)) {
+        return 1;
+    }
+
+    /* Check if data pointer can be modified */
+    if ((node_index < pqueue->size) && (NULL != pqueue->nodes) && (NULL != pqueue->nodes[node_index]) && (NULL != pqueue->nodes[node_index]->data)) {
+
+        /* Copy a new value in old data pointer */
+        memcpy(pqueue->nodes[node_index]->data, new_data, data_size);
+        return 0;
+    }
+
+    /* Return failure */
+    return 1;
+}
+
+/**
  * @brief Function to find the index of one data element. Function
  * will fail if priority queue is empty or if data was not found.
  * 
