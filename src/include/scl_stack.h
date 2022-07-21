@@ -56,7 +56,8 @@ void            print_stack         (stack_t* stack, void (*print_data)(const vo
 int             is_stack_empty      (stack_t* stack);
 int             get_stack_size      (stack_t* stack);
 
-const void*     stack_top           (stack_t* stack);
+int             change_stack_data   (void* old_data, const void* new_data, size_t data_size);
+void*           stack_top           (stack_t* stack);
 int             stack_push          (stack_t* stack, const void* data, size_t data_size);
 int             stack_pop           (stack_t* stack);
 

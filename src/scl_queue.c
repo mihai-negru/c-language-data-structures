@@ -217,15 +217,36 @@ int get_queue_size(queue_t* queue) {
 }
 
 /**
+ * @brief Function to change the data of a queue node.
+ * 
+ * @param old_data pointer to the old data type
+ * @param new_data pointer to the new data type
+ * @param data_size size of the data type
+ * @return int 1 for failure, 0 otherwise
+ */
+int change_queue_data(void* old_data, const void* new_data, size_t data_size) {
+    /* Check if input data is valid */
+    if ((NULL == old_data) || (NULL == new_data) || (0 == data_size)) {
+        return 1;
+    }
+
+    /* Copy bytes from new data to old data */
+    memcpy(old_data, new_data, data_size);
+
+    /* Return success */
+    return 0;
+}
+
+/**
  * @brief Function to return the real data of the
  * front node. If queue is not allocated or queue is empty
  * then NULL will be returned, otherwise a pointer to the actual
  * data memory location will be returned
  * 
  * @param queue a queue object
- * @return const void* a pointer to front element data
+ * @return void* a pointer to front element data
  */
-const void* queue_front(queue_t* queue) {
+void* queue_front(queue_t* queue) {
     if ((NULL == queue) || (NULL == queue->front)) {
         return NULL;
     }
@@ -240,9 +261,9 @@ const void* queue_front(queue_t* queue) {
  * data memory location will be returned
  * 
  * @param queue a queue object
- * @return const void* a pointer to front element data
+ * @return void* a pointer to front element data
  */
-const void* queue_back(queue_t* queue) {
+void* queue_back(queue_t* queue) {
     if ((NULL == queue) || (NULL == queue->back)) {
         return NULL;
     }

@@ -217,15 +217,36 @@ int get_stack_size(stack_t* stack) {
 }
 
 /**
+ * @brief Function to change the data of a stack node.
+ * 
+ * @param old_data pointer to the old data type
+ * @param new_data pointer to the new data type
+ * @param data_size size of the data type
+ * @return int 1 for failure, 0 otherwise
+ */
+int change_stack_data(void* old_data, const void* new_data, size_t data_size) {
+    /* Check if input data is valid */
+    if ((NULL == old_data) || (NULL == new_data) || (0 == data_size)) {
+        return 1;
+    }
+
+    /* Copy bytes from new data to old data */
+    memcpy(old_data, new_data, data_size);
+
+    /* Return success */
+    return 0;
+}
+
+/**
  * @brief Function to return the real data of the
  * top node. If stack is not allocated or stack is empty
  * then NULL will be returned, otherwise a pointer to the actual
  * data memory location will be returned
  * 
  * @param stack a stack object
- * @return const void* a pointer to top element data
+ * @return void* a pointer to top element data
  */
-const void* stack_top(stack_t* stack) {
+void* stack_top(stack_t* stack) {
     if ((NULL == stack) || (NULL == stack->top)) {
         return NULL;
     }

@@ -57,8 +57,9 @@ void            print_queue         (queue_t* queue, void (*print_data)(const vo
 int             is_queue_empty      (queue_t* queue);
 int             get_queue_size      (queue_t* queue);
 
-const void*     queue_front         (queue_t* queue);
-const void*     queue_back          (queue_t* queue);
+int             change_queue_data   (void* old_data, const void* new_data, size_t data_size);
+void*           queue_front         (queue_t* queue);
+void*           queue_back          (queue_t* queue);
 int             queue_push          (queue_t* queue, const void* data, size_t data_size);
 int             queue_pop           (queue_t* queue);
 
