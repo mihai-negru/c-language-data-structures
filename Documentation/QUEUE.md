@@ -1,8 +1,8 @@
-# Documentation for queue object (scl_queue)
+# Documentation for queue object (scl_queue.h)
 
 ## How to create a queue and how to destroy it?
 
-In the scl_queue you have two functions that will help you by creating a queue and destroying it.
+In the scl_queue.h you have two functions that will help you by creating a queue and destroying it.
 
 ```C
     queue_t* create_queue(void (*free_data)(void *));
