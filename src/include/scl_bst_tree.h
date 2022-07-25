@@ -58,7 +58,7 @@ void                    free_bst                            (bst_tree_t* tree);
 
 int                     bst_insert                          (bst_tree_t* tree, const void* data, size_t data_size);
 bst_tree_node_t*        bst_find_data                       (bst_tree_t* tree, const void* data);
-int                     bst_node_level                      (bst_tree_node_t* base_node);
+int                     bst_node_level                      (const bst_tree_node_t* base_node);
 
 int                     is_bst_empty                        (bst_tree_t* tree);
 bst_tree_node_t*        get_bst_root                        (bst_tree_t* tree);

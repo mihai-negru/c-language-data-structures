@@ -27,17 +27,17 @@
 
 #include "scl_avl_tree.h"
 #include "scl_bst_tree.h"
-#include "scl_red_black_tree.h"
-#include "scl_weighted_graph.h"
 #include "scl_dlist.h"
+#include "scl_func_types.h"
 #include "scl_hash_table.h"
 #include "scl_list.h"
 #include "scl_ordered_graph.h"
 #include "scl_priority_queue.h"
 #include "scl_queue.h"
+#include "scl_red_black_tree.h"
 #include "scl_sort_algo.h"
 #include "scl_stack.h"
 #include "scl_unordered_graph.h"
-#include "scl_func_types.h"
+#include "scl_weighted_graph.h"
 
 #endif /* DATA_STRUCTURES_H_ */

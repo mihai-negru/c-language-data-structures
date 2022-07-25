@@ -363,7 +363,7 @@ static void bst_change_data(bst_tree_node_t* dest_node, const bst_tree_node_t* s
  * @param base_node bst node object to calculate its level
  * @return int level of input bst object node
  */
-int bst_node_level(bst_tree_node_t* base_node) {
+int bst_node_level(const bst_tree_node_t* base_node) {
     /* Check if input data is valid */
     if (NULL == base_node) {
         return -1;

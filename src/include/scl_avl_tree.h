@@ -59,7 +59,7 @@ void                    free_avl                            (avl_tree_t* tree);
 
 int                     avl_insert                          (avl_tree_t* tree, const void* data, size_t data_size);
 avl_tree_node_t*        avl_find_data                       (avl_tree_t* tree, const void* data);
-int                     avl_node_level                      (avl_tree_node_t* base_node);
+int                     avl_node_level                      (const avl_tree_node_t* base_node);
 
 int                     is_avl_empty                        (avl_tree_t* tree);
 avl_tree_node_t*        get_avl_root                        (avl_tree_t* tree);

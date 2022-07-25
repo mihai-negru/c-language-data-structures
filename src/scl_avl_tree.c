@@ -600,7 +600,7 @@ static void avl_change_data(avl_tree_node_t* dest_node, const avl_tree_node_t* s
  * @param base_node avl node object to calculate its level
  * @return int level of input avl object node
  */
-int avl_node_level(avl_tree_node_t* base_node) {
+int avl_node_level(const avl_tree_node_t* base_node) {
     /* Check if input data is valid */
     if (NULL == base_node) {
         return -1;
