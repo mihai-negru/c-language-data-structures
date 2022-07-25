@@ -27,6 +27,7 @@
 
 #include "scl_avl_tree.h"
 #include "scl_bst_tree.h"
+#include "scl_red_black_tree.h"
 #include "scl_weighted_graph.h"
 #include "scl_dlist.h"
 #include "scl_hash_table.h"
