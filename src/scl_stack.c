@@ -29,10 +29,10 @@
  * if there is not enough memory on heap, in this case
  * an exception will be thrown
  * 
- * @param free_data pointer to a function to free content of one data
+ * @param frd pointer to a function to free content of one data
  * @return stack_t* a new allocated stack object or NULL (if function failed)
  */
-stack_t* create_stack(void (*free_data)(void*)) {
+stack_t* create_stack(free_func frd) {
     /* Allocate a new stack on the heap */
     stack_t* new_stack = malloc(sizeof(*new_stack));
 
@@ -40,7 +40,7 @@ stack_t* create_stack(void (*free_data)(void*)) {
     if (NULL != new_stack) {
 
         /* Set function pointers */
-        new_stack->free_data = free_data;
+        new_stack->frd = frd;
 
         /* Set top and size of an empty stack */
         new_stack->top = NULL;
@@ -121,8 +121,8 @@ void free_stack(stack_t* stack) {
             stack->top = stack->top->next;
 
             /* Free content of data if necessary */
-            if ((NULL != stack->free_data) && (NULL != iterator->data)) {
-                stack->free_data(iterator->data);
+            if ((NULL != stack->frd) && (NULL != iterator->data)) {
+                stack->frd(iterator->data);
             }
 
             /* Free node pointer to data */
@@ -158,9 +158,9 @@ void free_stack(stack_t* stack) {
  * then a set of paired square brakets will be printed on output.
  * 
  * @param stack a stack object
- * @param print_data a pointer to a function to print content of data pointer
+ * @param print a pointer to a function to print content of data pointer
  */
-void print_stack(stack_t* stack, void (*print_data)(const void*)) {
+void print_stack(stack_t* stack, simple_action print) {
     /* Check is stack is allocated */
     if (NULL != stack) {
 
@@ -176,7 +176,7 @@ void print_stack(stack_t* stack, void (*print_data)(const void*)) {
          * to printData function
          */
         while (NULL != iterator) {
-            print_data(iterator->data);
+            print(iterator->data);
             iterator = iterator->next;
         }
     }
@@ -326,8 +326,8 @@ int stack_pop(stack_t* stack) {
     --(stack->size);
 
     /* Free content of the data if necessary */
-    if ((NULL != stack->free_data) && (NULL != delete_node->data)) {
-        stack->free_data(delete_node->data);
+    if ((NULL != stack->frd) && (NULL != delete_node->data)) {
+        stack->frd(delete_node->data);
     }
 
     /* Free pointer to data memory location */

@@ -34,26 +34,20 @@
 
 /**
  * @brief Create a priority queue object. Function will create
- * a new priority queue object . Function may fail if `compare_priority`
+ * a new priority queue object . Function may fail if `cmp_pr`
  * function is not specified in input data, also if not enough memory is left
  * on heap for priority queue the function will fail.
  * 
  * @param init_capacity initial size allocated for a priority queue
- * @param compare_data a pointer to a function to compare two sets of data
- * @param compare_priority a pointer to a function to compare two sets of priorities
- * @param free_data a pointer to a function to free memory of one data set
- * @param free_priority a pointer to a function to free memory of one priority set
+ * @param cmp_dt a pointer to a function to compare two sets of data
+ * @param cmp_pr a pointer to a function to compare two sets of priorities
+ * @param frd_dt a pointer to a function to free memory of one data set
+ * @param frd_pr a pointer to a function to free memory of one priority set
  * @return priority_queue_t* a new allocated priority queue object or `NULL` if function fails
  */
-priority_queue_t* create_priority_queue(
-    size_t init_capacity,
-    int (*compare_data)(const void*, const void*),
-    int (*compare_priority)(const void*, const void*),
-    void (*free_data)(void*),
-    void (*free_priority)(void*)
-) {
+priority_queue_t* create_priority_queue(size_t init_capacity, compare_func cmp_dt, compare_func cmp_pr, free_func frd_dt, free_func frd_pr) {
     /* Check if input data is valid */
-    if (NULL == compare_priority) {
+    if (NULL == cmp_pr) {
         errno = EINVAL;
         perror("Compare function undefined for priority queue");
         return NULL;
@@ -71,10 +65,10 @@ priority_queue_t* create_priority_queue(
     if (NULL != new_pri_queue) {
 
         /* Set priority queue default functions */
-        new_pri_queue->compare_data = compare_data;
-        new_pri_queue->compare_priority = compare_priority;
-        new_pri_queue->free_data = free_data;
-        new_pri_queue->free_priority = free_priority;
+        new_pri_queue->cmp_dt = cmp_dt;
+        new_pri_queue->cmp_pr = cmp_pr;
+        new_pri_queue->frd_dt = frd_dt;
+        new_pri_queue->frd_pr = frd_pr;
 
         /* Set default size and capacity for priority queue */
         new_pri_queue->capacity = init_capacity;
@@ -112,8 +106,8 @@ static void free_priority_queue_node(priority_queue_t* pqueue, pri_node_t** free
     if ((NULL != pqueue) && (NULL != free_node) && (NULL != *free_node)) {
 
         /* Free memory allocated for data content */
-        if ((NULL != pqueue->free_data) && (NULL != (*free_node)->data)) {
-            pqueue->free_data((*free_node)->data);
+        if ((NULL != pqueue->frd_dt) && (NULL != (*free_node)->data)) {
+            pqueue->frd_dt((*free_node)->data);
         }
 
         /* Free data pointer */
@@ -125,8 +119,8 @@ static void free_priority_queue_node(priority_queue_t* pqueue, pri_node_t** free
         (*free_node)->data = NULL;
 
         /* Free memory allocated for priority content */
-        if ((NULL != pqueue->free_priority) && (NULL != (*free_node)->pri)) {
-            pqueue->free_priority((*free_node)->pri);
+        if ((NULL != pqueue->frd_pr) && (NULL != (*free_node)->pri)) {
+            pqueue->frd_pr((*free_node)->pri);
         }
 
         /* Free priority pointer */
@@ -222,12 +216,12 @@ static void swap_pri_queue_nodes(pri_node_t** first_node, pri_node_t** second_no
  */
 static int sift_node_up(priority_queue_t* pqueue, size_t start_index) {
     /* Check if input data is valid */
-    if ((NULL == pqueue) || (NULL == pqueue->nodes) || (NULL == pqueue->compare_priority)) {
+    if ((NULL == pqueue) || (NULL == pqueue->nodes) || (NULL == pqueue->cmp_pr)) {
         return 1;
     }
 
     /* Sift heap node up until it reaches its position according to its priority */
-    while ((start_index > 0) && (pqueue->compare_priority(pqueue->nodes[start_index]->pri, pqueue->nodes[get_node_parent_pos(start_index)]->pri) >= 1)) {
+    while ((start_index > 0) && (pqueue->cmp_pr(pqueue->nodes[start_index]->pri, pqueue->nodes[get_node_parent_pos(start_index)]->pri) >= 1)) {
         /* Swap nodes */
         swap_pri_queue_nodes(&pqueue->nodes[start_index], &pqueue->nodes[get_node_parent_pos(start_index)]);
         
@@ -251,7 +245,7 @@ static int sift_node_up(priority_queue_t* pqueue, size_t start_index) {
  */
 static int sift_node_down(priority_queue_t* pqueue, size_t start_index) {
     /* Check if input data is valid */
-    if ((NULL == pqueue) || (NULL == pqueue->nodes) || (NULL == pqueue->compare_priority)) {
+    if ((NULL == pqueue) || (NULL == pqueue->nodes) || (NULL == pqueue->cmp_pr)) {
         return 1;
     }
 
@@ -262,7 +256,7 @@ static int sift_node_down(priority_queue_t* pqueue, size_t start_index) {
     size_t check_index = get_node_left_child_pos(start_index);
 
     /* Check if left child has a bigger/smaller priority than current heap node */
-    if ((check_index < pqueue->size) && (pqueue->compare_priority(pqueue->nodes[check_index]->pri, pqueue->nodes[swap_index]->pri) >= 1)) {
+    if ((check_index < pqueue->size) && (pqueue->cmp_pr(pqueue->nodes[check_index]->pri, pqueue->nodes[swap_index]->pri) >= 1)) {
         swap_index = check_index;
     }
 
@@ -270,7 +264,7 @@ static int sift_node_down(priority_queue_t* pqueue, size_t start_index) {
     check_index = get_node_right_child_pos(start_index);
 
     /* Check if right child has a bigge/smaller priority than current heap node or brother node */
-    if ((check_index < pqueue->size) && (pqueue->compare_priority(pqueue->nodes[check_index]->pri, pqueue->nodes[swap_index]->pri) >= 1)) {
+    if ((check_index < pqueue->size) && (pqueue->cmp_pr(pqueue->nodes[check_index]->pri, pqueue->nodes[swap_index]->pri) >= 1)) {
         swap_index = check_index;
     }
 
@@ -374,30 +368,20 @@ static pri_node_t* create_priority_queue_node(const void* data, const void* prio
  * @param data_size size of one data element from priority queue
  * @param pri_size size of one priority element from priority queue
  * @param number_of_data number of elements into data and priority array
- * @param compare_data pointer to a function two compare two sets of data
- * @param compare_priority pointer to a function two compare two sets of priority
- * @param free_data a pointer to a function to free memory of one data set
- * @param free_priority a pointer to a function to free memory of one priority set
+ * @param cmp_dt pointer to a function two compare two sets of data
+ * @param cmp_pr pointer to a function two compare two sets of priority
+ * @param frd_dt a pointer to a function to free memory of one data set
+ * @param frd_pr a pointer to a function to free memory of one priority set
  * @return priority_queue_t* an allocated priority queue object or `NULL` if function fails
  */
-priority_queue_t* heapify(
-    const void* data,
-    const void* priority,
-    size_t data_size,
-    size_t pri_size,
-    size_t number_of_data,
-    int (*compare_data)(const void*, const void*),
-    int (*compare_priority)(const void*, const void*),
-    void (*free_data)(void*),
-    void (*free_priority)(void*)
-) {
+priority_queue_t* heapify(const void* data, const void* priority, size_t data_size, size_t pri_size, size_t number_of_data, compare_func cmp_dt, compare_func cmp_pr, free_func frd_dt, free_func frd_pr) {
     /* Check if input data is valid */
-    if ((NULL == priority) || (0 == pri_size) || (0 == number_of_data) || (NULL == compare_priority)) {
+    if ((NULL == priority) || (0 == pri_size) || (0 == number_of_data) || (NULL == cmp_pr)) {
         return NULL;
     }
 
     /* Create a new priority queue */
-    priority_queue_t* new_pqueue = create_priority_queue(number_of_data, compare_data, compare_priority, free_data, free_priority);
+    priority_queue_t* new_pqueue = create_priority_queue(number_of_data, cmp_dt, cmp_pr, frd_dt, frd_pr);
 
     /* Check if priority queue was created successfully */
     if (NULL != new_pqueue) {
@@ -462,7 +446,7 @@ int change_node_priority(priority_queue_t* pqueue, size_t node_index, const void
     }
 
     /* Check if selected priority queue is a valid queue */
-    if ((NULL == pqueue->nodes[node_index]->pri) || (NULL == pqueue->compare_priority)) {
+    if ((NULL == pqueue->nodes[node_index]->pri) || (NULL == pqueue->cmp_pr)) {
         return 1;
     }
 
@@ -470,7 +454,7 @@ int change_node_priority(priority_queue_t* pqueue, size_t node_index, const void
      * Sift selected node down if new priority has a smaller rank 
      * than old priority according to compare function
      */
-    if (pqueue->compare_priority(pqueue->nodes[node_index]->pri, new_pri) >= 1) {
+    if (pqueue->cmp_pr(pqueue->nodes[node_index]->pri, new_pri) >= 1) {
 
         /* Copy new priority into old priority */
         memmove(pqueue->nodes[node_index]->pri, new_pri, pri_size);
@@ -483,7 +467,7 @@ int change_node_priority(priority_queue_t* pqueue, size_t node_index, const void
      * Sift selected node up if new priority has a bigger rank 
      * than old priority according to compare function
      */
-    if (pqueue->compare_priority(pqueue->nodes[node_index]->pri, new_pri) <= -1) {
+    if (pqueue->cmp_pr(pqueue->nodes[node_index]->pri, new_pri) <= -1) {
 
         /* Copy new priority into old priority */
         memmove(pqueue->nodes[node_index]->pri, new_pri, pri_size);
@@ -538,14 +522,14 @@ int change_node_data(priority_queue_t* pqueue, size_t node_index, const void* ne
  */
 size_t pri_find_data_index(priority_queue_t* pqueue, const void* data) {
     /* Check if input data is valid */
-    if ((NULL == pqueue) || (0 == pqueue->size) || (NULL == pqueue->nodes) || (NULL == data) || (NULL == pqueue->compare_data)) {
+    if ((NULL == pqueue) || (0 == pqueue->size) || (NULL == pqueue->nodes) || (NULL == data) || (NULL == pqueue->cmp_dt)) {
         return __SIZE_MAX__;
     }
 
     /* Find desired data index according to compare function */
     for (size_t iter = 0; iter < pqueue->size; ++iter) {
         if (NULL != pqueue->nodes[iter]) {
-            if (0 == pqueue->compare_data(pqueue->nodes[iter]->data, data)) {
+            if (0 == pqueue->cmp_dt(pqueue->nodes[iter]->data, data)) {
                 return iter;
             }
         }    
@@ -566,14 +550,14 @@ size_t pri_find_data_index(priority_queue_t* pqueue, const void* data) {
  */
 size_t pri_find_pri_index(priority_queue_t* pqueue, const void* priority) {
     /* Check if input data is valid */
-    if ((NULL == pqueue) || (0 == pqueue->size) || (NULL == pqueue->nodes) || (NULL == priority) || (NULL == pqueue->compare_priority)) {
+    if ((NULL == pqueue) || (0 == pqueue->size) || (NULL == pqueue->nodes) || (NULL == priority) || (NULL == pqueue->cmp_pr)) {
         return __SIZE_MAX__;
     }
 
     /* Find desired priority index according to compare function */
     for (size_t iter = 0; iter < pqueue->size; ++iter) {
         if (NULL != pqueue->nodes[iter]) {
-            if (0 == pqueue->compare_priority(pqueue->nodes[iter]->pri, priority)) {
+            if (0 == pqueue->cmp_pr(pqueue->nodes[iter]->pri, priority)) {
                 return iter;
             }
         }
@@ -722,7 +706,7 @@ int pri_queue_pop(priority_queue_t* pqueue) {
  * @param pqueue an allocated priority queue object
  * @param action a pointer to a function that will perform an action
  */
-void pri_queue_traverse(priority_queue_t* pqueue, void (*action)(const pri_node_t*)) {
+void pri_queue_traverse(priority_queue_t* pqueue, pri_action action) {
     /* Check if input data value is valid */
     if ((NULL == pqueue) || (NULL == pqueue->nodes) || (NULL == action)) {
         return;
@@ -781,16 +765,16 @@ int is_priq_empty(priority_queue_t* pqueue) {
  * @param arr an array of any typeto sort its elements
  * @param number_of_arr number of elements within the selected array
  * @param arr_elem_size size of one element from selected array
- * @param compare_arr pointer to a function to compare two sets of data from array
+ * @param cmp pointer to a function to compare two sets of data from array
  */
-void heap_sort(void* arr, size_t number_of_arr, size_t arr_elem_size, int (*compare_arr)(const void*, const void*)) {
+void heap_sort(void* arr, size_t number_of_arr, size_t arr_elem_size, compare_func cmp) {
     /* Check if input data is valid */
-    if ((NULL == arr) || (0 == number_of_arr) || (0 == arr_elem_size) || (NULL == compare_arr)) {
+    if ((NULL == arr) || (0 == number_of_arr) || (0 == arr_elem_size) || (NULL == cmp)) {
         return;
     }
 
     /* Heapify the input array in O(N) complexity */
-    priority_queue_t* heap = heapify(NULL, arr, 0, arr_elem_size, number_of_arr, NULL, compare_arr, NULL, NULL);
+    priority_queue_t* heap = heapify(NULL, arr, 0, arr_elem_size, number_of_arr, NULL, cmp, NULL, NULL);
 
     /* Rearrange input array data from heap structure in O(NlogN) complexity */
     for (size_t iter = 0; iter < number_of_arr; ++iter) {

@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include "scl_config.h"
 
 /**
  * @brief Binary Search Tree Node object definition
@@ -48,26 +49,29 @@ typedef struct bst_tree_node {
  */
 typedef struct {
     bst_tree_node_t* root;                                  /* Pointer to tree root */
-    int (*compare_data)(const void*, const void*);          /* Function to compare two elements */
-    void (*free_data)(void*);                               /* Function to free content of data */
+    bst_tree_node_t* nil;                                   /* Black hole pointer */
+    compare_func cmp;                                       /* Function to compare two elements */
+    free_func frd;                                          /* Function to free content of data */
     size_t size;                                            /* Size of the binary search tree */
 } bst_tree_t;
 
-bst_tree_t*             create_bst                          (int (*compare_data)(const void*, const void*), void (*free_data)(void*));
+typedef void (*bst_action)(bst_tree_t*tree, const bst_tree_node_t*);
+
+bst_tree_t*             create_bst                          (compare_func cmp, free_func frd);
 void                    free_bst                            (bst_tree_t* tree);
 
 int                     bst_insert                          (bst_tree_t* tree, const void* data, size_t data_size);
 bst_tree_node_t*        bst_find_data                       (bst_tree_t* tree, const void* data);
-int                     bst_node_level                      (const bst_tree_node_t* base_node);
+int                     bst_node_level                      (bst_tree_t* tree, const bst_tree_node_t* base_node);
 
 int                     is_bst_empty                        (bst_tree_t* tree);
 bst_tree_node_t*        get_bst_root                        (bst_tree_t* tree);
 size_t                  get_bst_size                        (bst_tree_t* tree);
 
-bst_tree_node_t*        bst_max_node                        (bst_tree_node_t* root);
-bst_tree_node_t*        bst_min_node                        (bst_tree_node_t* root);
-void*                   bst_max_data                        (bst_tree_node_t* root);
-void*                   bst_min_data                        (bst_tree_node_t* root);
+bst_tree_node_t*        bst_max_node                        (bst_tree_t* tree, bst_tree_node_t* root);
+bst_tree_node_t*        bst_min_node                        (bst_tree_t* tree, bst_tree_node_t* root);
+void*                   bst_max_data                        (bst_tree_t* tree, bst_tree_node_t* root);
+void*                   bst_min_data                        (bst_tree_t* tree, bst_tree_node_t* root);
 
 int                     bst_delete                          (bst_tree_t* tree, void* data, size_t data_size);
 
@@ -78,9 +82,9 @@ void*                   bst_succecessor_data                (bst_tree_t* tree, c
 bst_tree_node_t*        bst_lowest_common_ancestor_node     (bst_tree_t* tree, const void* data1, const void* data2);
 void*                   bst_lowest_common_ancestor_data     (bst_tree_t* tree, const void* data1, const void* data2);
 
-void                    bst_traverse_inorder                (bst_tree_t* tree, void (*action)(const bst_tree_node_t*));
-void                    bst_traverse_preorder               (bst_tree_t* tree, void (*action)(const bst_tree_node_t*));
-void                    bst_traverse_postorder              (bst_tree_t* tree, void (*action)(const bst_tree_node_t*));
-void                    bst_traverse_level                  (bst_tree_t* tree, void (*action)(const bst_tree_node_t*));
+void                    bst_traverse_inorder                (bst_tree_t* tree, bst_action action);
+void                    bst_traverse_preorder               (bst_tree_t* tree, bst_action action);
+void                    bst_traverse_postorder              (bst_tree_t* tree, bst_action action);
+void                    bst_traverse_level                  (bst_tree_t* tree, bst_action action);
 
 #endif /* BST_UTILS_H_ */

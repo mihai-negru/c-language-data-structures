@@ -29,10 +29,10 @@
  * if there is not enough memory on heap, in this case
  * an exception will be thrown
  * 
- * @param free_data pointer to a function to free content of one data
+ * @param frd pointer to a function to free content of one data
  * @return queue_t* a new allocated queue object or NULL (if function failed)
  */
-queue_t* create_queue(void (*free_data)(void*)) {
+queue_t* create_queue(free_func frd) {
     /* Allocate a new queue on the heap */
     queue_t* new_queue = malloc(sizeof(*new_queue));
 
@@ -40,7 +40,7 @@ queue_t* create_queue(void (*free_data)(void*)) {
     if (NULL != new_queue) {
 
         /* Set function pointers */
-        new_queue->free_data = free_data;
+        new_queue->frd = frd;
 
         /* Set front, back and size of an empty queue */
         new_queue->front = new_queue->back = NULL;
@@ -121,8 +121,8 @@ void free_queue(queue_t* queue) {
             queue->front = queue->front->next;
 
             /* Free content of data if necessary */
-            if ((NULL != queue->free_data) && (NULL != iterator->data)) {
-                queue->free_data(iterator->data);
+            if ((NULL != queue->frd) && (NULL != iterator->data)) {
+                queue->frd(iterator->data);
             }
 
             /* Free node pointer to data */
@@ -158,9 +158,9 @@ void free_queue(queue_t* queue) {
  * then a set of paired square brakets will be printed on output.
  * 
  * @param queue a queue object
- * @param print_data a pointer to a function to print content of data pointer
+ * @param print a pointer to a function to print content of data pointer
  */
-void print_queue(queue_t* queue, void (*print_data)(const void*)) {
+void print_queue(queue_t* queue, simple_action print) {
     /* Check is queue is allocated */
     if (NULL != queue) {
 
@@ -176,7 +176,7 @@ void print_queue(queue_t* queue, void (*print_data)(const void*)) {
          * to printData function
          */
         while (NULL != iterator) {
-            print_data(iterator->data);
+            print(iterator->data);
             iterator = iterator->next;
         }
     }
@@ -345,8 +345,8 @@ int queue_pop(queue_t* queue) {
     --(queue->size);
 
     /* Free content of the data if necessary */
-    if ((NULL != queue->free_data) && (NULL != delete_node->data)) {
-        queue->free_data(delete_node->data);
+    if ((NULL != queue->frd) && (NULL != delete_node->data)) {
+        queue->frd(delete_node->data);
     }
 
     /* Free pointer to data memory location */

@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include "scl_config.h"
 
 /**
  * @brief queue Node object definition
@@ -46,13 +47,13 @@ typedef struct queue_node {
 typedef struct {
     queue_node_t* front;            /* Pointer to beginning of queue */
     queue_node_t* back;             /* Pointer to end of queue */
-    void (*free_data)(void*);       /* Function to free one data */
+    free_func frd;                  /* Function to free one data */
     size_t size;                    /* Size of the queue */
 } queue_t;
 
-queue_t*        create_queue        (void (*free_data)(void*));
+queue_t*        create_queue        (free_func frd);
 void            free_queue          (queue_t* queue);
-void            print_queue         (queue_t* queue, void (*print_data)(const void*));
+void            print_queue         (queue_t* queue, simple_action print);
 
 int             is_queue_empty      (queue_t* queue);
 int             get_queue_size      (queue_t* queue);

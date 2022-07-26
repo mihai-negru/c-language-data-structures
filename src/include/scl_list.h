@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include "scl_config.h"
 
 /**
  * @brief Linked List Node object definition
@@ -46,13 +47,13 @@ typedef struct list_node {
 typedef struct {
     list_node_t *head;                                  /* head of linked list */
     list_node_t *tail;                                  /* tail of linked list */
-    int (*compare_data)(const void*, const void*);      /* function to compare items */
-    void (*print_data)(const void*);                    /* function to print item */
-    void (*free_data)(void*);                           /* function to free item */
+    compare_func cmp;                                   /* function to compare items */
+    simple_action print;                                /* function to print item */
+    free_func frd;                                      /* function to free item */
     size_t size;                                        /* size of linked list */
 } list_t;
 
-list_t*         create_list         (int (*compare_data)(const void*, const void*), void (*print_data)(const void*), void (*free_data)(void *));
+list_t*         create_list         (compare_func cmp, simple_action print, free_func frd);
 void            print_list          (list_t* list);
 void            free_list           (list_t* list);
 
@@ -75,7 +76,7 @@ int             list_delete_data    (list_t* list, void *data);
 int             list_delete_index   (list_t* list, size_t data_index);
 int             list_erase          (list_t* list, size_t left_index, size_t right_index);
 
-list_t*         list_filter         (list_t* list, int (*filter)(const void*), size_t data_size);
-void            list_map            (list_t* list, const void* (*map)(void*), size_t data_size);
+list_t*         list_filter         (list_t* list, filter_func filter, size_t data_size);
+void            list_map            (list_t* list, map_func map, size_t data_size);
 
 #endif /* LIST_UTILS_H_ */

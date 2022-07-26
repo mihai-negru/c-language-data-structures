@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include "scl_config.h"
 
 /**
  * @brief stack Node object definition
@@ -45,13 +46,13 @@ typedef struct stack_node {
  */
 typedef struct {
     stack_node_t* top;              /* Pointer to top data node */
-    void (*free_data)(void*);       /* Function to free one data */
+    free_func frd;                  /* Function to free one data */
     size_t size;                    /* Size of the stack */
 } stack_t;
 
-stack_t*        create_stack        (void (*free_data)(void*));
+stack_t*        create_stack        (free_func frd);
 void            free_stack          (stack_t* stack);
-void            print_stack         (stack_t* stack, void (*print_data)(const void*));
+void            print_stack         (stack_t* stack, simple_action print);
 
 int             is_stack_empty      (stack_t* stack);
 int             get_stack_size      (stack_t* stack);

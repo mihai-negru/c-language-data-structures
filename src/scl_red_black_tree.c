@@ -30,13 +30,13 @@
  * is not enough memory on heap or compareData function is not valid
  * (data arranges in red-black tree by comparation) in this case an exception will be thrown.
  * 
- * @param compare_data pointer to a function to compare two sets of data
- * @param free_data pointer to a function to free content of one data
+ * @param cmp pointer to a function to compare two sets of data
+ * @param frd pointer to a function to free content of one data
  * @return rbk_tree_t* a new allocated red-black tree object or NULL (if function failed)
  */
-rbk_tree_t* create_rbk(int (*compare_data)(const void*, const void*), void (*free_data)(void*)) {
+rbk_tree_t* create_rbk(compare_func cmp, free_func frd) {
     /* Check if compareData function is valid */
-    if (NULL == compare_data) {
+    if (NULL == cmp) {
         errno = EINVAL;
         perror("Compare function undefined for red-black tree");
         return NULL;
@@ -49,18 +49,33 @@ rbk_tree_t* create_rbk(int (*compare_data)(const void*, const void*), void (*fre
     if (NULL != new_tree) {
 
         /* Set function pointers */
-        new_tree->compare_data = compare_data;
-        new_tree->free_data = free_data;
+        new_tree->cmp = cmp;
+        new_tree->frd = frd;
+
+        /* Create nil node */
+        new_tree->nil = malloc(sizeof(*new_tree->nil));
+
+        /* Set default values for a nil cell*/
+        if (NULL != new_tree->nil) {
+            new_tree->nil->data = NULL;
+            new_tree->nil->color = BLACK;
+            new_tree->nil->count = 1;
+            new_tree->nil->left = new_tree->nil->right = new_tree->nil;
+            new_tree->nil->parent = new_tree->nil;
+        } else {
+            errno = ENOMEM;
+            perror("Not enough memory for nil red-black allocation");
+        }
 
         /* Set root and size of the red-black tree */
-        new_tree->root = NULL;
+        new_tree->root = new_tree->nil;
         new_tree->size = 0;
     } else {
         errno = ENOMEM;
         perror("Not enough memory for red-black allocation");
     }
     
-    /* Return a new allocated red-black tree object or NULL */
+    /* Return a new allocated red-black tree object or nil */
     return new_tree;
 }
 
@@ -70,14 +85,15 @@ rbk_tree_t* create_rbk(int (*compare_data)(const void*, const void*), void (*fre
  * is left on heap, in this case function will return NULL and an exception
  * will be thrown.
  * 
+ * @param tree an allocated red-black tree object
  * @param data pointer to an address of a generic data
  * @param data_size size of one generic data
- * @return rbk_tree_node_t* a new allocated red-black tree node object or NULL
+ * @return rbk_tree_node_t* a new allocated red-black tree node object or nil
  */
-static rbk_tree_node_t* create_rbk_node(const void* data, size_t data_size) {
+static rbk_tree_node_t* create_rbk_node(rbk_tree_t* tree, const void* data, size_t data_size) {
     /* Check if data address is valid */
     if (NULL == data) {
-        return NULL;
+        return tree->nil;
     }
 
     /* Allocate a new node on the heap */
@@ -87,8 +103,8 @@ static rbk_tree_node_t* create_rbk_node(const void* data, size_t data_size) {
     if (NULL != new_node) {
 
         /* Set default node data */
-        new_node->right = new_node->left = NULL;
-        new_node->parent = NULL;
+        new_node->right = new_node->left = tree->nil;
+        new_node->parent = tree->nil;
         new_node->count = 1;
         new_node->color = RED;
 
@@ -108,11 +124,12 @@ static rbk_tree_node_t* create_rbk_node(const void* data, size_t data_size) {
             perror("Not enough memory for node red-black data allocation");
         }
     } else {
+        new_node = tree->nil;
         errno = ENOMEM;
         perror("Not enough memory for node red-black allocation");
     }
 
-    /* return a new red-black tree node object or NULL */
+    /* return a new red-black tree node object or nil */
     return new_node;
 }
 
@@ -126,7 +143,7 @@ static rbk_tree_node_t* create_rbk_node(const void* data, size_t data_size) {
  */
 static void free_rbk_helper(rbk_tree_t* tree, rbk_tree_node_t* root) {
     /* Check if current node is valid */
-    if (NULL == root) {
+    if (tree->nil == root) {
         return;
     }
 
@@ -135,8 +152,8 @@ static void free_rbk_helper(rbk_tree_t* tree, rbk_tree_node_t* root) {
     free_rbk_helper(tree, root->right);
 
     /* Free content of the data pointer */
-    if ((NULL != tree->free_data) && (NULL != root->data)) {
-        tree->free_data(root->data);
+    if ((NULL != tree->frd) && (NULL != root->data)) {
+        tree->frd(root->data);
     }
 
     /* Free data pointer */
@@ -148,12 +165,12 @@ static void free_rbk_helper(rbk_tree_t* tree, rbk_tree_node_t* root) {
     root->data = NULL;
 
     /* Free red-black node pointer */
-    if (NULL != root) {
+    if (tree->nil != root) {
         free(root);
     }
 
     /* Set red-black node pointer as NULL */
-    root = NULL;
+    root = tree->nil;
 }
 
 /**
@@ -173,6 +190,11 @@ void free_rbk(rbk_tree_t* tree) {
         /* Free every node from red-black -> tree */
         free_rbk_helper(tree, tree->root);
         
+        /* Free nil cell*/
+        free(tree->nil);
+
+        tree->nil = NULL;
+
         /* Free red-black tree object */
         free(tree);
 
@@ -192,12 +214,12 @@ void free_rbk(rbk_tree_t* tree) {
  */
 static void rbk_rotate_left(rbk_tree_t* tree, rbk_tree_node_t* fix_node) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == fix_node)) {
+    if ((NULL == tree) || (tree->nil == fix_node)) {
         return;
     }
 
     /* Check if rotation may happen */
-    if (NULL == fix_node->right) {
+    if (tree->nil == fix_node->right) {
         return;
     }
 
@@ -208,7 +230,7 @@ static void rbk_rotate_left(rbk_tree_t* tree, rbk_tree_node_t* fix_node) {
     fix_node->right = rotate_node->left;
 
     /* Update child parent to fix_node */
-    if (NULL != rotate_node->left) {
+    if (tree->nil != rotate_node->left) {
         rotate_node->left->parent = fix_node;
     }
 
@@ -222,8 +244,8 @@ static void rbk_rotate_left(rbk_tree_t* tree, rbk_tree_node_t* fix_node) {
     fix_node->parent = rotate_node;
 
     /* Update new sub-root links to the rest of tree */
-    if (NULL != rotate_node->parent) {
-        if (tree->compare_data(rotate_node->data, rotate_node->parent->data) >= 1) {
+    if (tree->nil != rotate_node->parent) {
+        if (tree->cmp(rotate_node->data, rotate_node->parent->data) >= 1) {
             rotate_node->parent->right = rotate_node;
         } else {
             rotate_node->parent->left = rotate_node;
@@ -244,12 +266,12 @@ static void rbk_rotate_left(rbk_tree_t* tree, rbk_tree_node_t* fix_node) {
  */
 static void rbk_rotate_right(rbk_tree_t* tree, rbk_tree_node_t* fix_node) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == fix_node)) {
+    if ((NULL == tree) || (tree->nil == fix_node)) {
         return;
     }
 
     /* Check if rotation may happen */
-    if (NULL == fix_node->left) {
+    if (tree->nil == fix_node->left) {
         return;
     }
 
@@ -260,7 +282,7 @@ static void rbk_rotate_right(rbk_tree_t* tree, rbk_tree_node_t* fix_node) {
     fix_node->left = rotate_node->right;
 
     /* Update child parent to fix_node */
-    if (NULL != rotate_node->right) {
+    if (tree->nil != rotate_node->right) {
         rotate_node->right->parent = fix_node;
     }
 
@@ -274,8 +296,8 @@ static void rbk_rotate_right(rbk_tree_t* tree, rbk_tree_node_t* fix_node) {
     fix_node->parent = rotate_node;
 
     /* Update new sub-root links to the rest of tree */
-    if (NULL != rotate_node->parent) {
-        if (tree->compare_data(rotate_node->data, rotate_node->parent->data) >= 1) {
+    if (tree->nil != rotate_node->parent) {
+        if (tree->cmp(rotate_node->data, rotate_node->parent->data) >= 1) {
             rotate_node->parent->right = rotate_node;
         } else {
             rotate_node->parent->left = rotate_node;
@@ -296,12 +318,12 @@ static void rbk_rotate_right(rbk_tree_t* tree, rbk_tree_node_t* fix_node) {
  */
 static void rbk_insert_fix_node_up(rbk_tree_t* tree, rbk_tree_node_t* fix_node) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == fix_node)) {
+    if ((NULL == tree) || (tree->nil == fix_node)) {
         return;
     }
 
     /* Set parent node pointer as default value */
-    rbk_tree_node_t* parent_fix_node = NULL;
+    rbk_tree_node_t* parent_fix_node = tree->nil;
 
     /* Fix up the red black tree */
     while ((tree->root != fix_node) && (BLACK != fix_node->color) && (BLACK != fix_node->parent->color)) {
@@ -310,7 +332,7 @@ static void rbk_insert_fix_node_up(rbk_tree_t* tree, rbk_tree_node_t* fix_node) 
         
         /* Set initial data */
         parent_fix_node = fix_node->parent;
-        rbk_tree_node_t* brother_node = NULL;
+        rbk_tree_node_t* brother_node = tree->nil;
 
         /* Find brother node */
         if (parent_fix_node->parent->left == parent_fix_node) {
@@ -320,7 +342,7 @@ static void rbk_insert_fix_node_up(rbk_tree_t* tree, rbk_tree_node_t* fix_node) 
         }
 
         /* Fix tree according to brother's color */
-        if ((NULL == brother_node) || (BLACK == brother_node->color)) {
+        if (BLACK == brother_node->color) {
 
             /* Brother's color is black check what rotations we should make */
             
@@ -418,15 +440,15 @@ int rbk_insert(rbk_tree_t* tree, const void* data, size_t data_size) {
 
     /* Set iterator pointers */
     rbk_tree_node_t* iterator = tree->root;
-    rbk_tree_node_t* parent_iterator = NULL;
+    rbk_tree_node_t* parent_iterator = tree->nil;
 
     /* Find a valid position for insertion */
-    while (NULL != iterator) {
+    while (tree->nil != iterator) {
         parent_iterator = iterator;
 
-        if (tree->compare_data(iterator->data, data) >= 1) {
+        if (tree->cmp(iterator->data, data) >= 1) {
             iterator = iterator->left;
-        } else if (tree->compare_data(iterator->data, data) <= -1) {
+        } else if (tree->cmp(iterator->data, data) <= -1) {
             iterator = iterator->right;
         } else {
 
@@ -440,20 +462,20 @@ int rbk_insert(rbk_tree_t* tree, const void* data, size_t data_size) {
     }
 
     /* Create a new red-black node object */
-    rbk_tree_node_t* new_node = create_rbk_node(data, data_size);
+    rbk_tree_node_t* new_node = create_rbk_node(tree, data, data_size);
 
     /* Check if new red-black node was created */
-    if (NULL == new_node) {
+    if (tree->nil == new_node) {
         return 1;
     }
         
-    if (NULL != parent_iterator) {
+    if (tree->nil != parent_iterator) {
 
         /* Update parent links */
         new_node->parent = parent_iterator;
 
         /* Update children links */
-        if (tree->compare_data(parent_iterator->data, new_node->data) >= 1) {
+        if (tree->cmp(parent_iterator->data, new_node->data) >= 1) {
             parent_iterator->left = new_node;
         } else {
             parent_iterator->right = new_node;
@@ -477,44 +499,6 @@ int rbk_insert(rbk_tree_t* tree, const void* data, size_t data_size) {
 
 /**
  * @brief Function to search data in red-black tree O(log N).
- * Function will start searching from root node specified in 
- * parameters list of function.
- * 
- * @param tree an allocated red-black tree object
- * @param root pointer to current working red-black node object
- * @param data pointer to an address of a generic data type
- * @return rbk_tree_node_t* red-black tree node object containing
- * data value or NULL in case no such node exists
- */
-static rbk_tree_node_t* rbk_find_data_set_root(rbk_tree_t* tree, rbk_tree_node_t* root, const void* data) {
-    /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == root)) {
-        return NULL;
-    }
-
-    /* Set iterator pointer */
-    rbk_tree_node_t* iterator = root;
-
-    /*
-     * Search for input data (void *data),
-     * from root - subtree
-     */
-    while (NULL != iterator) {
-        if (tree->compare_data(iterator->data, data) <= -1) {
-            iterator = iterator->right;
-        } else if (tree->compare_data(iterator->data, data) >= 1) {
-            iterator = iterator->left;
-        } else {
-            return iterator;
-        }
-    }
-
-    /* Data was not found */
-    return NULL;
-}
-
-/**
- * @brief Function to search data in red-black tree O(log N).
  * Function will start searching from red-black tree root and will
  * search the data value in all tree.
  * 
@@ -525,18 +509,18 @@ static rbk_tree_node_t* rbk_find_data_set_root(rbk_tree_t* tree, rbk_tree_node_t
  */
 rbk_tree_node_t* rbk_find_data(rbk_tree_t* tree, const void* data) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == tree->root)) {
-        return NULL;
+    if ((NULL == tree) || (tree->nil == tree->root)) {
+        return tree->nil;
     }
 
     /* Set iterator pointer */
     rbk_tree_node_t* iterator = tree->root;
 
     /* Search for imput data (void *data) in all tree */
-    while (NULL != iterator) {
-        if (tree->compare_data(iterator->data, data) <= -1) {
+    while (tree->nil != iterator) {
+        if (tree->cmp(iterator->data, data) <= -1) {
             iterator = iterator->right;
-        } else if (tree->compare_data(iterator->data, data) >= 1) {
+        } else if (tree->cmp(iterator->data, data) >= 1) {
             iterator = iterator->left;
         } else {
             return iterator;
@@ -544,7 +528,7 @@ rbk_tree_node_t* rbk_find_data(rbk_tree_t* tree, const void* data) {
     }
 
     /* Data was not found */
-    return NULL;
+    return tree->nil;
 }
 
 /**
@@ -559,13 +543,8 @@ rbk_tree_node_t* rbk_find_data(rbk_tree_t* tree, const void* data) {
  * @param data_size size of a generic data type element
  */
 static void rbk_change_data(rbk_tree_node_t* dest_node, const rbk_tree_node_t* src_node, size_t data_size) {
-    /* Check if input data is valid */
-    if ((NULL == dest_node) || (NULL == src_node) || (0 == data_size)) {
-        return;
-    }
-
     /* Check if data pointers are allocated */
-    if ((NULL == dest_node->data) || (NULL == src_node->data)) {
+    if ((NULL == dest_node->data) || (NULL == src_node->data) || (0 == data_size)) {
         return;
     }
 
@@ -574,7 +553,6 @@ static void rbk_change_data(rbk_tree_node_t* dest_node, const rbk_tree_node_t* s
 
     /* Update count parameter */
     dest_node->count = src_node->count;
-    dest_node->color = src_node->color;
 }
 
 /**
@@ -582,12 +560,13 @@ static void rbk_change_data(rbk_tree_node_t* dest_node, const rbk_tree_node_t* s
  * a node in red-black tree. Function may fail if input node
  * is not valid (allocated).
  * 
+ * @param tree an allocated red-black tree object
  * @param base_node red-black node object to calculate its level
  * @return int level of input red-black object node
  */
-int rbk_node_level(const rbk_tree_node_t* base_node) {
+int rbk_node_level(rbk_tree_t* tree, const rbk_tree_node_t* base_node) {
     /* Check if input data is valid */
-    if (NULL == base_node) {
+    if (tree->nil == base_node) {
         return -1;
     }
 
@@ -595,7 +574,7 @@ int rbk_node_level(const rbk_tree_node_t* base_node) {
     int level_count = -1;
 
     /* Compute level of input node */
-    while (NULL != base_node) {
+    while (tree->nil != base_node) {
         base_node = base_node->parent;
         ++level_count;
     }
@@ -613,7 +592,7 @@ int rbk_node_level(const rbk_tree_node_t* base_node) {
  * 0 if it is not empty
  */
 int is_rbk_empty(rbk_tree_t* tree) {
-    if ((NULL == tree) || (NULL == tree->root) || (0 == tree->size)) {
+    if ((NULL == tree) || (tree->nil == tree->root) || (0 == tree->size)) {
         return 1;
     }
 
@@ -628,7 +607,7 @@ int is_rbk_empty(rbk_tree_t* tree) {
  */
 rbk_tree_node_t* get_rbk_root(rbk_tree_t* tree) {
     if (NULL == tree) {
-        return NULL;
+        return tree->nil;
     }
 
     return tree->root;
@@ -653,12 +632,13 @@ size_t get_rbk_size(rbk_tree_t* tree) {
  * Function will search the maximum considering root node
  * as the beginning of the tree (root != tree(root)).
  * 
+ * @param tree an allocated red-black tree object
  * @param root pointer to current working red-black node object
  * @return rbk_tree_node_t* pointer to maximum node value from red-black
  */
-rbk_tree_node_t* rbk_max_node(rbk_tree_node_t* root) {
-    if (NULL != root) {
-        while (NULL != root->right) {
+rbk_tree_node_t* rbk_max_node(rbk_tree_t* tree, rbk_tree_node_t* root) {
+    if (tree->nil != root) {
+        while (tree->nil != root->right) {
             root = root->right;
         }
     }
@@ -671,12 +651,13 @@ rbk_tree_node_t* rbk_max_node(rbk_tree_node_t* root) {
  * Function will search the minimum considering root node
  * as the beginning of the tree (root != tree(root)).
  * 
+ * @param tree an allocated red-black tree object
  * @param root pointer to current working red-black node object
  * @return rbk_tree_node_t* pointer to minimum node value from red-black
  */
-rbk_tree_node_t* rbk_min_node(rbk_tree_node_t* root) {
-    if (NULL != root) {
-        while (NULL != root->left) {
+rbk_tree_node_t* rbk_min_node(rbk_tree_t* tree, rbk_tree_node_t* root) {
+    if (tree->nil != root) {
+        while (tree->nil != root->left) {
             root = root->left;
         }
     }
@@ -689,25 +670,18 @@ rbk_tree_node_t* rbk_min_node(rbk_tree_node_t* root) {
  * Function will search the maximum data considering root node
  * as the beginning of the tree (root != tree(root))
  * 
+ * @param tree an allocated red-black tree object
  * @param root pointer to current working red-black node object
  * @return void* pointer to maximum data value from red-black tree
  */
-void* rbk_max_data(rbk_tree_node_t* root) {
+void* rbk_max_data(rbk_tree_t* tree, rbk_tree_node_t* root) {
     /* Check if input data is valid */
-    if (NULL == root) {
+    if (tree->nil == root) {
         return NULL;
     }
 
-    /* Get maximum node from red-black */
-    rbk_tree_node_t* max_node = rbk_max_node(root);
-
-    /* Return data pointer if node is not NULL */
-    if (NULL != max_node) {
-        return max_node->data;
-    }
-    
-    /* Function failed */
-    return NULL;
+    /* Get maximum data from red-black or NULL is node is nil*/
+    return rbk_max_node(tree, root)->data;
 }
 
 /**
@@ -715,25 +689,18 @@ void* rbk_max_data(rbk_tree_node_t* root) {
  * Function will search the minimum data considering root node
  * as the beginning of the tree (root != tree(root))
  * 
+ * @param tree an allocated red-black tree object
  * @param root pointer to current working red-black node object
  * @return void* pointer to minimum data value from red-black tree
  */
-void* rbk_min_data(rbk_tree_node_t* root) {
+void* rbk_min_data(rbk_tree_t* tree, rbk_tree_node_t* root) {
     /* Check if input data is valid */
-    if (NULL == root) {
+    if (tree->nil == root) {
         return NULL;
     }
 
-    /* Get minimum node from red-black */
-    rbk_tree_node_t* min_node = rbk_min_node(root);
-
-    /* Return data pointer if node is not NULL */
-    if (NULL != min_node) {
-        return min_node->data;
-    }
-    
-    /* Function failed */
-    return NULL;
+    /* Get minimum data from red-black or NULL is node is nil*/
+    return rbk_min_node(tree, root)->data;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -749,146 +716,8 @@ void* rbk_min_data(rbk_tree_node_t* root) {
  */
 static void rbk_delete_fix_node_up(rbk_tree_t* tree, rbk_tree_node_t* fix_node) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == fix_node)) {
+    if ((NULL == tree) || (tree->nil == fix_node)) {
         return;
-    }
-}
-
-/**
- * @brief Helper function for rbk_delete_data function.
- * Function will remove one data at a time and will preserve
- * the proprety of a red-black tree.
- * 
- * @param tree an allocated red-black tree object
- * @param root pointer to current working sub-tree
- * @param data pointer to an address of a generic data to be deleted
- * @param data_size size of one generic data
- */
-static void rbk_delete_helper(rbk_tree_t* tree, rbk_tree_node_t* root, void* data, size_t data_size) {
-    /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == root) || (NULL == data)) {
-        return;
-    }
-
-    /* Find current node (root) in red-black tree */
-    rbk_tree_node_t* delete_node = rbk_find_data_set_root(tree, root, data);
-
-    /* Bst node was not found exit process */
-    if (NULL == delete_node) {
-        return;
-    }
-
-    /* Delete selected node */
-    if ((NULL != delete_node->left) && (NULL != delete_node->right)) {
-
-        /* Selected node has two children */
-
-        /* Find a replacement for selected node */
-        rbk_tree_node_t* delete_succecessor = rbk_min_node(delete_node->right);
-                
-        /* Replace the selected red-black node and remove the dublicate */
-        rbk_change_data(delete_node, delete_succecessor, data_size);
-        rbk_delete_helper(tree, delete_node->right, delete_succecessor->data, data_size);
-    } else {
-
-        /* Selected node has one or no chlid */
-
-        if (NULL != delete_node->left) {
-
-            /* Selected node has a left child */
-
-            /* Update child-grandparent links */
-            delete_node->left->parent = delete_node->parent;
-
-            if (NULL != delete_node->parent) {
-
-                /* Update grandparent-child links */
-
-                if (delete_node->parent->right == delete_node) {
-                    delete_node->parent->right = delete_node->left;
-                } else {
-                    delete_node->parent->left = delete_node->left;
-                }
-            } else {
-
-                /*
-                 * Selected node was root
-                 * Update a new root
-                 */
-                tree->root = delete_node->left;
-            }
-        } else if (NULL != delete_node->right) {
-
-            /* Selected node has a right child */
-
-            /* Update child-grandparent links */
-            delete_node->right->parent = delete_node->parent;
-
-            if (NULL != delete_node->parent) {
-
-                /* Update grandparent-child links */
-
-                if (delete_node->parent->right == delete_node) {
-                    delete_node->parent->right = delete_node->right;
-                } else {
-                    delete_node->parent->left = delete_node->right;
-                }
-            } else {
-
-                /*
-                 * Selected node was root
-                 * Update a new root
-                 */
-                tree->root = delete_node->right;
-            }
-        } else {
-
-            /* Selected node has no children */
-
-            /* Update grandparent links */
-            if (NULL != delete_node->parent) {
-                if (delete_node->parent->right == delete_node) {
-                    delete_node->parent->right = NULL;
-                } else {
-                    delete_node->parent->left = NULL;
-                }
-            } else {
-
-                /*
-                 * Selected node was root
-                 * Update new root to NULL
-                 */
-                tree->root = NULL;
-            }
-        }
-
-        rbk_tree_node_t* parent_delete_node = delete_node->parent;
-
-        /* Free content of the data pointer */
-        if ((NULL != tree->free_data) && (NULL != delete_node->data)) {
-            tree->free_data(delete_node->data);
-        }
-
-        /* Free data pointer of selected node */
-        if (NULL != delete_node->data) {
-            free(delete_node->data);
-        }
-
-        /* Set data pointer as NULL */
-        delete_node->data = NULL;
-
-        /* Free selected red-black node pointer */
-        if (NULL != delete_node) {
-            free(delete_node);
-        }
-
-        /* Set selected red-black node as NULL */
-        delete_node = NULL;
-
-        rbk_delete_fix_node_up(tree, parent_delete_node);
-
-        /* Deacrease tree size  */
-        --(tree->size);
     }
 }
 
@@ -906,12 +735,57 @@ static void rbk_delete_helper(rbk_tree_t* tree, rbk_tree_node_t* root, void* dat
  */
 int rbk_delete(rbk_tree_t* tree, void* data, size_t data_size) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == tree->root) || (NULL == data) || (0 == data_size)) {
+    if ((NULL == tree) || (tree->nil == tree->root) || (NULL == data) || (0 == data_size)) {
         return 1;
     }
 
-    /* Call helper function for deletion */
-    rbk_delete_helper(tree, tree->root, data, data_size);
+    rbk_tree_node_t* delete_node = rbk_find_data(tree, data);
+
+    if (tree->nil == delete_node) {
+        return 1;
+    }
+
+    if ((tree->nil != delete_node->left) && (tree->nil != delete_node->right)) {
+
+        /* Selected node has two children */
+
+        /* Find a replacement for selected node */
+        rbk_tree_node_t* delete_succecessor = rbk_min_node(tree, delete_node->right);
+                
+        /* Replace the selected red-black node and remove the dublicate */
+        rbk_change_data(delete_node, delete_succecessor, data_size);
+        delete_node = delete_succecessor;
+    }
+
+    /* Selected node has one or no chlid */
+
+    rbk_tree_node_t* parent_delete_node = delete_node->parent;
+
+    /* Free content of the data pointer */
+    if ((NULL != tree->frd) && (NULL != delete_node->data)) {
+        tree->frd(delete_node->data);
+    }
+
+    /* Free data pointer of selected node */
+    if (NULL != delete_node->data) {
+        free(delete_node->data);
+    }
+
+    /* Set data pointer as NULL */
+    delete_node->data = NULL;
+
+    /* Free selected red-black node pointer */
+    if (tree->nil != delete_node) {
+        free(delete_node);
+    }
+
+    /* Set selected red-black node as NULL */
+    delete_node = tree->nil;
+
+    rbk_delete_fix_node_up(tree, parent_delete_node);
+
+    /* Deacrease tree size  */
+    --(tree->size);
 
     /* Deletion went successfully */
     return 0;
@@ -934,31 +808,31 @@ int rbk_delete(rbk_tree_t* tree, void* data, size_t data_size) {
  */
 rbk_tree_node_t* rbk_predecessor_node(rbk_tree_t* tree, const void* data) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == tree->root) || (NULL == data)) {
-        return NULL;
+    if ((NULL == tree) || (tree->nil == tree->root) || (NULL == data)) {
+        return tree->nil;
     }
 
     /* Find node containing the data value */
     rbk_tree_node_t* iterator = rbk_find_data(tree, data);
 
     /* If node is not in red-black than return NULL */
-    if (NULL == iterator) {
-        return NULL;
+    if (tree->nil == iterator) {
+        return tree->nil;
     }
 
     /*
      * If node has a left child than
      * find predecessor in left subtree
      */
-    if (NULL != iterator->left) {
-        return rbk_max_node(iterator->left);
+    if (tree->nil != iterator->left) {
+        return rbk_max_node(tree, iterator->left);
     }
 
     /* Set parent iterator */
     rbk_tree_node_t* parent_iterator = iterator->parent;
 
     /* Find predecessor node */
-    while ((NULL != parent_iterator) && (parent_iterator->left == iterator)) {
+    while ((tree->nil != parent_iterator) && (parent_iterator->left == iterator)) {
         iterator = parent_iterator;
         parent_iterator = parent_iterator->parent;
     }
@@ -981,31 +855,31 @@ rbk_tree_node_t* rbk_predecessor_node(rbk_tree_t* tree, const void* data) {
  */
 rbk_tree_node_t* rbk_successor_node(rbk_tree_t* tree, const void* data) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == tree->root) || (NULL == data)) {
-        return NULL;
+    if ((NULL == tree) || (tree->nil == tree->root) || (NULL == data)) {
+        return tree->nil;
     }
 
     /* Find node containing the data value */
     rbk_tree_node_t* iterator = rbk_find_data(tree, data);
 
     /* If node is not in red-black than return NULL */
-    if (NULL == iterator) {
-        return NULL;
+    if (tree->nil == iterator) {
+        return tree->nil;
     }
 
     /*
      * If node has a right child than
      * find successor in right subtree
      */
-    if (NULL != iterator->right) {
-        return rbk_min_node(iterator->right);
+    if (tree->nil != iterator->right) {
+        return rbk_min_node(tree, iterator->right);
     }
 
     /* Set parent iterator */
     rbk_tree_node_t* parent_iterator = iterator->parent;
 
     /* Find successor node */
-    while ((NULL != parent_iterator) && (parent_iterator->right == iterator)) {
+    while ((tree->nil != parent_iterator) && (parent_iterator->right == iterator)) {
         iterator = parent_iterator;
         parent_iterator = parent_iterator->parent;
     }
@@ -1032,16 +906,8 @@ void* rbk_predecessor_data(rbk_tree_t* tree, const void* data) {
         return NULL;
     }
 
-    /* Get the predecessor node */
-    rbk_tree_node_t* predecessor_node = rbk_predecessor_node(tree, data);
-
-    /* Return data pointer if node is not NULL */
-    if (NULL != predecessor_node) {
-        return predecessor_node->data;
-    }
-
-    /* Function failed */
-    return NULL;
+    /* Get the predecessor data or NULL if node is nil */
+    return rbk_predecessor_node(tree, data)->data;
 }
 
 /**
@@ -1062,16 +928,8 @@ void* rbk_succecessor_data(rbk_tree_t* tree, const void* data) {
         return NULL;
     }
 
-    /* Get the successor node */
-    rbk_tree_node_t* successor_node = rbk_successor_node(tree, data);
-
-    /* Return data pointer if nodse is not NULL */
-    if (NULL != successor_node) {
-        return successor_node->data;
-    }
-
-    /* Function failed */
-    return NULL;
+    /* Get the successor data or NULL if node is nil */
+    return rbk_successor_node(tree, data)->data;
 }
 
 /**
@@ -1091,22 +949,22 @@ void* rbk_succecessor_data(rbk_tree_t* tree, const void* data) {
 rbk_tree_node_t* rbk_lowest_common_ancestor_node(rbk_tree_t* tree, const void* data1, const void* data2) {
     /* Check if input data is valid */
     if ((NULL == tree) || (NULL == data1) || NULL == data2) {
-        return NULL;
+        return tree->nil;
     }
 
     /* Check if both nodes are in the current working red-black tree */
-    if ((NULL == rbk_find_data(tree, data1)) || (NULL == rbk_find_data(tree, data2))) {
-        return NULL;
+    if ((tree->nil == rbk_find_data(tree, data1)) || (tree->nil == rbk_find_data(tree, data2))) {
+        return tree->nil;
     }
 
     /* Set iterator pointer */
     rbk_tree_node_t* iterator = tree->root;
 
     /* Find the lowest common ancestor */
-    while (NULL != iterator) {
-        if ((tree->compare_data(iterator->data, data1) >= 1) && (tree->compare_data(iterator->data, data2) >= 1)) {
+    while (tree->nil != iterator) {
+        if ((tree->cmp(iterator->data, data1) >= 1) && (tree->cmp(iterator->data, data2) >= 1)) {
             iterator = iterator->left;
-        } else if ((tree->compare_data(iterator->data, data1) <= -1) && (tree->compare_data(iterator->data, data2) <= -1)) {
+        } else if ((tree->cmp(iterator->data, data1) <= -1) && (tree->cmp(iterator->data, data2) <= -1)) {
             iterator = iterator->right;
         } else {
 
@@ -1116,7 +974,7 @@ rbk_tree_node_t* rbk_lowest_common_ancestor_node(rbk_tree_t* tree, const void* d
     }
 
     /* Function failed */
-    return NULL;
+    return tree->nil;
 }
 
 /**
@@ -1139,16 +997,8 @@ void* rbk_lowest_common_ancestor_data(rbk_tree_t* tree, const void* data1, const
         return NULL;
     }
 
-    /* Get the lowest common ancestor node */
-    rbk_tree_node_t* common_ancestor = rbk_lowest_common_ancestor_node(tree, data1, data2);
-
-    /* Return data pointer if node is not NULL */
-    if (NULL != common_ancestor) {
-        return common_ancestor->data;
-    }
-
-    /* Function failed */
-    return NULL;
+    /* Get the lowest common ancestor data or NULL if node is nil */
+    return rbk_lowest_common_ancestor_node(tree, data1, data2)->data;
 }
 
 /**
@@ -1156,23 +1006,24 @@ void* rbk_lowest_common_ancestor_data(rbk_tree_t* tree, const void* data1, const
  * This method will recursively iterate through all nodes by
  * Left-Root-Right principle.
  * 
+ * @param tree an allocated red-black tree object
  * @param root starting point of the red-black tree traversal
  * @param action a pointer function to perform an action on one red-black node object
  */
-static void rbk_traverse_inorder_helper(rbk_tree_node_t* root, void (*action)(const rbk_tree_node_t*)) {
+static void rbk_traverse_inorder_helper(rbk_tree_t* tree, rbk_tree_node_t* root, rbk_action action) {
     /* Check if current working red-black node is not NULL */
-    if (NULL == root) {
+    if (tree->nil == root) {
         return;
     }
 
     /* Traverse in the left sub-tree */
-    rbk_traverse_inorder_helper(root->left, action);
+    rbk_traverse_inorder_helper(tree, root->left, action);
     
     /* Call action function */
-    action(root);
+    action(tree, root);
 
     /* Traverse in the right sub-tree */
-    rbk_traverse_inorder_helper(root->right, action);
+    rbk_traverse_inorder_helper(tree, root->right, action);
 }
 
 /**
@@ -1187,13 +1038,13 @@ static void rbk_traverse_inorder_helper(rbk_tree_node_t* root, void (*action)(co
  * @param action a pointer to a function that will perform an action
  * on every red-black node object from current working tree
  */
-void rbk_traverse_inorder(rbk_tree_t* tree, void (*action)(const rbk_tree_node_t*)) {
+void rbk_traverse_inorder(rbk_tree_t* tree, rbk_action action) {
     /* Check if input data is valid */
     if ((NULL == tree) || (NULL == action)) {
         return;
     }
 
-    if (NULL == tree->root) {
+    if (tree->nil == tree->root) {
 
         /* Tree is empty no node to traverse */
         printf("(Null)\n");
@@ -1201,7 +1052,7 @@ void rbk_traverse_inorder(rbk_tree_t* tree, void (*action)(const rbk_tree_node_t
     else {
 
         /* Call helper function and traverse all nodes */
-        rbk_traverse_inorder_helper(tree->root, action);
+        rbk_traverse_inorder_helper(tree, tree->root, action);
     }
 }
 
@@ -1210,23 +1061,24 @@ void rbk_traverse_inorder(rbk_tree_t* tree, void (*action)(const rbk_tree_node_t
  * This method will recursively iterate through all nodes by
  * Root-Left-Right principle.
  * 
+ * @param tree an allocated red-black tree object
  * @param root starting point of the red-black tree traversal
  * @param action a pointer function to perform an action on one red-black node object
  */
-static void rbk_traverse_preorder_helper(rbk_tree_node_t* root, void (*action)(const rbk_tree_node_t*)) {
+static void rbk_traverse_preorder_helper(rbk_tree_t* tree, rbk_tree_node_t* root, rbk_action action) {
     /* Check if current working red-black node is not NULL */
-    if (NULL == root) {
+    if (tree->nil == root) {
         return;
     }
 
     /* Call action function */
-    action(root);
+    action(tree, root);
 
     /* Traverse in the left sub-tree */
-    rbk_traverse_preorder_helper(root->left, action);
+    rbk_traverse_preorder_helper(tree, root->left, action);
 
     /* Traverse in the right sub-tree */
-    rbk_traverse_preorder_helper(root->right, action);
+    rbk_traverse_preorder_helper(tree, root->right, action);
 }
 
 /**
@@ -1241,20 +1093,20 @@ static void rbk_traverse_preorder_helper(rbk_tree_node_t* root, void (*action)(c
  * @param action a pointer to a function that will perform an action
  * on every red-black node object from current working tree
  */
-void rbk_traverse_preorder(rbk_tree_t* tree, void (*action)(const rbk_tree_node_t*)) {
+void rbk_traverse_preorder(rbk_tree_t* tree, rbk_action action) {
     /* Check if input data is valid */
     if ((NULL == tree) || (NULL == action)) {
         return;
     }
 
-    if (NULL == tree->root) {
+    if (tree->nil == tree->root) {
 
         /* Tree is empty no node to traverse */
         printf("(Null)\n");
     } else {
 
         /* Call helper function and traverse all nodes */
-        rbk_traverse_preorder_helper(tree->root, action);
+        rbk_traverse_preorder_helper(tree, tree->root, action);
     }
 }
 
@@ -1263,23 +1115,24 @@ void rbk_traverse_preorder(rbk_tree_t* tree, void (*action)(const rbk_tree_node_
  * This method will recursively iterate through all nodes by
  * Left-Right-Root principle.
  * 
+ * @param tree an allocated red-black tree object
  * @param root starting point of the red-black tree traversal
  * @param action a pointer function to perform an action on one red-black node object
  */
-static void rbk_traverse_postorder_helper(rbk_tree_node_t* root, void (*action)(const rbk_tree_node_t*)) {
+static void rbk_traverse_postorder_helper(rbk_tree_t* tree, rbk_tree_node_t* root, rbk_action action) {
     /* Check if current working red-black node is not NULL */
-    if (NULL == root) {
+    if (tree->nil == root) {
         return;
     }
 
     /* Traverse in the left sub-tree */
-    rbk_traverse_postorder_helper(root->left, action);
+    rbk_traverse_postorder_helper(tree, root->left, action);
 
     /* Traverse in the right sub-tree */
-    rbk_traverse_postorder_helper(root->right, action);
+    rbk_traverse_postorder_helper(tree, root->right, action);
 
     /* Call action function */
-    action(root);
+    action(tree, root);
 }
 
 /**
@@ -1294,20 +1147,20 @@ static void rbk_traverse_postorder_helper(rbk_tree_node_t* root, void (*action)(
  * @param action a pointer to a function that will perform an action
  * on every red-black node object from current working tree
  */
-void rbk_traverse_postorder(rbk_tree_t* tree, void (*action)(const rbk_tree_node_t*)) {
+void rbk_traverse_postorder(rbk_tree_t* tree, rbk_action action) {
     /* Check if input data is valid */
     if ((NULL == tree) || (NULL == action)) {
         return;
     }
 
-    if (NULL == tree->root) {
+    if (tree->nil == tree->root) {
 
         /* Tree is empty no node to traverse */
         printf("(Null)\n");
     } else {
 
         /* Call helper function and traverse all nodes */
-        rbk_traverse_postorder_helper(tree->root, action);
+        rbk_traverse_postorder_helper(tree, tree->root, action);
     }
 }
 
@@ -1323,13 +1176,13 @@ void rbk_traverse_postorder(rbk_tree_t* tree, void (*action)(const rbk_tree_node
  * @param action a pointer to a function that will perform an action
  * on every red-black node object from current working tree
  */
-void rbk_traverse_level(rbk_tree_t* tree, void (*action)(const rbk_tree_node_t*)) {
+void rbk_traverse_level(rbk_tree_t* tree, rbk_action action) {
     /* Check if input data is valid */
     if ((NULL == tree) || (NULL == action)) {
         return;
     }
 
-    if (NULL == tree->root) {
+    if (tree->nil == tree->root) {
 
         /* Tree is empty no node to traverse */
         printf("(Null)\n");
@@ -1354,15 +1207,15 @@ void rbk_traverse_level(rbk_tree_t* tree, void (*action)(const rbk_tree_node_t*)
                 queue_pop(level_queue);
 
                 /* Call action function on front node */
-                action(front_node);
+                action(tree, front_node);
 
                 /* Push on queue front left child if it exists */
-                if ((NULL != front_node) && (NULL != front_node->left)) {
+                if (tree->nil != front_node->left) {
                     queue_push(level_queue, &front_node->left, sizeof(front_node->left));
                 }
                 
                 /* Push on queue front right child if it exists */
-                if ((NULL != front_node) && (NULL != front_node->right)) {
+                if (tree->nil != front_node->right) {
                     queue_push(level_queue, &front_node->right, sizeof(front_node->right));
                 }
             }

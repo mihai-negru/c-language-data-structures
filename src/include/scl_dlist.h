@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include "scl_config.h"
 
 /**
  * @brief Double Linked List Node object definition
@@ -47,13 +48,13 @@ typedef struct dlist_node {
 typedef struct {
     dlist_node_t* head;                                 /* head of linked list */
     dlist_node_t* tail;                                 /* tail of linked list */
-    int (*compare_data)(const void*, const void*);      /* function to compare items */
-    void (*print_data)(const void*);                    /* function to print item */
-    void (*free_data)(void*);                           /* function to free item */
+    compare_func cmp;                                   /* function to compare items */
+    simple_action print;                                /* function to print item */
+    free_func frd;                                      /* function to free item */
     size_t size;                                        /* size of linked list */
 } dlist_t;
 
-dlist_t*          create_dlist            (int (*compare_data)(const void*, const void*), void (*print_data)(const void*), void (*free_data)(void*));
+dlist_t*          create_dlist            (compare_func cmp, simple_action print, free_func frd);
 void              print_front_dlist       (dlist_t* list);
 void              print_back_dlist        (dlist_t* list);
 void              free_dlist              (dlist_t* list);
@@ -68,7 +69,7 @@ int               dlist_change_data       (dlist_t* list, const dlist_node_t* ba
 int               dlist_insert            (dlist_t* list, const void* data, size_t data_size);
 int               dlist_insert_order      (dlist_t* list, const void* data, size_t data_size);
 int               dlist_insert_front      (dlist_t* list, const void* data, size_t data_size);
-int               dlist_insert_index      (dlist_t* list, const void* data, size_t data_size,size_t data_index);
+int               dlist_insert_index      (dlist_t* list, const void* data, size_t data_size, size_t data_index);
 
 dlist_node_t*     dlist_find_index        (dlist_t* list, size_t data_index);
 dlist_node_t*     dlist_find_data         (dlist_t* list, const void* data);
@@ -77,7 +78,7 @@ int               dlist_delete_data       (dlist_t* list, void* data);
 int               dlist_delete_index      (dlist_t* list, size_t data_index);
 int               dlist_erase             (dlist_t* list, size_t left_index, size_t right_index);
 
-dlist_t*          dlist_filter            (dlist_t* list, int (*filter)(const void*),size_t data_size);
-void              dlist_map               (dlist_t* list, const void* (*map)(void*), size_t data_size);
+dlist_t*          dlist_filter            (dlist_t* list, filter_func filter,size_t data_size);
+void              dlist_map               (dlist_t* list, map_func map, size_t data_size);
 
 #endif /* DOUBLE_LIST_UTILS_H_ */

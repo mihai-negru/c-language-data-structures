@@ -29,20 +29,20 @@
  * does not provide a compare and a print function, also in case if
  * heap memory is full function will return a NULL pointer
  * 
- * @param compare_data pointer to a function to compare two sets of data
- * @param print_data pointer to a function to print specific data
- * @param free_data pointer to a function to free the content of data
+ * @param cp pointer to a function to compare two sets of data
+ * @param print pointer to a function to print specific data
+ * @param frd pointer to a function to free the content of data
  * basic types like int, float, double, etc... do not need a free function
  * so you can pass a NULL pointer
  * @return list_t* return a new dynamically allocated list or NULL if
  * allocation went wrong
  */
-list_t* create_list(int (*compare_data)(const void*, const void*), void (*print_data)(const void*), void (*free_data)(void*)) {
+list_t* create_list(compare_func cmp, simple_action print, free_func frd) {
     /*
      * It is required for every linked list to have a compare and a print function
      * The free function is optional
      */
-    if ((NULL == compare_data) || (NULL == print_data)) {
+    if ((NULL == cmp) || (NULL == print)) {
         errno = EINVAL;
         perror("Compare or print functions undefined for linked list");
         return NULL;
@@ -55,9 +55,9 @@ list_t* create_list(int (*compare_data)(const void*, const void*), void (*print_
     if (NULL != new_list) {
 
         /* Set pointer functions in linked list class */
-        new_list->compare_data = compare_data;
-        new_list->print_data = print_data;
-        new_list->free_data = free_data;
+        new_list->cmp = cmp;
+        new_list->print = print;
+        new_list->frd = frd;
 
         /* Initialize head, tail and size of new list */
         new_list->head = new_list->tail = NULL;
@@ -137,7 +137,7 @@ void print_list(list_t* list) {
         list_node_t* iterator = list->head;
 
         while (NULL != iterator) {
-            list->print_data(iterator->data);
+            list->print(iterator->data);
             iterator = iterator->next;
         }
     }
@@ -164,8 +164,8 @@ void free_list(list_t* list) {
             list->head = list->head->next;
 
             /* Erase content of an element */
-            if ((NULL != list->free_data) && (NULL != iterator->data)) {
-                list->free_data(iterator->data);
+            if ((NULL != list->frd) && (NULL != iterator->data)) {
+                list->frd(iterator->data);
             }
 
             /* Free data pointer */
@@ -397,7 +397,7 @@ int list_insert_order(list_t* list, const void* data, size_t data_size) {
         list_node_t* prev_iterator = NULL;
 
         /* Find the position for the new element */
-        while ((NULL != iterator) && (list->compare_data(new_node->data, iterator->data) > 0)) {
+        while ((NULL != iterator) && (list->cmp(new_node->data, iterator->data) > 0)) {
             prev_iterator = iterator;
             iterator = iterator->next;
         }
@@ -584,7 +584,7 @@ list_node_t* list_find_data(list_t* list, const void* data) {
     list_node_t* iterator = list->head;
 
     /* Find node */
-    while ((NULL != iterator) && (list->compare_data(iterator->data, data) != 0)) {
+    while ((NULL != iterator) && (list->cmp(iterator->data, data) != 0)) {
         iterator = iterator->next;
     }
 
@@ -617,7 +617,7 @@ int list_delete_data(list_t* list, void* data) {
     list_node_t* prev_iterator = NULL;
 
     /* Find list data associated with data pointer */
-    while ((NULL != iterator) && (list->compare_data(iterator->data, data) != 0)) {
+    while ((NULL != iterator) && (list->cmp(iterator->data, data) != 0)) {
         prev_iterator = iterator;
         iterator = iterator->next;
     }
@@ -643,8 +643,8 @@ int list_delete_data(list_t* list, void* data) {
     }
 
     /* Free content of data */
-    if ((NULL != list->free_data) && (NULL != iterator->data)) {
-        list->free_data(iterator->data);
+    if ((NULL != list->frd) && (NULL != iterator->data)) {
+        list->frd(iterator->data);
     }
 
     /* Free data pointer and set to NULL */
@@ -713,8 +713,8 @@ int list_delete_index(list_t* list, size_t data_index) {
     }
 
     /* Free content of data */
-    if ((NULL != list->free_data) && (NULL != iterator->data)) {
-        list->free_data(iterator->data);
+    if ((NULL != list->frd) && (NULL != iterator->data)) {
+        list->frd(iterator->data);
     }
 
     /* Free data pointer and set to NULL */
@@ -813,8 +813,8 @@ int list_erase(list_t* list, size_t left_index, size_t right_index) {
         }
 
         /* Free content of data */
-        if ((NULL != list->free_data) && (NULL != iterator->data)) {
-            list->free_data(iterator->data);
+        if ((NULL != list->frd) && (NULL != iterator->data)) {
+            list->frd(iterator->data);
         }
 
         /* Free data pointer and set to NULL */
@@ -857,7 +857,7 @@ int list_erase(list_t* list, size_t left_index, size_t right_index) {
  * @return list_t* a filtered linked list object with smaller
  * or equal size of the original linked list object
  */
-list_t* list_filter(list_t* list, int (*filter)(const void*), size_t data_size) {
+list_t* list_filter(list_t* list, filter_func filter, size_t data_size) {
     /*
      * Check if input is valid
      * Filter function has to be different from NULL pointer
@@ -867,7 +867,7 @@ list_t* list_filter(list_t* list, int (*filter)(const void*), size_t data_size) 
     }
 
     /* Create a new linked list object */
-    list_t* filter_list = create_list(list->compare_data, list->print_data, list->free_data);
+    list_t* filter_list = create_list(list->cmp, list->print, list->frd);
 
     /* Check if list was created */
     if (NULL != filter_list) {
@@ -909,7 +909,7 @@ list_t* list_filter(list_t* list, int (*filter)(const void*), size_t data_size) 
  * @param map a pointer to a mapping function
  * @param data_size size of a single element
  */
-void list_map(list_t* list, const void* (*map)(void*), size_t data_size) {
+void list_map(list_t* list, map_func map, size_t data_size) {
     /*
      * Check if list is allocated and is not empty
      * Check if user provided a valid map function
