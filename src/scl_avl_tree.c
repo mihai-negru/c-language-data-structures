@@ -481,44 +481,6 @@ int avl_insert(avl_tree_t* tree, const void* data, size_t data_size) {
 
 /**
  * @brief Function to search data in avl tree O(log N).
- * Function will start searching from root node specified in 
- * parameters list of function.
- * 
- * @param tree an allocated avl tree object
- * @param root pointer to current working avl node object
- * @param data pointer to an address of a generic data type
- * @return avl_tree_node_t* avl tree node object containing
- * data value or NULL in case no such node exists
- */
-static avl_tree_node_t* avl_find_data_set_root(avl_tree_t* tree, avl_tree_node_t* root, const void* data) {
-    /* Check if input data is valid */
-    if ((NULL == tree) || (tree->nil == root)) {
-        return tree->nil;
-    }
-
-    /* Set iterator pointer */
-    avl_tree_node_t* iterator = root;
-
-    /*
-     * Search for input data (void *data),
-     * from root - subtree
-     */
-    while (tree->nil != iterator) {
-        if (tree->cmp(iterator->data, data) <= -1) {
-            iterator = iterator->right;
-        } else if (tree->cmp(iterator->data, data) >= 1) {
-            iterator = iterator->left;
-        } else {
-            return iterator;
-        }
-    }
-
-    /* Data was not found */
-    return tree->nil;
-}
-
-/**
- * @brief Function to search data in avl tree O(log N).
  * Function will start searching from avl tree root and will
  * search the data value in all tree.
  * 
@@ -778,144 +740,6 @@ static void avl_delete_fix_node_up(avl_tree_t* tree, avl_tree_node_t* fix_node) 
 }
 
 /**
- * @brief Helper function for avl_delete_data function.
- * Function will remove one data at a time and will preserve
- * the proprety of a avl tree.
- * 
- * @param tree an allocated avl tree object
- * @param root pointer to current working sub-tree
- * @param data pointer to an address of a generic data to be deleted
- * @param data_size size of one generic data
- */
-static void avl_delete_helper(avl_tree_t* tree, avl_tree_node_t* root, void* data, size_t data_size) {
-    /* Check if input data is valid */
-    if ((NULL == tree) || (tree->nil == root) || (NULL == data)) {
-        return;
-    }
-
-    /* Find current node (root) in avl tree */
-    avl_tree_node_t* delete_node = avl_find_data_set_root(tree, root, data);
-
-    /* Bst node was not found exit process */
-    if (tree->nil == delete_node) {
-        return;
-    }
-
-    /* Delete selected node */
-    if ((tree->nil != delete_node->left) && (tree->nil != delete_node->right)) {
-
-        /* Selected node has two children */
-
-        /* Find a replacement for selected node */
-        avl_tree_node_t* delete_succecessor = avl_min_node(tree, delete_node->right);
-                
-        /* Replace the selected avl node and remove the dublicate */
-        avl_change_data(delete_node, delete_succecessor, data_size);
-        avl_delete_helper(tree, delete_node->right, delete_succecessor->data, data_size);
-    } else {
-
-        /* Selected node has one or no chlid */
-
-        if (tree->nil != delete_node->left) {
-
-            /* Selected node has a left child */
-
-            /* Update child-grandparent links */
-            delete_node->left->parent = delete_node->parent;
-
-            if (tree->nil != delete_node->parent) {
-
-                /* Update grandparent-child links */
-
-                if (delete_node->parent->right == delete_node) {
-                    delete_node->parent->right = delete_node->left;
-                } else {
-                    delete_node->parent->left = delete_node->left;
-                }
-            } else {
-
-                /*
-                 * Selected node was root
-                 * Update a new root
-                 */
-                tree->root = delete_node->left;
-            }
-        } else if (tree->nil != delete_node->right) {
-
-            /* Selected node has a right child */
-
-            /* Update child-grandparent links */
-            delete_node->right->parent = delete_node->parent;
-
-            if (tree->nil != delete_node->parent) {
-
-                /* Update grandparent-child links */
-
-                if (delete_node->parent->right == delete_node) {
-                    delete_node->parent->right = delete_node->right;
-                } else {
-                    delete_node->parent->left = delete_node->right;
-                }
-            } else {
-
-                /*
-                 * Selected node was root
-                 * Update a new root
-                 */
-                tree->root = delete_node->right;
-            }
-        } else {
-
-            /* Selected node has no children */
-
-            /* Update grandparent links */
-            if (tree->nil != delete_node->parent) {
-                if (delete_node->parent->right == delete_node) {
-                    delete_node->parent->right = tree->nil;
-                } else {
-                    delete_node->parent->left = tree->nil;
-                }
-            } else {
-
-                /*
-                 * Selected node was root
-                 * Update new root to NULL
-                 */
-                tree->root = tree->nil;
-            }
-        }
-
-        avl_tree_node_t* parent_delete_node = delete_node->parent;
-
-        /* Free content of the data pointer */
-        if ((NULL != tree->frd) && (NULL != delete_node->data)) {
-            tree->frd(delete_node->data);
-        }
-
-        /* Free data pointer of selected node */
-        if (NULL != delete_node->data) {
-            free(delete_node->data);
-        }
-
-        /* Set data pointer as NULL */
-        delete_node->data = NULL;
-
-        /* Free selected avl node pointer */
-        if (tree->nil != delete_node) {
-            free(delete_node);
-        }
-
-        /* Set selected avl node as NULL */
-        delete_node = tree->nil;
-
-        avl_delete_fix_node_up(tree, parent_delete_node);
-
-        /* Deacrease tree size  */
-        --(tree->size);
-    }
-}
-
-/**
  * @brief Function to delete one generic data from a avl.
  * Function may fail if input data is not valid or if
  * changing the data fails. You can delete one data at a time
@@ -933,8 +757,127 @@ int avl_delete(avl_tree_t* tree, void* data, size_t data_size) {
         return 1;
     }
 
-    /* Call helper function for deletion */
-    avl_delete_helper(tree, tree->root, data, data_size);
+    /* Find current node (root) in avl tree */
+    avl_tree_node_t* delete_node = avl_find_data(tree, data);
+
+    /* Bst node was not found exit process */
+    if (tree->nil == delete_node) {
+        return 1;
+    }
+
+    /* Delete selected node */
+    if ((tree->nil != delete_node->left) && (tree->nil != delete_node->right)) {
+
+        /* Selected node has two children */
+
+        /* Find a replacement for selected node */
+        avl_tree_node_t* delete_succecessor = avl_min_node(tree, delete_node->right);
+                
+        /* Replace the selected avl node and remove the dublicate */
+        avl_change_data(delete_node, delete_succecessor, data_size);
+
+        /* Set the new node to delete */
+        delete_node = delete_succecessor;
+    }
+
+    /* Selected node has one or no chlid */
+
+    if (tree->nil != delete_node->left) {
+
+        /* Selected node has a left child */
+
+        /* Update child-grandparent links */
+        delete_node->left->parent = delete_node->parent;
+
+        if (tree->nil != delete_node->parent) {
+
+            /* Update grandparent-child links */
+
+            if (delete_node->parent->right == delete_node) {
+                delete_node->parent->right = delete_node->left;
+            } else {
+                delete_node->parent->left = delete_node->left;
+            }
+        } else {
+
+            /*
+                * Selected node was root
+                * Update a new root
+                */
+            tree->root = delete_node->left;
+        }
+    } else if (tree->nil != delete_node->right) {
+
+        /* Selected node has a right child */
+
+        /* Update child-grandparent links */
+        delete_node->right->parent = delete_node->parent;
+
+        if (tree->nil != delete_node->parent) {
+
+            /* Update grandparent-child links */
+
+            if (delete_node->parent->right == delete_node) {
+                delete_node->parent->right = delete_node->right;
+            } else {
+                delete_node->parent->left = delete_node->right;
+            }
+        } else {
+
+            /*
+                * Selected node was root
+                * Update a new root
+                */
+            tree->root = delete_node->right;
+        }
+    } else {
+
+        /* Selected node has no children */
+
+        /* Update grandparent links */
+        if (tree->nil != delete_node->parent) {
+            if (delete_node->parent->right == delete_node) {
+                delete_node->parent->right = tree->nil;
+            } else {
+                delete_node->parent->left = tree->nil;
+            }
+        } else {
+
+            /*
+                * Selected node was root
+                * Update new root to NULL
+                */
+            tree->root = tree->nil;
+        }
+    }
+
+    avl_tree_node_t* parent_delete_node = delete_node->parent;
+
+    /* Free content of the data pointer */
+    if ((NULL != tree->frd) && (NULL != delete_node->data)) {
+        tree->frd(delete_node->data);
+    }
+
+    /* Free data pointer of selected node */
+    if (NULL != delete_node->data) {
+        free(delete_node->data);
+    }
+
+    /* Set data pointer as NULL */
+    delete_node->data = NULL;
+
+    /* Free selected avl node pointer */
+    if (tree->nil != delete_node) {
+        free(delete_node);
+    }
+
+    /* Set selected avl node as NULL */
+    delete_node = tree->nil;
+
+    avl_delete_fix_node_up(tree, parent_delete_node);
+
+    /* Deacrease tree size  */
+    --(tree->size);
 
     /* Deletion went successfully */
     return 0;

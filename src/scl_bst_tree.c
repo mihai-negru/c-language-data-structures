@@ -277,44 +277,6 @@ int bst_insert(bst_tree_t* tree, const void* data, size_t data_size) {
 
 /**
  * @brief Function to search data in binary search tree O(log h).
- * Function will start searching from root node specified in 
- * parameters list of function.
- * 
- * @param tree an allocated binary search tree object
- * @param root pointer to current working bst node object
- * @param data pointer to an address of a generic data type
- * @return bst_tree_node_t* binary search tree node object containing
- * data value or NULL in case no such node exists
- */
-static bst_tree_node_t* bst_find_data_set_root(bst_tree_t* tree, bst_tree_node_t* root, const void* data) {
-    /* Check if input data is valid */
-    if ((NULL == tree) || (tree->nil == root)) {
-        return tree->nil;
-    }
-
-    /* Set iterator pointer */
-    bst_tree_node_t* iterator = root;
-
-    /*
-     * Search for input data (void *data),
-     * from root - subtree
-     */
-    while (tree->nil != iterator) {
-        if (tree->cmp(iterator->data, data) <= -1) {
-            iterator = iterator->right;
-        } else if (tree->cmp(iterator->data, data) >= 1) {
-            iterator = iterator->left;
-        } else {
-            return iterator;
-        }
-    }
-
-    /* Data was not found */
-    return tree->nil;
-}
-
-/**
- * @brief Function to search data in binary search tree O(log h).
  * Function will start searching from bst tree root and will
  * search the data value in all tree.
  * 
@@ -521,139 +483,6 @@ void* bst_min_data(bst_tree_t* tree, bst_tree_node_t* root) {
 }
 
 /**
- * @brief Helper function for bst_delete_data function.
- * Function will remove one data at a time and will preserve
- * the proprety of a binary search tree.
- * 
- * @param tree an allocated binary search tree object
- * @param root pointer to current working sub-tree
- * @param data pointer to an address of a generic data to be deleted
- * @param data_size size of one generic data
- */
-static void bst_delete_helper(bst_tree_t* tree, bst_tree_node_t* root, void* data, size_t data_size) {
-    /* Check if input data is valid */
-    if ((NULL == tree) || (tree->nil == root) || (NULL == data) || (0 == data_size)) {
-        return;
-    }
-
-    /* Find current node (root) in binary search tree */
-    bst_tree_node_t* delete_node = bst_find_data_set_root(tree, root, data);
-
-    /* Bst node was not found exit process */
-    if (tree->nil == delete_node) {
-        return;
-    }
-
-    /* Delete selected node */
-    if ((tree->nil != delete_node->left) && (tree->nil != delete_node->right)) {
-
-        /* Selected node has two children */
-
-        /* Find a replacement for selected node */
-        bst_tree_node_t* delete_succecessor = bst_min_node(tree, delete_node->right);
-                
-        /* Replace the selected bst node and remove the dublicate */
-        bst_change_data(delete_node, delete_succecessor, data_size);
-        bst_delete_helper(tree, delete_node->right, delete_succecessor->data, data_size);
-    } else {
-
-        /* Selected node has one or no chlid */
-
-        if (tree->nil != delete_node->left) {
-
-            /* Selected node has a left child */
-
-            /* Update child-grandparent links */
-            delete_node->left->parent = delete_node->parent;
-
-            if (tree->nil != delete_node->parent) {
-
-                /* Update grandparent-child links */
-
-                if (delete_node->parent->right == delete_node) {
-                    delete_node->parent->right = delete_node->left;
-                } else {
-                    delete_node->parent->left = delete_node->left;
-                }
-            } else {
-
-                /*
-                 * Selected node was root
-                 * Update a new root
-                 */
-                tree->root = delete_node->left;
-            }
-        } else if (tree->nil != delete_node->right) {
-            /* Selected node has a right child */
-
-            /* Update child-grandparent links */
-            delete_node->right->parent = delete_node->parent;
-
-            if (tree->nil != delete_node->parent) {
-
-                /* Update grandparent-child links */
-
-                if (delete_node->parent->right == delete_node) {
-                    delete_node->parent->right = delete_node->right;
-                } else {
-                    delete_node->parent->left = delete_node->right;
-                }
-            } else {
-
-                /*
-                 * Selected node was root
-                 * Update a new root
-                 */
-                tree->root = delete_node->right;
-            }
-        } else {
-
-            /* Selected node has no children */
-
-            /* Update grandparent links */
-            if (tree->nil != delete_node->parent) {
-                if (delete_node->parent->right == delete_node) {
-                    delete_node->parent->right = tree->nil;
-                } else {
-                    delete_node->parent->left = tree->nil;
-                }
-            } else {
-
-                /*
-                 * Selected node was root
-                 * Update new root to NULL
-                 */
-                tree->root = tree->nil;
-            }
-        }
-
-        /* Free content of the data pointer */
-        if ((NULL != tree->frd) && (NULL != delete_node->data)) {
-            tree->frd(delete_node->data);
-        }
-
-        /* Free data pointer of selected node */
-        if (NULL != delete_node->data) {
-            free(delete_node->data);
-        }
-
-        /* Set data pointer as NULL */
-        delete_node->data = NULL;
-
-        /* Free selected bst node pointer */
-        if (tree->nil != delete_node) {
-            free(delete_node);
-        }
-
-        /* Set selected bst node as NULL */
-        delete_node = tree->nil;
-
-        /* Deacrease tree size  */
-        --(tree->size);
-    }
-}
-
-/**
  * @brief Function to delete one generic data from a bst.
  * Function may fail if input data is not valid or if
  * changing the data fails. You can delete one data at a time
@@ -671,8 +500,121 @@ int bst_delete(bst_tree_t* tree, void* data, size_t data_size) {
         return 1;
     }
 
-    /* Call helper function for deletion */
-    bst_delete_helper(tree, tree->root, data, data_size);
+    /* Find current node (root) in binary search tree */
+    bst_tree_node_t* delete_node = bst_find_data(tree, data);
+
+    /* Bst node was not found exit process */
+    if (tree->nil == delete_node) {
+        return 1;
+    }
+
+    /* Delete selected node */
+    if ((tree->nil != delete_node->left) && (tree->nil != delete_node->right)) {
+
+        /* Selected node has two children */
+
+        /* Find a replacement for selected node */
+        bst_tree_node_t* delete_succecessor = bst_min_node(tree, delete_node->right);
+                
+        /* Replace the selected bst node and remove the dublicate */
+        bst_change_data(delete_node, delete_succecessor, data_size);
+        
+        /* Set the new node to delete*/
+        delete_node = delete_succecessor;
+    }
+
+    /* Selected node has one or no chlid */
+    if (tree->nil != delete_node->left) {
+
+        /* Selected node has a left child */
+
+        /* Update child-grandparent links */
+        delete_node->left->parent = delete_node->parent;
+
+        if (tree->nil != delete_node->parent) {
+
+            /* Update grandparent-child links */
+
+            if (delete_node->parent->right == delete_node) {
+                delete_node->parent->right = delete_node->left;
+            } else {
+                delete_node->parent->left = delete_node->left;
+            }
+        } else {
+
+            /*
+                * Selected node was root
+                * Update a new root
+                */
+            tree->root = delete_node->left;
+        }
+    } else if (tree->nil != delete_node->right) {
+        /* Selected node has a right child */
+
+        /* Update child-grandparent links */
+        delete_node->right->parent = delete_node->parent;
+
+        if (tree->nil != delete_node->parent) {
+
+            /* Update grandparent-child links */
+
+            if (delete_node->parent->right == delete_node) {
+                delete_node->parent->right = delete_node->right;
+            } else {
+                delete_node->parent->left = delete_node->right;
+            }
+        } else {
+
+            /*
+                * Selected node was root
+                * Update a new root
+                */
+            tree->root = delete_node->right;
+        }
+    } else {
+
+        /* Selected node has no children */
+
+        /* Update grandparent links */
+        if (tree->nil != delete_node->parent) {
+            if (delete_node->parent->right == delete_node) {
+                delete_node->parent->right = tree->nil;
+            } else {
+                delete_node->parent->left = tree->nil;
+            }
+        } else {
+
+            /*
+                * Selected node was root
+                * Update new root to NULL
+                */
+            tree->root = tree->nil;
+        }
+    }
+
+    /* Free content of the data pointer */
+    if ((NULL != tree->frd) && (NULL != delete_node->data)) {
+        tree->frd(delete_node->data);
+    }
+
+    /* Free data pointer of selected node */
+    if (NULL != delete_node->data) {
+        free(delete_node->data);
+    }
+
+    /* Set data pointer as NULL */
+    delete_node->data = NULL;
+
+    /* Free selected bst node pointer */
+    if (tree->nil != delete_node) {
+        free(delete_node);
+    }
+
+    /* Set selected bst node as NULL */
+    delete_node = tree->nil;
+
+    /* Deacrease tree size  */
+    --(tree->size); 
 
     /* Deletion went successfully */
     return 0;
