@@ -1,4 +1,9 @@
-CFLAGS = -c -g -Wextra -Werror -Wall
+CFLAGS += -c -g -Wall -Wextra -Wpedantic \
+		  -Wformat=2 -Wno-unused-parameter \
+		  -Wshadow -Wwrite-strings -Wstrict-prototypes \
+		  -Wold-style-definition -Wredundant-decls \
+		  -Wnested-externs -Wmissing-include-dirs \
+		  -Wjump-misses-init -Wlogical-op -O2
 
 FILES = ./scl_avl_tree.c ./scl_bst_tree.c \
 		./scl_weighted_graph.c ./scl_list.c \

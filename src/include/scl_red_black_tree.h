@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <stdint.h>
 #include "scl_config.h"
 
 /**
@@ -49,7 +50,7 @@ typedef struct rbk_tree_node {
     struct rbk_tree_node* parent;                               /* Pointer to parent node */
     struct rbk_tree_node* left;                                 /* Pointer to left child node */
     struct rbk_tree_node* right;                                /* Pointer to right child node */
-    int count;                                                  /* Number of nodes with the same data value */
+    uint64_t count;                                             /* Number of nodes with the same data value */
     node_color color;                                           /* Color of a node */
 } rbk_tree_node_t;
 

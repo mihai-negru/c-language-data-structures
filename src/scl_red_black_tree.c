@@ -711,14 +711,145 @@ void* rbk_min_data(rbk_tree_t* tree, rbk_tree_node_t* root) {
  * working tree and node are NULL.
  * 
  * @param tree an allocated red-black tree object
- * @param fix_node a pointer to a red-black tree node object to start
- * fixing the balance
+ * @param fix_node a pointer to a red-black tree node object that is a double black
+ * @param parent_fix_node a pointer to a red-black tree node object, parent of double black node
  */
-static void rbk_delete_fix_node_up(rbk_tree_t* tree, rbk_tree_node_t* fix_node) {
+static void rbk_delete_fix_node_up(rbk_tree_t* tree, rbk_tree_node_t* fix_node, rbk_tree_node_t* parent_fix_node) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (tree->nil == fix_node)) {
+    if ((NULL == tree) || (tree->nil == parent_fix_node)) {
         return;
     }
+
+    /* Set the brother of the double black node */
+    rbk_tree_node_t* brother_node = tree->nil;
+
+    /* Fix the red-black tree */
+    while ((tree->root != fix_node) && (BLACK == fix_node->color)) {
+        if (parent_fix_node->left == fix_node) {
+
+            /* Double black node is a left child */
+
+            /* Find the brother node */
+            brother_node = parent_fix_node->right;
+
+            if (RED == brother_node->color) {
+
+                /* Case 1: brother is a red node */
+
+                /* Recolor the nodes */
+                brother_node->color = BLACK;
+                parent_fix_node->color = RED;
+
+                /* Rotate the parent to the left */
+                rbk_rotate_left(tree, parent_fix_node);
+
+                /* Update the brother node */
+                brother_node = parent_fix_node->right;
+            }
+
+            if ((BLACK == brother_node->left->color) && (BLACK == brother_node->right->color)) {
+
+                /* Case 2: brother is a black node and its children are black */
+
+                /* Recolor the brother node */
+                brother_node->color = RED;
+
+                /* Propagate the double black problem in higher hierarchy */
+                fix_node = parent_fix_node;
+            } else {
+                if (BLACK == brother_node->right->color) {
+
+                    /* Case 3: brother node is black, left child is red and right is black */
+
+                    /* Recolor nodes */
+                    brother_node->left->color = BLACK;
+                    brother_node->color = RED;
+
+                    /* Rotate brother to the right */
+                    rbk_rotate_right(tree, brother_node);
+                    
+                    /* Update the new brother */
+                    brother_node = parent_fix_node->right;
+                }
+
+                /* Case 4: brother node is black and right child is red */
+
+                /* Recolor the nodes */
+                brother_node->color = parent_fix_node->color;
+                parent_fix_node->color = BLACK;
+                brother_node->right->color = BLACK;
+
+                /* Rotate parent node to left */
+                rbk_rotate_left(tree, parent_fix_node);
+
+                /* Tree is fixed */
+                fix_node = tree->root;
+            }
+        } else {
+
+            /* Double black node is a right child */
+
+            /* Find the brother node */
+            brother_node = parent_fix_node->left;
+
+            if (RED == brother_node->color) {
+
+                /* Case 1: brother is a red node */
+
+                /* Recolor the nodes */
+                brother_node->color = BLACK;
+                parent_fix_node->color = RED;
+
+                /* Rotate the parent to the right */
+                rbk_rotate_right(tree, parent_fix_node);
+
+                /* Update the brother node */
+                brother_node = parent_fix_node->left;
+            }
+
+            if ((BLACK == brother_node->right->color) && (BLACK == brother_node->left->color)) {
+
+                /* Case 2: brother is a black node and its children are black */
+
+                /* Recolor the brother node */
+                brother_node->color = RED;
+
+                /* Propagate the double black problem in higher hierarchy */
+                fix_node = parent_fix_node;
+            } else {
+                if (BLACK == brother_node->left->color) {
+
+                    /* Case 3: brother node is black, right child is red and left is black */
+
+                    /* Recolor nodes */
+                    brother_node->right->color = BLACK;
+                    brother_node->color = RED;
+
+                    /* Rotate brother to the left */
+                    rbk_rotate_left(tree, brother_node);
+
+                    /* Update the new brother */
+                    brother_node = parent_fix_node->left;
+                }
+
+                /* Case 4: brother node is black and right child is red */
+
+                /* Recolor the nodes */
+                brother_node->color = parent_fix_node->color;
+                parent_fix_node->color = BLACK;
+                brother_node->left->color = BLACK;
+
+                /* Rotate parent node to right */
+                rbk_rotate_right(tree, parent_fix_node);
+
+                /* Tree is fixed */
+                fix_node = tree->root;
+            }
+        }
+    }
+
+    /* Recolor the root as BLACK */
+    fix_node->color = BLACK; 
 }
 
 /**
@@ -739,25 +870,115 @@ int rbk_delete(rbk_tree_t* tree, void* data, size_t data_size) {
         return 1;
     }
 
+    /* Find node to delete */
     rbk_tree_node_t* delete_node = rbk_find_data(tree, data);
 
+    /* Delete node is not in the current working tree */
     if (tree->nil == delete_node) {
         return 1;
     }
 
+    /* Node has two children swap with it's inorder successor and delete successor */
     if ((tree->nil != delete_node->left) && (tree->nil != delete_node->right)) {
-
-        /* Selected node has two children */
 
         /* Find a replacement for selected node */
         rbk_tree_node_t* delete_succecessor = rbk_min_node(tree, delete_node->right);
                 
         /* Replace the selected red-black node and remove the dublicate */
         rbk_change_data(delete_node, delete_succecessor, data_size);
+
+        /* Delete node now is inorder successor */
         delete_node = delete_succecessor;
     }
 
-    /* Selected node has one or no chlid */
+    /* Variable to check if fixing is needed */
+    uint8_t need_fixing_tree = 1;
+
+    /* Set the child of the deleted node */
+    rbk_tree_node_t* delete_node_child = tree->nil;
+
+    /* delete node has only one child */
+    if (tree->nil != delete_node->left) {
+        delete_node_child = delete_node->left;
+
+        /* Check if deletion will not make a double black exception */
+        if ((RED == delete_node_child->color) && (BLACK == delete_node->color)) {
+            need_fixing_tree = 0;
+
+            /* Recolor red node into a red one */
+            delete_node_child->color = BLACK;
+        }
+
+        /* Update child with it's grandparent */
+        delete_node_child->parent = delete_node->parent;
+
+        /* Update grandparent with it's grandchild */
+        if (tree->nil != delete_node->parent) {
+            if (delete_node->parent->right == delete_node) {
+                delete_node->parent->right = delete_node_child;
+            } else {
+                delete_node->parent->left = delete_node_child;
+            }
+        } else {
+
+            /*
+             * Selected node was root
+             * Update a new root
+             */            
+            tree->root = delete_node_child;
+        }
+    } else if (tree->nil != delete_node->right) {
+        delete_node_child = delete_node->right;
+
+        /* Check if deletion will not make a double black exception */
+        if ((RED == delete_node_child->color) && (BLACK == delete_node->color)) {
+            need_fixing_tree = 0;
+
+            /* Recolor red node into a red one */
+            delete_node_child->color = BLACK;
+        }
+
+        /* Update child with it's grandparent */
+        delete_node_child->parent = delete_node->parent;
+
+        /* Update grandparent with it's grandchild */
+        if (tree->nil != delete_node->parent) {
+            if (delete_node->parent->right == delete_node) {
+                delete_node->parent->right = delete_node_child;
+            } else {
+                delete_node->parent->left = delete_node_child;
+            }
+        } else {
+
+            /*
+             * Selected node was root
+             * Update a new root
+             */
+            tree->root = delete_node_child;
+        }
+    } else {
+
+        /* Check if deletion will not make a double black exception */ 
+        if (RED == delete_node->color) {
+            need_fixing_tree = 0;
+        }
+
+        // Update parent's links to nil node
+        if (tree->nil != delete_node->parent) {
+            if (delete_node->parent->right == delete_node) {
+                delete_node->parent->right = tree->nil;
+            } else {
+                delete_node->parent->left = tree->nil;
+            }
+        } else {
+
+            /*
+             * Selected node was root
+             * Update a new root
+             */
+            tree->root = tree->nil;
+        }
+    }
 
     rbk_tree_node_t* parent_delete_node = delete_node->parent;
 
@@ -782,7 +1003,10 @@ int rbk_delete(rbk_tree_t* tree, void* data, size_t data_size) {
     /* Set selected red-black node as NULL */
     delete_node = tree->nil;
 
-    rbk_delete_fix_node_up(tree, parent_delete_node);
+    /* Check if fixing is needed */
+    if (0 != need_fixing_tree) {
+        rbk_delete_fix_node_up(tree, delete_node_child, parent_delete_node);
+    }
 
     /* Deacrease tree size  */
     --(tree->size);

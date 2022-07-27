@@ -394,9 +394,9 @@ priority_queue_t* heapify(const void* data, const void* priority, size_t data_si
 
             /* Create a new priority queue node depending by data pointer */
             if ((NULL != data) && (0 != data_size)) {
-                new_pqueue_node = create_priority_queue_node(data + iter * data_size, priority + iter * pri_size, data_size, pri_size);
+                new_pqueue_node = create_priority_queue_node((char*)data + iter * data_size, (char*)priority + iter * pri_size, data_size, pri_size);
             } else {
-                new_pqueue_node = create_priority_queue_node(NULL, priority + iter * pri_size, 0, pri_size);
+                new_pqueue_node = create_priority_queue_node(NULL, (char*)priority + iter * pri_size, 0, pri_size);
             }
 
             /* Check if new priority queue node was created successfully */
@@ -778,7 +778,7 @@ void heap_sort(void* arr, size_t number_of_arr, size_t arr_elem_size, compare_fu
 
     /* Rearrange input array data from heap structure in O(NlogN) complexity */
     for (size_t iter = 0; iter < number_of_arr; ++iter) {
-        memcpy(arr + iter * arr_elem_size, pri_queue_top_pri(heap), arr_elem_size);
+        memcpy((char*)arr + iter * arr_elem_size, pri_queue_top_pri(heap), arr_elem_size);
         pri_queue_pop(heap);
     }
 
