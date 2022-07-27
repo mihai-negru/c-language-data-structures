@@ -6,7 +6,7 @@ In the scl_stack.h you have two functions that will help you by creating a stack
 
 ```C
     stack_t* create_stack(void (*free_data)(void*));
-    void free_stack(stack_t *stack);
+    scl_error_t free_stack(stack_t *stack);
 ```
 
 First function will take a pointer to a function that will free the content of the actual data. However you can send NULL(0) instead of a pointer. For base types as **int**, **float**, **double**, **char**, **static arrays**, **static structures**, `free_data` function should be **NULL**, if a structure that contains a pointer (and it is allocated with malloc or calloc) then a free_data function (*not NULL*) should be provided.
@@ -89,9 +89,9 @@ Example of creating a stack:
 You have 3 function that will maintain a stack:
 
 ```C
-    int stack_push(stack_t *stack, const void *data, size_t data_size);
-    const void* stack_top(stack_t *stack);
-    int stack_pop(stack_t *stack);
+    scl_error_t stack_push(stack_t *stack, const void *data, size_t data_size);
+    void* stack_top(stack_t *stack);
+    scl_error_t stack_pop(stack_t *stack);
 ```
 
 Function `stack_push` will insert one element into the stack. You should pass an allocated stack into push function, however if stack pointer is NULL than no operation will be executed. As we mentioned above you can insert different data types into the stack, but you will have to provide your functions to maintain the stack (for printing elements).
@@ -108,10 +108,15 @@ Function `stack_top` will return a pointer to the data content of the first elem
     }
 
     int main() {
+
+        scl_error_t err = SCL_OK;
+
         stack_t *stack = create_stack(NULL);
 
         for (int i = 0; i < 10; ++i)
-            stack_push(stack, &i, sizeof(i));
+            if ((err = stack_push(stack, &i, sizeof(i))) != SCL_OK) {
+                scl_error_message(err);
+            }
 
         int top = *(int *)stack_top(stack);
         printf("%d\n", top);
@@ -119,6 +124,8 @@ Function `stack_top` will return a pointer to the data content of the first elem
         // or using the print function
 
         print_int(stack_top(stack));
+
+        free_stack(stack); // You may not check for errors but if you want go on
     }
 ```
 
@@ -133,13 +140,13 @@ Example of using stack_pop:
         stack_t *stack = create_stack(NULL);
 
         for (int i = 0; i < 10; ++i)
-            if (stack_push(stack, &i, sizeof(i))) {
+            if (stack_push(stack, &i, sizeof(i)) != SCL_OK) {
                 printf("Something went wrong inserting &i element\n", i);
                 return EXIT_FAILURE;
             }
 
         for (int i = 0; i < 10; ++i)
-            if (stack_pop(stack)) {
+            if (stack_pop(stack) != SCL_OK) {
                 printf("Something went wrong removing %d element\n", i);
                 return EXIT_FAILURE;
             }
@@ -148,18 +155,19 @@ Example of using stack_pop:
     }
 ```
 
-## Other functions 
+## Other functions
 
 Some functions that also are important for stack maintaining are:
+
 ```C
-    int is_stack_empty(stack_t* stack);
-    int get_stack_size(stack_t* stack);
+    uint8_t is_stack_empty(stack_t* stack);
+    size_t get_stack_size(stack_t* stack);
 ```
 
 First function will check if stack exists and if it is empty.
 
 >**NOTE:** A non-existing stack is also considered as an empty stack.
 
-The second function will return the size of the stack or **-1** if stack does not exist.
+The second function will return the size of the stack or **SIZE_MAX** if stack does not exist.
 
 ## For some other examples of using stacks you can look up at /examples/stack

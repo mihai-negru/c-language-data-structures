@@ -7,13 +7,13 @@ In the scl_priority_queue.h you have three functions that will help you by creat
 ```C
     priority_queue_t* create_priority_queue(
         size_t init_capacity,
-        int (*compare_data)(const void*, const void*),
-        int (*compare_priority)(const void*, const void*),
-        void (*free_data)(void*),
-        void (*free_priority)(void*)
+        compare_func cmp_dt,
+        compare_func cmp_pr,
+        free_func frd_dt,
+        free_func frd_pr
     );
 
-    void free_priority_queue(
+    scl_error_t free_priority_queue(
         priority_queue_t* pqueue
     );
 
@@ -23,10 +23,10 @@ In the scl_priority_queue.h you have three functions that will help you by creat
         size_t data_size,
         size_t pri_size,
         size_t number_of_data,
-        int (*compare_data)(const void*, const void*),
-        int (*compare_priority)(const void*, const void*), 
-        void (*free_data)(void*),
-        void (*free_priority)(void*)
+        compare_func cmp_dt,
+        compare_func cmp_pr,
+        free_func frd_dt,
+        free_func frd_pr
     );
 ```
 
@@ -78,7 +78,7 @@ Example of creating a heap:
 ```C
     priority_queue* pq = create_priority_queue(20, 0, &compare_int, 0, 0);
 
-    free_priority_queue(pq);
+    free_priority_queue(pq); // returns a scl_error_t
 ```
 
 >**NOTE:** Even if you are working with not NULL data pointer (you keep some keys) then you can set **compare_data** to NULL, this function is used just to find a desired data to change its priority but if you o not care about comparing data then you are free to set it to NULL. However all priority functions MUST not be **NULL**, because the data is arranged in priority queue according to its priority.
@@ -90,7 +90,7 @@ Example of creating a heap:
 You have 4 function that will maintain a queue:
 
 ```C
-    int pri_queue_push(
+    scl_error_t pri_queue_push(
         priority_queue_t* pqueue,
         const void* data,
         const void* priority,
@@ -105,7 +105,7 @@ You have 4 function that will maintain a queue:
         priority_queue_t* pqueue
     );
 
-    int pri_queue_pop(
+    scl_error_t pri_queue_pop(
         priority_queue_t* pqueue
     );
 ```
@@ -144,14 +144,18 @@ Example of using above functions:
         priority_queue_t* pq = create_priority_queue(
             10, &compare_int, &compare_int, NULL, NULL);
 
+        scl_error_t err = SCL_OK;
+
         for (int i = 0; i < nr_of_elem; ++i) {
             int data = 0;
             scanf("%d", &data);
 
-            pri_queue_push(pq, &data, &data, sizeof(data), sizeof(data));
+            if ((err = pri_queue_push(pq, &data, &data, sizeof(data), sizeof(data))) != SCL_OK) {
+                scl_error_message(err);
+            }
         }
 
-        pri_queue_pop(pq);
+        pri_queue_pop(pq); // do same as i did with pri_queue_push or do not
         pri_queue_pop(pq);
         pri_queue_pop(pq);
         pri_queue_pop(pq);
@@ -167,7 +171,7 @@ Example of using above functions:
             printf("Could not fetch top element from pq\n");
         }
 
-        free_priority_queue(pq);
+        free_priority_queue(pq); // Also returns a sccl_error_t
 
         fclose(fin);
         fclose(fout);
@@ -183,14 +187,14 @@ Example of using above functions:
 In the header file are specified 4 functions to find and change data and priority:
 
 ```C
-    int change_node_priority(
+    scl_error_t change_node_priority(
         priority_queue_t* pqueue,
         size_t node_index,
         const void* new_pri,
         size_t pri_size
     );
     
-    int change_node_data(
+    scl_error_t change_node_data(
         priority_queue_t* pqueue,
         size_t node_index,
         const void* new_data,
@@ -226,7 +230,7 @@ Example of using above functions:
         int pri = 1;
         int new_pri = 10;
 
-        if (change_node_priority(pq, pri_find_pri_index(pq, &pri), &new_pri, sizeof(pri))) {
+        if (change_node_priority(pq, pri_find_pri_index(pq, &pri), &new_pri, sizeof(pri)) != SCL_OK) {
             printf("Something went wrong, must call the cops\n");
         } else {
             printf("Well you now how to change data and priority now\n");
@@ -246,15 +250,15 @@ Example of using above functions:
         priority_queue_t* pqueue
     );
 
-    int is_priq_empty(
+    uint8_t is_priq_empty(
         priority_queue_t* pqueue
     );
 
-    void heap_sort(
+    scl_error_t heap_sort(
         void* arr,
         size_t number_of_arr,
         size_t arr_elem_size,
-        int (*compare_arr)(const void*, const void*)
+        compare_func cmp
     );
 ```
 

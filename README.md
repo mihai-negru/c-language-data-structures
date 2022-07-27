@@ -1,5 +1,4 @@
 # Taskuri
-* redBlackTree
 * unordGraph
 * ordGraph
 * costGraphs

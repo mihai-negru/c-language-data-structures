@@ -6,7 +6,7 @@ In the scl_queue.h you have two functions that will help you by creating a queue
 
 ```C
     queue_t* create_queue(void (*free_data)(void *));
-    void free_queue(queue_t* queue);
+    scl_error_t free_queue(queue_t* queue);
 ```
 
 First function will take a pointer to a function that will free the content of the actual data. However you can send NULL(0) instead of a pointer. For base types as **int**, **float**, **double**, **char**, **static arrays**, **static structures**, `free_data` function should be **NULL**, if a structure that contains a pointer (and it is allocated with malloc or calloc) then a free_data function (*not NULL*) should be provided.
@@ -89,10 +89,10 @@ Example of creating a queue:
 You have 4 function that will maintain a queue:
 
 ```C
-    int queue_push(queue_t* queue, const void* data, size_t data_size);
-    const void* queue_front(queue_t* queue);
-    const void* queue_back(queue_t* queue);
-    int queue_pop(queue_t* queue);
+    scl_error_t queue_push(queue_t* queue, const void* data, size_t data_size);
+    void* queue_front(queue_t* queue);
+    void* queue_back(queue_t* queue);
+    scl_error_t queue_pop(queue_t* queue);
 ```
 
 Function `queue_push` will insert one element into the queue. You should pass an allocated queue into push function, however if queue pointer is NULL than no operation will be executed. As we mentioned above you can insert different data types into the queue, but you will have to provide your functions to maintain the queue (for printing elements).
@@ -109,10 +109,15 @@ Function `queue_front(back` will return a pointer to the data content of the fir
     }
 
     int main() {
+
+        scl_error_t err = SCL_OK;
+
         queue_t* queue = create_queue(NULL);
 
         for (int i = 0; i < 10; ++i)
-            queue_push(queue, &i, sizeof(i));
+            if ((err = queue_push(queue, &i, sizeof(i))) != SCL_OK) {
+                scl_error_message(err);
+            }
 
         int top = *(int *)queue_front(queue);
         // Or queue_back(queue);
@@ -121,6 +126,8 @@ Function `queue_front(back` will return a pointer to the data content of the fir
         // or using the print function
 
         print_int(queue_top(queue));
+
+        free_queue(queue); // You may not check free function for error
     }
 ```
 
@@ -135,13 +142,13 @@ Example of using queue_pop:
         queue_t* queue = create_queue(NULL);
 
         for (int i = 0; i < 10; ++i)
-            if (queue_push(queue, &i, sizeof(i))) {
+            if (queue_push(queue, &i, sizeof(i)) != SCL_OK) {
                 printf("Something went wrong inserting &i element\n", i);
                 return EXIT_FAILURE;
             }
 
         for (int i = 0; i < 10; ++i)
-            if (queue_pop(queue)) {
+            if (queue_pop(queue) != SCL_OK) {
                 printf("Something went wrong removing %d element\n", i);
                 return EXIT_FAILURE;
             }
@@ -154,14 +161,14 @@ Example of using queue_pop:
 
 Some functions that also are important for queue maintaining are:
 ```C
-    int is_queue_empty(queue_t* queue);
-    int get_queue_size(queue_t* queue);
+    uint8_t is_queue_empty(queue_t* queue);
+    size_t get_queue_size(queue_t* queue);
 ```
 
 First function will check if queue exists and if it is empty.
 
 >**NOTE:** A non-existing queue is also considered as an empty queue.
 
-The second function will return the size of the queue or **-1** if queue does not exist.
+The second function will return the size of the queue or **SIZE_MAX** if queue does not exist.
 
 ## For some other examples of using queues you can look up at /examples/queue

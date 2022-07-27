@@ -6,15 +6,15 @@ In the scl_list.h file you have two functions that helps you to create and delet
 
 ```C
     list_t* create_list(
-        int (*compare_data)(const void *, const void *),
-        void (*print_data)(const void *),
-        void (*free_data)(void *))
+        compare_func cmp,
+        simple_action print,
+        free_func frd)
 ```
 
 create_list function will allocate a list on heap and will return a pointer to its location. However you should provide 3 function that are neccessary for maintaing the linked list.
 
 ```C
-    int compare_data(const void *elem1, const void *elem2)
+    typedef int (*compare_data)(const void *elem1, const void *elem2)
 ```
 
 Function will take 2 generic pointers and according to user needs will return:
@@ -112,7 +112,9 @@ insertion would show like:
 
     for (int i = 0; i < 10; ++i) {
         scanf("%d", &data); // You could replace with fscanf
-        list_insert(list, &data, sizeof(data));
+        if (list_insert(list, &data, sizeof(data)) != SCL_OK) {
+            // Something went wrong
+        }
     }
 ```
 
@@ -133,13 +135,13 @@ If you have dynamic elements in a structure and want to store the strucutre in t
         data.name = malloc(SET_A_WORD_SIZE);
         scanf("%d", &data.age);
         scanf("%s", data.name);
-        list_insert(list, &data, sizeof(data));
+        list_insert(list, &data, sizeof(data)); // Returns a scl_error_t so you may check
     }
 
     // It is very important not to free manually data.name
     // This will be done in freeing the entire list
 
-    free_list(list);
+    free_list(list); // No need to check a free funcion for error but if you want go on
     // Will free every allocation made for list including data.name
 ```
 
@@ -158,18 +160,23 @@ If you have dynamic elements in a structure and want to store the strucutre in t
 Let's take the above example of insertion with integers and let remove some elements:
 
 ```C
+    scl_error_t err = SCL_OK;
+
     // By data
     data = 4;
-    if (list_delete_data(list, &data))
+    if ((err = list_delete_data(list, &data)) != SCL_OK) {
         printf("Failed to remove %d\n", data);
-
+        scl_error_message(err);
+    }
+       
     // By index
-    if (list_delete_index(list, 4))
-        printf("Failed to remove index 4\n");
-
+    if ((err = list_delete_index(list, 4)) != SCL_OK) {
+        scl_error_message(err);
+    }
     // By range
-    if (list_erase(list, 1, 3))
-        printf("Failed to remove range [1,3]\n");
+    if ((err = list_(list, 1, 3)) != SCL_OK) {
+        scl_error_message(err);
+    }
 ```
 
 These 3 functions can return either 0 if deletion was successfully or 1 if something went wrong.
@@ -225,10 +232,10 @@ Example of changing and swapping two data:
     list_node_t* node1 = list_find_index(list, 0);
     list_node_t* node2 = list_find_index(list, list->size - 1);
 
-    list_swap_data(list, node1, node2);
+    list_swap_data(list, node1, node2); // Also returns a scl_error_t
     
     data = 20;
-    list_change_data(list, node1, &data, sizeof(data));
+    list_change_data(list, node1, &data, sizeof(data)); // Also returns a scl_error_t
 
     // list = 20 -> 2 -> 3 -> 4 -> 5
 ```
@@ -267,7 +274,7 @@ Examples of list filter and mapping
 
     // list = 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
-    list_map(list, &map, sizeof(int));
+    list_map(list, &map, sizeof(int)); // Check for SCL_OK
 
     // list = 1 -> 0 -> 1 -> 0 -> 1 -> 0 -> 1 -> 0 -> 1 -> 0
 
