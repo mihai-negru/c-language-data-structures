@@ -879,20 +879,20 @@ uint8_t is_priq_empty(priority_queue_t* pqueue) {
  * method. Function will call heapify function to make a priority queue
  * where array elements will be priorities and data will be set as NULL.
  * 
- * @param arr an array of any typeto sort its elements
- * @param number_of_arr number of elements within the selected array
+ * @param arr an array of any type to sort its elements
+ * @param number_of_elem number of elements within the selected array
  * @param arr_elem_size size of one element from selected array
  * @param cmp pointer to a function to compare two sets of data from array
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t heap_sort(void* arr, size_t number_of_arr, size_t arr_elem_size, compare_func cmp) {
+scl_error_t heap_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
     /* Check if input data is valid */
-    if ((NULL == arr) || (0 == number_of_arr) || (0 == arr_elem_size) || (NULL == cmp)) {
+    if ((NULL == arr) || (0 == number_of_elem) || (0 == arr_elem_size) || (NULL == cmp)) {
         return SCL_INVALID_INPUT;
     }
 
     /* Heapify the input array in O(N) complexity */
-    priority_queue_t* heap = heapify(NULL, arr, 0, arr_elem_size, number_of_arr, NULL, cmp, NULL, NULL);
+    priority_queue_t* heap = heapify(NULL, arr, 0, arr_elem_size, number_of_elem, NULL, cmp, NULL, NULL);
 
     if (NULL == heap) {
         return SCL_NULL_PRIORITY_QUEUE;
@@ -907,7 +907,7 @@ scl_error_t heap_sort(void* arr, size_t number_of_arr, size_t arr_elem_size, com
     }
 
     /* Rearrange input array data from heap structure in O(NlogN) complexity */
-    for (size_t iter = 0; iter < number_of_arr; ++iter) {
+    for (size_t iter = 0; iter < number_of_elem; ++iter) {
         memcpy((char*)arr + iter * arr_elem_size, pri_queue_top_pri(heap), arr_elem_size);
         scl_error_t err = pri_queue_pop(heap);
 

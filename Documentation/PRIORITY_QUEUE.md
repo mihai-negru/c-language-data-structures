@@ -256,7 +256,7 @@ Example of using above functions:
 
     scl_error_t heap_sort(
         void* arr,
-        size_t number_of_arr,
+        size_t number_of_elem,
         size_t arr_elem_size,
         compare_func cmp
     );

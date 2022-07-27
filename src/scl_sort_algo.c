@@ -23,3 +23,163 @@
  */
 
 #include "./include/scl_sort_algo.h"
+
+/**
+ * @brief 
+ * 
+ * @param arr an array of any type to sort its elements
+ * @param number_of_elem number of elements within the selected array
+ * @param arr_elem_size size of one element from selected array
+ * @param cmp pointer to a function to compare two sets of data from array
+ * @return scl_error_t enum object for handling errors
+ */
+scl_error_t quick_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
+    (void)arr;
+    (void)number_of_elem;
+    (void)arr_elem_size;
+    (void)cmp;
+
+    return SCL_OK;
+}
+
+/**
+ * @brief 
+ * 
+ * @param arr an array of any type to sort its elements
+ * @param number_of_elem number of elements within the selected array
+ * @param arr_elem_size size of one element from selected array
+ * @param cmp pointer to a function to compare two sets of data from array
+ * @return scl_error_t enum object for handling errors
+ */
+scl_error_t merge_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
+    (void)arr;
+    (void)number_of_elem;
+    (void)arr_elem_size;
+    (void)cmp;
+
+    return SCL_OK;
+}
+
+/**
+ * @brief 
+ * 
+ * @param arr an array of any type to sort its elements
+ * @param number_of_elem number of elements within the selected array
+ * @param arr_elem_size size of one element from selected array
+ * @param cmp pointer to a function to compare two sets of data from array
+ * @return scl_error_t enum object for handling errors
+ */
+scl_error_t bubble_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
+    (void)arr;
+    (void)number_of_elem;
+    (void)arr_elem_size;
+    (void)cmp;
+
+    return SCL_OK;
+}
+
+/**
+ * @brief 
+ * 
+ * @param arr an array of any type to sort its elements
+ * @param number_of_elem number of elements within the selected array
+ * @param arr_elem_size size of one element from selected array
+ * @param cmp pointer to a function to compare two sets of data from array
+ * @return scl_error_t enum object for handling errors
+ */
+scl_error_t radix_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
+    (void)arr;
+    (void)number_of_elem;
+    (void)arr_elem_size;
+    (void)cmp;
+
+    return SCL_OK;
+}
+
+/**
+ * @brief 
+ * 
+ * @param arr an array of any type to sort its elements
+ * @param number_of_elem number of elements within the selected array
+ * @param arr_elem_size size of one element from selected array
+ * @param cmp pointer to a function to compare two sets of data from array
+ * @return scl_error_t enum object for handling errors
+ */
+scl_error_t bucket_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
+    (void)arr;
+    (void)number_of_elem;
+    (void)arr_elem_size;
+    (void)cmp;
+
+    return SCL_OK;
+}
+
+/**
+ * @brief 
+ * 
+ * @param arr an array of any type to sort its elements
+ * @param number_of_elem number of elements within the selected array
+ * @param arr_elem_size size of one element from selected array
+ * @param cmp pointer to a function to compare two sets of data from array
+ * @return scl_error_t enum object for handling errors
+ */
+scl_error_t shell_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
+    (void)arr;
+    (void)number_of_elem;
+    (void)arr_elem_size;
+    (void)cmp;
+
+    return SCL_OK;
+}
+
+/**
+ * @brief 
+ * 
+ * @param arr an array of any type to sort its elements
+ * @param number_of_elem number of elements within the selected array
+ * @param arr_elem_size size of one element from selected array
+ * @param cmp pointer to a function to compare two sets of data from array
+ * @return scl_error_t enum object for handling errors
+ */
+scl_error_t insertion_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
+    (void)arr;
+    (void)number_of_elem;
+    (void)arr_elem_size;
+    (void)cmp;
+
+    return SCL_OK;
+}
+
+/**
+ * @brief 
+ * 
+ * @param arr an array of any type to sort its elements
+ * @param number_of_elem number of elements within the selected array
+ * @param arr_elem_size size of one element from selected array
+ * @param cmp pointer to a function to compare two sets of data from array
+ * @return scl_error_t enum object for handling errors
+ */
+scl_error_t selection_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
+    (void)arr;
+    (void)number_of_elem;
+    (void)arr_elem_size;
+    (void)cmp;
+
+    return SCL_OK;
+}
+
+/**
+ * @brief 
+ * 
+ * @param arr an array of any type to sort its elements
+ * @param number_of_elem number of elements within the selected array
+ * @param arr_elem_size size of one element from selected array
+ * @return scl_error_t enum object for handling errors
+ */
+scl_error_t reverse_array(void* arr, size_t number_of_elem, size_t arr_elem_size) {
+    (void)arr;
+    (void)number_of_elem;
+    (void)arr_elem_size;
+
+    return SCL_OK;
+}

@@ -76,6 +76,6 @@ scl_error_t         pri_queue_traverse          (priority_queue_t* pqueue, pri_a
 size_t              pri_queue_size              (priority_queue_t* pqueue);
 uint8_t             is_priq_empty               (priority_queue_t* pqueue);
 
-scl_error_t         heap_sort                   (void* arr, size_t number_of_arr, size_t arr_elem_size, compare_func cmp);
+scl_error_t         heap_sort                   (void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp);
 
 #endif /* PRIORITY_QUEUE_UTILS_H_ */
