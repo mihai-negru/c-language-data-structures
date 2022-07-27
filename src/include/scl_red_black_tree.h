@@ -50,7 +50,7 @@ typedef struct rbk_tree_node {
     struct rbk_tree_node* parent;                               /* Pointer to parent node */
     struct rbk_tree_node* left;                                 /* Pointer to left child node */
     struct rbk_tree_node* right;                                /* Pointer to right child node */
-    uint64_t count;                                             /* Number of nodes with the same data value */
+    uint32_t count;                                             /* Number of nodes with the same data value */
     node_color color;                                           /* Color of a node */
 } rbk_tree_node_t;
 
@@ -69,13 +69,13 @@ typedef struct {
 typedef void (*rbk_action)(rbk_tree_t* tree, const rbk_tree_node_t*);
 
 rbk_tree_t*             create_rbk                          (compare_func cmp, free_func frd);
-void                    free_rbk                            (rbk_tree_t* tree);
+scl_error_t             free_rbk                            (rbk_tree_t* tree);
 
-int                     rbk_insert                          (rbk_tree_t* tree, const void* data, size_t data_size);
+scl_error_t             rbk_insert                          (rbk_tree_t* tree, const void* data, size_t data_size);
 rbk_tree_node_t*        rbk_find_data                       (rbk_tree_t* tree, const void* data);
-int                     rbk_node_level                      (rbk_tree_t* tree, const rbk_tree_node_t* base_node);
+int32_t                 rbk_node_level                      (rbk_tree_t* tree, const rbk_tree_node_t* base_node);
 
-int                     is_rbk_empty                        (rbk_tree_t* tree);
+uint8_t                 is_rbk_empty                        (rbk_tree_t* tree);
 rbk_tree_node_t*        get_rbk_root                        (rbk_tree_t* tree);
 size_t                  get_rbk_size                        (rbk_tree_t* tree);
 
@@ -84,7 +84,7 @@ rbk_tree_node_t*        rbk_min_node                        (rbk_tree_t* tree, r
 void*                   rbk_max_data                        (rbk_tree_t* tree, rbk_tree_node_t* root);
 void*                   rbk_min_data                        (rbk_tree_t* tree, rbk_tree_node_t* root);
 
-int                     rbk_delete                          (rbk_tree_t* tree, void* data, size_t data_size);
+scl_error_t             rbk_delete                          (rbk_tree_t* tree, void* data, size_t data_size);
 
 rbk_tree_node_t*        rbk_predecessor_node                (rbk_tree_t* tree, const void* data);
 rbk_tree_node_t*        rbk_successor_node                  (rbk_tree_t* tree, const void* data);
@@ -93,9 +93,9 @@ void*                   rbk_succecessor_data                (rbk_tree_t* tree, c
 rbk_tree_node_t*        rbk_lowest_common_ancestor_node     (rbk_tree_t* tree, const void* data1, const void* data2);
 void*                   rbk_lowest_common_ancestor_data     (rbk_tree_t* tree, const void* data1, const void* data2);
 
-void                    rbk_traverse_inorder                (rbk_tree_t* tree, rbk_action action);
-void                    rbk_traverse_preorder               (rbk_tree_t* tree, rbk_action action);
-void                    rbk_traverse_postorder              (rbk_tree_t* tree, rbk_action action);
-void                    rbk_traverse_level                  (rbk_tree_t* tree, rbk_action action);
+scl_error_t             rbk_traverse_inorder                (rbk_tree_t* tree, rbk_action action);
+scl_error_t             rbk_traverse_preorder               (rbk_tree_t* tree, rbk_action action);
+scl_error_t             rbk_traverse_postorder              (rbk_tree_t* tree, rbk_action action);
+scl_error_t             rbk_traverse_level                  (rbk_tree_t* tree, rbk_action action);
 
 #endif /* _RED_BLACK_TREE_UTILS_H_ */

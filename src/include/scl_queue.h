@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <errno.h>
 #include "scl_config.h"
 
@@ -52,16 +53,16 @@ typedef struct {
 } queue_t;
 
 queue_t*        create_queue        (free_func frd);
-void            free_queue          (queue_t* queue);
-void            print_queue         (queue_t* queue, simple_action print);
+scl_error_t     free_queue          (queue_t* queue);
+scl_error_t     print_queue         (queue_t* queue, simple_action print);
 
-int             is_queue_empty      (queue_t* queue);
-int             get_queue_size      (queue_t* queue);
+uint8_t         is_queue_empty      (queue_t* queue);
+size_t          get_queue_size      (queue_t* queue);
 
-int             change_queue_data   (void* old_data, const void* new_data, size_t data_size);
+scl_error_t     change_queue_data   (void* old_data, const void* new_data, size_t data_size);
 void*           queue_front         (queue_t* queue);
 void*           queue_back          (queue_t* queue);
-int             queue_push          (queue_t* queue, const void* data, size_t data_size);
-int             queue_pop           (queue_t* queue);
+scl_error_t     queue_push          (queue_t* queue, const void* data, size_t data_size);
+scl_error_t     queue_pop           (queue_t* queue);
 
 #endif /* QUEUE_UTILS_H_ */

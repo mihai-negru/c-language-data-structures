@@ -108,8 +108,9 @@ static queue_node_t* create_queue_node(const void* data, size_t data_size) {
  * that data pointer does not contain any dinamically allocated elements.
  * 
  * @param queue an allocated queue object
+ * @return scl_error_t enum object for handling errors
  */
-void free_queue(queue_t* queue) {
+scl_error_t free_queue(queue_t* queue) {
     /* Check if queue needs to be freed */
     if (NULL != queue) {
 
@@ -147,7 +148,11 @@ void free_queue(queue_t* queue) {
 
         /* Set queue pointer as NULL */
         queue = NULL;
+
+        return SCL_OK;
     }
+
+    return SCL_NULL_QUEUE;
 }
 
 /**
@@ -159,8 +164,9 @@ void free_queue(queue_t* queue) {
  * 
  * @param queue a queue object
  * @param print a pointer to a function to print content of data pointer
+ * @return scl_error_t enum object for handling errors
  */
-void print_queue(queue_t* queue, simple_action print) {
+scl_error_t print_queue(queue_t* queue, simple_action print) {
     /* Check is queue is allocated */
     if (NULL != queue) {
 
@@ -179,7 +185,11 @@ void print_queue(queue_t* queue, simple_action print) {
             print(iterator->data);
             iterator = iterator->next;
         }
+
+        return SCL_OK;
     }
+
+    return SCL_NULL_QUEUE;
 }
 
 /**
@@ -189,10 +199,10 @@ void print_queue(queue_t* queue, simple_action print) {
  * it will return false. A NULL queue is also considered as an
  * empty queue
  * 
- * @param stack a stack obecjt
- * @return int 1(True) if queue is not allocated or empty and 0(False) otherwise
+ * @param queue queue object
+ * @return uint8_t 1(True) if queue is not allocated or empty and 0(False) otherwise
  */
-int is_queue_empty(queue_t* queue) {
+uint8_t is_queue_empty(queue_t* queue) {
     if ((NULL == queue) || (NULL == queue->front)) {
         return 1;
     }
@@ -205,12 +215,12 @@ int is_queue_empty(queue_t* queue) {
  * allocated then function will return -1 value.
  * 
  * @param queue a queue object
- * @return int -1 if queue is not allocated or
+ * @return size_t -1 if queue is not allocated or
  * queue size
  */
-int get_queue_size(queue_t* queue) {
+size_t get_queue_size(queue_t* queue) {
     if (NULL == queue) {
-        return -1;
+        return SIZE_MAX;
     }
 
     return queue->size;
@@ -222,19 +232,19 @@ int get_queue_size(queue_t* queue) {
  * @param old_data pointer to the old data type
  * @param new_data pointer to the new data type
  * @param data_size size of the data type
- * @return int 1 for failure, 0 otherwise
+ * @return scl_error_t enum object for handling errors
  */
-int change_queue_data(void* old_data, const void* new_data, size_t data_size) {
+scl_error_t change_queue_data(void* old_data, const void* new_data, size_t data_size) {
     /* Check if input data is valid */
     if ((NULL == old_data) || (NULL == new_data) || (0 == data_size)) {
-        return 1;
+        return SCL_CANNOT_CHANGE_DATA;
     }
 
     /* Copy bytes from new data to old data */
     memcpy(old_data, new_data, data_size);
 
     /* Return success */
-    return 0;
+    return SCL_OK;
 }
 
 /**
@@ -281,13 +291,16 @@ void* queue_back(queue_t* queue) {
  * @param queue a queue object
  * @param data pointer to an address of a generic data type
  * @param dataSize size of a generic data type element
- * @return int 1(Fail) if function failed or 0(Success) if
- * pushing on the queue went successfully
+ * @return scl_error_t enum object for handling errors
  */
-int queue_push(queue_t* queue, const void* data, size_t data_size) {
+scl_error_t queue_push(queue_t* queue, const void* data, size_t data_size) {
     /* Check if queue and data addresses are valid */
-    if ((NULL == queue) || (NULL == data)) {
-        return 1;
+    if (NULL == queue) {
+        return SCL_NULL_QUEUE;
+    }
+
+    if (NULL == data) {
+        return SCL_INVALID_DATA;
     }
 
     /* Create a new queue node */
@@ -295,7 +308,7 @@ int queue_push(queue_t* queue, const void* data, size_t data_size) {
 
     /* Check if new node was allocated */
     if (NULL == new_node) {
-        return 1;
+        return SCL_NOT_ENOUGHT_MEM_FOR_NODE;
     }
 
     /* Insert node into queue */
@@ -315,7 +328,7 @@ int queue_push(queue_t* queue, const void* data, size_t data_size) {
     ++(queue->size);
 
     /* Pushing went successfully */
-    return 0;
+    return SCL_OK;
 }
 
 /**
@@ -326,14 +339,18 @@ int queue_push(queue_t* queue, const void* data, size_t data_size) {
  * function provided by the user at creation of the stack.
  * 
  * @param queue a queue object
- * @return int 1(Fail) if function failed or 0(Success) if
- * popping on the queue went successfully
+ * @return scl_error_t enum object for handling errors
  */
-int queue_pop(queue_t* queue) {
+scl_error_t queue_pop(queue_t* queue) {
     /* Check if queue is allocated and it is not empty */
-    if ((NULL == queue) || (NULL == queue->front) || (0 == queue->size)) {
-        return 1;
+    if (NULL == queue) {
+        return SCL_NULL_QUEUE;
     }
+
+    if ((NULL == queue->front) || (0 == queue->size)) {
+        return SCL_DELETE_FROM_EMPTY_OBJECT;
+    }
+
 
     /* Pointer to current wipe node */
     queue_node_t* delete_node = queue->front;
@@ -366,5 +383,5 @@ int queue_pop(queue_t* queue) {
     delete_node = NULL;
 
     /* Popping went successfully */
-    return 0;
+    return SCL_OK;
 }

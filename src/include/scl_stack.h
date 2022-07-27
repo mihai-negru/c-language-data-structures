@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <errno.h>
 #include "scl_config.h"
 
@@ -51,15 +52,15 @@ typedef struct {
 } stack_t;
 
 stack_t*        create_stack        (free_func frd);
-void            free_stack          (stack_t* stack);
-void            print_stack         (stack_t* stack, simple_action print);
+scl_error_t     free_stack          (stack_t* stack);
+scl_error_t     print_stack         (stack_t* stack, simple_action print);
 
-int             is_stack_empty      (stack_t* stack);
-int             get_stack_size      (stack_t* stack);
+uint8_t         is_stack_empty      (stack_t* stack);
+size_t          get_stack_size      (stack_t* stack);
 
-int             change_stack_data   (void* old_data, const void* new_data, size_t data_size);
+scl_error_t     change_stack_data   (void* old_data, const void* new_data, size_t data_size);
 void*           stack_top           (stack_t* stack);
-int             stack_push          (stack_t* stack, const void* data, size_t data_size);
-int             stack_pop           (stack_t* stack);
+scl_error_t     stack_push          (stack_t* stack, const void* data, size_t data_size);
+scl_error_t     stack_pop           (stack_t* stack);
 
 #endif /* STACK_UTILS_H_ */

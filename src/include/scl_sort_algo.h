@@ -28,6 +28,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <errno.h>
+#include "scl_priority_queue.h"
+#include "scl_config.h"
 
 #endif /* SORT_ALGORITHMS_H_ */

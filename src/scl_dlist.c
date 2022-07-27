@@ -127,8 +127,9 @@ static dlist_node_t* create_dlist_node(const void* data, size_t data_size) {
  * then a set of paired square brakets will be printed on output.
  * 
  * @param list a double linked list objects
+ * @return scl_error_t enum object for handling errors
  */
-void print_front_dlist(dlist_t* list) {
+scl_error_t print_front_dlist(dlist_t* list) {
     if (NULL != list) {
 
         /* If list is empty, print [] */
@@ -143,7 +144,11 @@ void print_front_dlist(dlist_t* list) {
             list->print(iterator->data);
             iterator = iterator->next;
         }
+
+        return SCL_OK;
     }
+
+    return SCL_NULL_DLIST;
 }
 
 /**
@@ -155,8 +160,9 @@ void print_front_dlist(dlist_t* list) {
  * then a set of paired square brakets will be printed on output.
  * 
  * @param list a double linked list objects
+ * @return scl_error_t enum object for handling errors
  */
-void print_back_dlist(dlist_t* list) {
+scl_error_t print_back_dlist(dlist_t* list) {
     if (NULL != list) {
 
         /* If list is empty, print [] */
@@ -171,7 +177,11 @@ void print_back_dlist(dlist_t* list) {
             list->print(iterator->data);
             iterator = iterator->prev;
         }
+
+        return SCL_OK;
     }
+
+    return SCL_NULL_DLIST;
 }
 
 /**
@@ -183,8 +193,9 @@ void print_back_dlist(dlist_t* list) {
  * 
  * @param list an allocated double linked list object. If list is not allocated
  * no operation will be needed
+ * @return scl_error_t enum object for handling errors
  */
-void free_dlist(dlist_t* list) {
+scl_error_t free_dlist(dlist_t* list) {
     /* Check if list needs to be deallocated */
     if (NULL != list) {
 
@@ -221,7 +232,11 @@ void free_dlist(dlist_t* list) {
 
         /* Set list pointer as NULL */
         list = NULL;
+
+        return SCL_OK;
     }
+
+    return SCL_NULL_DLIST;
 }
 
 /**
@@ -232,10 +247,10 @@ void free_dlist(dlist_t* list) {
  * empty list
  * 
  * @param list a double linked list object 
- * @return int true(1) if list is empty and false(0) if list is not
+ * @return uint8_t true(1) if list is empty and false(0) if list is not
  * empty
  */
-int is_dlist_empty(dlist_t* list) {
+uint8_t is_dlist_empty(dlist_t* list) {
     if ((NULL == list) || (NULL == list->head)) {
         return 1;
     }
@@ -248,12 +263,12 @@ int is_dlist_empty(dlist_t* list) {
  * allocated then function will return -1 value.
  * 
  * @param list a double linked list object
- * @return int -1 if list is not allocated or
+ * @return size_t -1 if list is not allocated or
  * list size
  */
-int get_dlist_size(dlist_t* list) {
+size_t get_dlist_size(dlist_t* list) {
     if (NULL == list) {
-        return -1;
+        return SIZE_MAX;
     }
 
     return list->size;
@@ -295,19 +310,19 @@ dlist_node_t* get_dlist_tail(dlist_t* list) {
  * will swap data pointers not node pointers. Function may fail if
  * list is not allocated
  * 
- * @param list a double linked list object
  * @param first_node first double linked list node
  * @param second_node second double linked list node
+ * @return scl_error_t enum object for handling errors
  */
-void dlist_swap_data(dlist_t* list, dlist_node_t* first_node, dlist_node_t* second_node) {
+scl_error_t dlist_swap_data(dlist_node_t* first_node, dlist_node_t* second_node) {
     /* Check if list and input nodes are allocated */
-    if ((NULL == list) || (NULL == first_node) || (NULL == second_node)) {
-        return;
+    if ((NULL == first_node) || (NULL == second_node)) {
+        return SCL_CANNOT_SWAP_DATA;
     }
 
     /* If nodes are the same then no swap is nedeed */
     if (first_node == second_node) {
-        return;
+        return SCL_SWAP_SAME_DATA;
     }
 
     /*
@@ -317,6 +332,8 @@ void dlist_swap_data(dlist_t* list, dlist_node_t* first_node, dlist_node_t* seco
     void *temp = first_node->data;
     first_node->data = second_node->data;
     second_node->data = temp;
+
+    return SCL_OK;
 }
 
 /**
@@ -327,22 +344,21 @@ void dlist_swap_data(dlist_t* list, dlist_node_t* first_node, dlist_node_t* seco
  * than current one than function may have unknown behavior. Function may fail if instead
  * of baseNode pointer user sends a pointer(void *) to any different type of data.  
  * 
- * @param list a double linked list object
  * @param base_node a double linked list node object to change its data
  * @param new_data a pointer to new data
  * @param data_size size of the new data
- * @return int function will return 1 if it fails and 0 otherwise
+ * @return scl_error_t enum object for handling errors
  */
-int dlist_change_data(dlist_t* list, const dlist_node_t* base_node, const void* new_data, size_t data_size) {
+scl_error_t dlist_change_data(const dlist_node_t* base_node, const void* new_data, size_t data_size) {
     /* Check if input is valid */
-    if ((NULL == list) || (NULL == base_node) || (NULL == base_node->data) || (NULL == new_data)) {
-        return 1;
+    if ((NULL == base_node) || (NULL == base_node->data) || (NULL == new_data)) {
+        return SCL_CANNOT_CHANGE_DATA;
     }
 
     /* Copy all bytes from new data to current data */
     memmove(base_node->data, new_data, data_size);
 
-    return 0;
+    return SCL_OK;
 }
 
 /**
@@ -351,12 +367,20 @@ int dlist_change_data(dlist_t* list, const dlist_node_t* base_node, const void* 
  * @param list a double linked list object
  * @param data a pointer for data to insert in list
  * @param data_size the size of current data type
- * @return int 1 if function fails or 0 if insertion was successfully
+ * @return scl_error_t enum object for handling errors
  */
-int dlist_insert(dlist_t* list, const void* data, size_t data_size) {
+scl_error_t dlist_insert(dlist_t* list, const void* data, size_t data_size) {
     /* Check if list and data are valid */
-    if ((NULL == list) || (NULL == data)) {
-        return 1;
+    if (NULL == list) {
+        return SCL_NULL_DLIST;
+    }
+
+    if (NULL == data) {
+        return SCL_INVALID_DATA;
+    }
+
+    if (0 == data_size) {
+        return SCL_DATA_SIZE_ZERO;
     }
 
     /* Create a new linked list node */
@@ -364,7 +388,7 @@ int dlist_insert(dlist_t* list, const void* data, size_t data_size) {
 
     /* Check if node was allocated */
     if (NULL == new_node) {
-        return 1;
+        return SCL_NOT_ENOUGHT_MEM_FOR_NODE;
     }
 
     /* Insert item in list */
@@ -388,7 +412,7 @@ int dlist_insert(dlist_t* list, const void* data, size_t data_size) {
     ++(list->size);
 
     /* Insertion went successfully */
-    return 0;
+    return SCL_OK;
 }
 
 /**
@@ -399,12 +423,20 @@ int dlist_insert(dlist_t* list, const void* data, size_t data_size) {
  * @param list a double linked list object
  * @param data a pointer for data to insert in list
  * @param data_size the size of current data type
- * @return int 1 if function fails or 0 if insertion was successfully
+ * @return scl_error_t enum object for handling errors
  */
-int dlist_insert_order(dlist_t* list, const void* data, size_t data_size) {
+scl_error_t dlist_insert_order(dlist_t* list, const void* data, size_t data_size) {
     /* Check if list and data are valid */
-    if ((NULL == list) || (NULL == data)) {
-        return 1;
+    if (NULL == list) {
+        return SCL_NULL_DLIST;
+    }
+
+    if (NULL == data) {
+        return SCL_INVALID_DATA;
+    }
+
+    if (0 == data_size) {
+        return SCL_DATA_SIZE_ZERO;
     }
 
     /* Create a new linked list node */
@@ -412,7 +444,7 @@ int dlist_insert_order(dlist_t* list, const void* data, size_t data_size) {
 
     /* Check if node was allocated */
     if (NULL == new_node) {
-        return 1;
+        return SCL_NOT_ENOUGHT_MEM_FOR_NODE;
     }
 
     /* Insert element into the list */
@@ -461,7 +493,7 @@ int dlist_insert_order(dlist_t* list, const void* data, size_t data_size) {
     ++(list->size);
 
     /* Insertion went successfully */
-    return 0;
+    return SCL_OK;
 }
 
 /**
@@ -470,12 +502,20 @@ int dlist_insert_order(dlist_t* list, const void* data, size_t data_size) {
  * @param list a double linked list object
  * @param data a pointer for data to insert in list
  * @param data_size the size of current data type
- * @return int 1 if function fails or 0 if insertion was successfully
+ * @return scl_error_t enum object for handling errors
  */
-int dlist_insert_front(dlist_t* list, const void* data, size_t data_size) {
+scl_error_t dlist_insert_front(dlist_t* list, const void* data, size_t data_size) {
     /* Check if list and data are valid */
-    if ((NULL == list) || (NULL == data)) {
-        return 1;
+    if (NULL == list) {
+        return SCL_NULL_DLIST;
+    }
+
+    if (NULL == data) {
+        return SCL_INVALID_DATA;
+    }
+
+    if (0 == data_size) {
+        return SCL_DATA_SIZE_ZERO;
     }
 
     /* Create a new linked list node */
@@ -483,7 +523,7 @@ int dlist_insert_front(dlist_t* list, const void* data, size_t data_size) {
 
     /* Check if node was allocated */
     if (NULL == new_node) {
-        return 1;
+        return SCL_NOT_ENOUGHT_MEM_FOR_NODE;
     }
 
     /*
@@ -513,7 +553,7 @@ int dlist_insert_front(dlist_t* list, const void* data, size_t data_size) {
     ++(list->size);
 
     /* Insertion went successfully */
-    return 0;
+    return SCL_OK;
 }
 
 /**
@@ -525,12 +565,20 @@ int dlist_insert_front(dlist_t* list, const void* data, size_t data_size) {
  * @param data a pointer for data to insert in list
  * @param data_size the size of current data type
  * @param data_index the index in the double linked list to insert an element
- * @return int 1 if function fails or 0 if insertion was successfully
+ * @return scl_error_t enum object for handling errors
  */
-int dlist_insert_index(dlist_t* list, const void* data, size_t data_size, size_t data_index) {
+scl_error_t dlist_insert_index(dlist_t* list, const void* data, size_t data_size, size_t data_index) {
     /* Check if list and data are valid */
-    if ((NULL == list) || (NULL == data)) {
-        return 1;
+    if (NULL == list) {
+        return SCL_NULL_DLIST;
+    }
+
+    if (NULL == data) {
+        return SCL_INVALID_DATA;
+    }
+
+    if (0 == data_size) {
+        return SCL_DATA_SIZE_ZERO;
     }
 
     /* Insert element at the end of the list */
@@ -548,7 +596,7 @@ int dlist_insert_index(dlist_t* list, const void* data, size_t data_size, size_t
 
     /* Check if new node was allocated */
     if (NULL == new_node) {
-        return 1;
+        return SCL_NOT_ENOUGHT_MEM_FOR_NODE;
     }
 
     dlist_node_t* iterator = list->head;
@@ -571,7 +619,7 @@ int dlist_insert_index(dlist_t* list, const void* data, size_t data_size, size_t
     ++(list->size);
 
     /* Insertion went successfully */
-    return 0;
+    return SCL_OK;
 }
 
 /**
@@ -645,16 +693,23 @@ dlist_node_t* dlist_find_data(dlist_t* list, const void* data) {
  * 
  * @param list a double linked list object
  * @param data a pointer to a typed data to be removed 
- * @return int 1 if function failed (list is NULL, list is empty, no valid data pointer
- * or element is not in the list) and 0 if function passed successfully
+ * @return scl_error_t enum object for handling errors
  */
-int dlist_delete_data(dlist_t* list, void* data) {
+scl_error_t dlist_delete_data(dlist_t* list, void* data) {
     /*
      * Check if list is allocated and it is not empty
      * Check if data pointer is valid
      */
-    if ((NULL == list) || (NULL == list->head) || (NULL == data)) {
-        return 1;
+    if (NULL == list) {
+        return SCL_NULL_DLIST;
+    }
+
+    if (NULL == list->head) {
+        return SCL_DELETE_FROM_EMPTY_OBJECT;
+    }
+
+    if (NULL == data) {
+        return SCL_INVALID_DATA;
     }
 
     dlist_node_t* iterator = list->head;
@@ -666,7 +721,7 @@ int dlist_delete_data(dlist_t* list, void* data) {
 
     /* List does not contain such element */
     if (NULL == iterator) {
-        return 1;
+        return SCL_DATA_NOT_FOUND_FOR_DELETE;
     }
 
     /* Update head if necessary or previous link */
@@ -706,7 +761,7 @@ int dlist_delete_data(dlist_t* list, void* data) {
     --(list->size);
 
     /* Deletion went successfully */
-    return 0;
+    return SCL_OK;
 }
 
 /**
@@ -718,15 +773,23 @@ int dlist_delete_data(dlist_t* list, void* data) {
  * 
  * @param list a double linked list object
  * @param data_index node index in the list to be removed starts from 0
- * @return int 1 if function fails and 0 if deletion went successfully
+ * @return scl_error_t enum object for handling errors
  */
-int dlist_delete_index(dlist_t* list, size_t data_index) {
+scl_error_t dlist_delete_index(dlist_t* list, size_t data_index) {
     /*
      * Check if list is allocated and it is not empty
      * Check if data pointer is valid
      */
-    if ((NULL == list) || (NULL == list->head) || (data_index >= list->size)) {
-        return 1;
+    if (NULL == list) {
+        return SCL_NULL_DLIST;
+    }
+
+    if (NULL == list->head) {
+        return SCL_DELETE_FROM_EMPTY_OBJECT;
+    }
+
+    if (data_index >= list->size) {
+        return SCL_INDEX_OVERFLOWS_SIZE;
     }
 
     dlist_node_t* iterator = list->head;
@@ -773,7 +836,7 @@ int dlist_delete_index(dlist_t* list, size_t data_index) {
     --(list->size);
 
     /* Deletion went successfully */
-    return 0;
+    return SCL_OK;
 }
 
 /**
@@ -786,13 +849,16 @@ int dlist_delete_index(dlist_t* list, size_t data_index) {
  * @param list a double linked list object
  * @param left_index left index to start deletion
  * @param right_index right index to finish deletion
- * @return int 1 if function fails (list is empty or not allocated) and
- * 0 if deletion of the range went successfully
+ * @return scl_error_t enum object for handling errors
  */
-int dlist_erase(dlist_t* list, size_t left_index, size_t right_index) {
+scl_error_t dlist_erase(dlist_t* list, size_t left_index, size_t right_index) {
     /* Check if list is allocated and it is not empty */
-    if ((NULL == list) || (NULL == list->head)) {
-        return 1;
+    if (NULL == list) {
+        return SCL_NULL_DLIST;
+    }
+
+    if (NULL == list->head) {
+        return SCL_DELETE_FROM_EMPTY_OBJECT;
     }
 
     /*
@@ -800,7 +866,7 @@ int dlist_erase(dlist_t* list, size_t left_index, size_t right_index) {
      * Swap if necessary
      */
     if (left_index > right_index) {
-        int temp = left_index;
+        size_t temp = left_index;
         left_index = right_index;
         right_index = temp;
     }
@@ -818,7 +884,7 @@ int dlist_erase(dlist_t* list, size_t left_index, size_t right_index) {
     dlist_node_t* iterator = list->head;
 
     /* Compute number of nodes from range */
-    int delete_num = right_index - left_index + 1;
+    size_t delete_num = right_index - left_index + 1;
 
     /*
      * Update iterator pointer
@@ -875,7 +941,7 @@ int dlist_erase(dlist_t* list, size_t left_index, size_t right_index) {
     }
 
     /* Deletion went successfully */
-    return 0;
+    return SCL_OK;
 }
 
 /**
@@ -943,14 +1009,23 @@ dlist_t* dlist_filter(dlist_t* list, filter_func filter, size_t data_size) {
  * @param list a double linked list object
  * @param map a pointer to a mapping function
  * @param data_size size of a single element
+ * @return scl_error_t enum object for handling errors
  */
-void dlist_map(dlist_t* list, map_func map, size_t data_size) {
+scl_error_t dlist_map(dlist_t* list, map_func map, size_t data_size) {
     /*
      * Check if list is allocated and is not empty
      * Check if user provided a valid map function
      */
-    if ((NULL == list) || (NULL == list->head) || (NULL == map)) {
-        return;
+    if (NULL == list) {
+        return SCL_NULL_DLIST;
+    }
+
+    if (NULL == list->head) {
+        return SCL_MAP_EMPTY_OBJECT;
+    }
+
+    if (NULL == map) {
+        return SCL_NULL_ACTION_FUNC;
     }
 
     dlist_node_t* iterator = list->head;
@@ -968,4 +1043,6 @@ void dlist_map(dlist_t* list, map_func map, size_t data_size) {
 
         iterator = iterator->next;
     }
+
+    return SCL_OK;
 }

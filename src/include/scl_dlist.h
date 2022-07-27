@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <errno.h>
 #include "scl_config.h"
 
@@ -55,30 +56,30 @@ typedef struct {
 } dlist_t;
 
 dlist_t*          create_dlist            (compare_func cmp, simple_action print, free_func frd);
-void              print_front_dlist       (dlist_t* list);
-void              print_back_dlist        (dlist_t* list);
-void              free_dlist              (dlist_t* list);
+scl_error_t       print_front_dlist       (dlist_t* list);
+scl_error_t       print_back_dlist        (dlist_t* list);
+scl_error_t       free_dlist              (dlist_t* list);
 
-int               is_dlist_empty          (dlist_t* list);
-int               get_dlist_size          (dlist_t* list);
+uint8_t           is_dlist_empty          (dlist_t* list);
+size_t            get_dlist_size          (dlist_t* list);
 dlist_node_t*     get_dlist_head          (dlist_t* list);
 dlist_node_t*     get_dlist_tail          (dlist_t* list);
 
-void              dlist_swap_data         (dlist_t* list, dlist_node_t *first_node, dlist_node_t *second_node);
-int               dlist_change_data       (dlist_t* list, const dlist_node_t* base_node, const void* new_data, size_t data_size);
-int               dlist_insert            (dlist_t* list, const void* data, size_t data_size);
-int               dlist_insert_order      (dlist_t* list, const void* data, size_t data_size);
-int               dlist_insert_front      (dlist_t* list, const void* data, size_t data_size);
-int               dlist_insert_index      (dlist_t* list, const void* data, size_t data_size, size_t data_index);
+scl_error_t       dlist_swap_data         (dlist_node_t *first_node, dlist_node_t *second_node);
+scl_error_t       dlist_change_data       (const dlist_node_t* base_node, const void* new_data, size_t data_size);
+scl_error_t       dlist_insert            (dlist_t* list, const void* data, size_t data_size);
+scl_error_t       dlist_insert_order      (dlist_t* list, const void* data, size_t data_size);
+scl_error_t       dlist_insert_front      (dlist_t* list, const void* data, size_t data_size);
+scl_error_t       dlist_insert_index      (dlist_t* list, const void* data, size_t data_size, size_t data_index);
 
 dlist_node_t*     dlist_find_index        (dlist_t* list, size_t data_index);
 dlist_node_t*     dlist_find_data         (dlist_t* list, const void* data);
 
-int               dlist_delete_data       (dlist_t* list, void* data);
-int               dlist_delete_index      (dlist_t* list, size_t data_index);
-int               dlist_erase             (dlist_t* list, size_t left_index, size_t right_index);
+scl_error_t       dlist_delete_data       (dlist_t* list, void* data);
+scl_error_t       dlist_delete_index      (dlist_t* list, size_t data_index);
+scl_error_t       dlist_erase             (dlist_t* list, size_t left_index, size_t right_index);
 
 dlist_t*          dlist_filter            (dlist_t* list, filter_func filter,size_t data_size);
-void              dlist_map               (dlist_t* list, map_func map, size_t data_size);
+scl_error_t       dlist_map               (dlist_t* list, map_func map, size_t data_size);
 
 #endif /* DOUBLE_LIST_UTILS_H_ */

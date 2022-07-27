@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <errno.h>
 #include "scl_config.h"
 
@@ -57,24 +58,24 @@ typedef struct priority_queue{
 typedef void (*pri_action)(const pri_node_t*);
 
 priority_queue_t*   create_priority_queue       (size_t init_capacity, compare_func cmp_dt, compare_func cmp_pr, free_func frd_dt, free_func frd_pr);
-void                free_priority_queue         (priority_queue_t* pqueue);
+scl_error_t         free_priority_queue         (priority_queue_t* pqueue);
 priority_queue_t*   heapify                     (const void* data, const void* priority, size_t data_size, size_t pri_size, size_t number_of_data, compare_func cmp_dt, compare_func cmp_pr, free_func frd_dt, free_func frd_pr);
 
-int                 change_node_priority        (priority_queue_t* pqueue, size_t node_index, const void* new_pri, size_t pri_size);
-int                 change_node_data            (priority_queue_t* pqueue, size_t node_index, const void* new_data, size_t data_size);
+scl_error_t         change_node_priority        (priority_queue_t* pqueue, size_t node_index, const void* new_pri, size_t pri_size);
+scl_error_t         change_node_data            (priority_queue_t* pqueue, size_t node_index, const void* new_data, size_t data_size);
 
 size_t              pri_find_data_index         (priority_queue_t* pqueue, const void* data);
 size_t              pri_find_pri_index          (priority_queue_t* pqueue, const void* priority);
 
-int                 pri_queue_push              (priority_queue_t* pqueue, const void* data, const void* priority, size_t data_size, size_t pri_size);
+scl_error_t         pri_queue_push              (priority_queue_t* pqueue, const void* data, const void* priority, size_t data_size, size_t pri_size);
 const void*         pri_queue_top               (priority_queue_t* pqueue);
 const void*         pri_queue_top_pri           (priority_queue_t* pqueue);
-int                 pri_queue_pop               (priority_queue_t* pqueue);
-void                pri_queue_traverse          (priority_queue_t* pqueue, pri_action action);
+scl_error_t         pri_queue_pop               (priority_queue_t* pqueue);
+scl_error_t         pri_queue_traverse          (priority_queue_t* pqueue, pri_action action);
 
 size_t              pri_queue_size              (priority_queue_t* pqueue);
-int                 is_priq_empty               (priority_queue_t* pqueue);
+uint8_t             is_priq_empty               (priority_queue_t* pqueue);
 
-void                heap_sort                   (void* arr, size_t number_of_arr, size_t arr_elem_size, compare_func cmp);
+scl_error_t         heap_sort                   (void* arr, size_t number_of_arr, size_t arr_elem_size, compare_func cmp);
 
 #endif /* PRIORITY_QUEUE_UTILS_H_ */

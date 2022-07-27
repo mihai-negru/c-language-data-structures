@@ -28,6 +28,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <errno.h>
+#include "scl_config.h"
 
 #endif /* ORDERED_GRAPH_UTILS_H_ */

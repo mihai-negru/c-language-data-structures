@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <errno.h>
 #include "scl_config.h"
 
@@ -40,7 +41,7 @@ typedef struct bst_tree_node {
     struct bst_tree_node* parent;                           /* Pointer to parent node */
     struct bst_tree_node* left;                             /* Pointer to left child node */
     struct bst_tree_node* right;                            /* Pointer to right child node */
-    int count;                                              /* Number of nodes with the same data value */
+    uint32_t count;                                         /* Number of nodes with the same data value */
 } bst_tree_node_t;
 
 /**
@@ -58,13 +59,13 @@ typedef struct {
 typedef void (*bst_action)(bst_tree_t*tree, const bst_tree_node_t*);
 
 bst_tree_t*             create_bst                          (compare_func cmp, free_func frd);
-void                    free_bst                            (bst_tree_t* tree);
+scl_error_t             free_bst                            (bst_tree_t* tree);
 
-int                     bst_insert                          (bst_tree_t* tree, const void* data, size_t data_size);
+scl_error_t             bst_insert                          (bst_tree_t* tree, const void* data, size_t data_size);
 bst_tree_node_t*        bst_find_data                       (bst_tree_t* tree, const void* data);
-int                     bst_node_level                      (bst_tree_t* tree, const bst_tree_node_t* base_node);
+scl_error_t             bst_node_level                      (bst_tree_t* tree, const bst_tree_node_t* base_node);
 
-int                     is_bst_empty                        (bst_tree_t* tree);
+uint8_t                 is_bst_empty                        (bst_tree_t* tree);
 bst_tree_node_t*        get_bst_root                        (bst_tree_t* tree);
 size_t                  get_bst_size                        (bst_tree_t* tree);
 
@@ -73,7 +74,7 @@ bst_tree_node_t*        bst_min_node                        (bst_tree_t* tree, b
 void*                   bst_max_data                        (bst_tree_t* tree, bst_tree_node_t* root);
 void*                   bst_min_data                        (bst_tree_t* tree, bst_tree_node_t* root);
 
-int                     bst_delete                          (bst_tree_t* tree, void* data, size_t data_size);
+scl_error_t             bst_delete                          (bst_tree_t* tree, void* data, size_t data_size);
 
 bst_tree_node_t*        bst_predecessor_node                (bst_tree_t* tree, const void* data);
 bst_tree_node_t*        bst_successor_node                  (bst_tree_t* tree, const void* data);
@@ -82,9 +83,9 @@ void*                   bst_succecessor_data                (bst_tree_t* tree, c
 bst_tree_node_t*        bst_lowest_common_ancestor_node     (bst_tree_t* tree, const void* data1, const void* data2);
 void*                   bst_lowest_common_ancestor_data     (bst_tree_t* tree, const void* data1, const void* data2);
 
-void                    bst_traverse_inorder                (bst_tree_t* tree, bst_action action);
-void                    bst_traverse_preorder               (bst_tree_t* tree, bst_action action);
-void                    bst_traverse_postorder              (bst_tree_t* tree, bst_action action);
-void                    bst_traverse_level                  (bst_tree_t* tree, bst_action action);
+scl_error_t             bst_traverse_inorder                (bst_tree_t* tree, bst_action action);
+scl_error_t             bst_traverse_preorder               (bst_tree_t* tree, bst_action action);
+scl_error_t             bst_traverse_postorder              (bst_tree_t* tree, bst_action action);
+scl_error_t             bst_traverse_level                  (bst_tree_t* tree, bst_action action);
 
 #endif /* BST_UTILS_H_ */

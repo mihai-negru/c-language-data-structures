@@ -108,8 +108,9 @@ static stack_node_t* create_stack_node(const void* data, size_t data_size) {
  * that data pointer does not contain any dinamically allocated elements.
  * 
  * @param stack an allocated stack object
+ * @return scl_error_t enum object for handling errors
  */
-void free_stack(stack_t* stack) {
+scl_error_t free_stack(stack_t* stack) {
     /* Check if stack needs to be freed */
     if (NULL != stack) {
 
@@ -147,7 +148,11 @@ void free_stack(stack_t* stack) {
 
         /* Set stack pointer as NULL */
         stack = NULL;
+
+        return SCL_OK;
     }
+
+    return SCL_NULL_STACK;
 }
 
 /**
@@ -159,8 +164,9 @@ void free_stack(stack_t* stack) {
  * 
  * @param stack a stack object
  * @param print a pointer to a function to print content of data pointer
+ * @return scl_error_t enum object for handling errors
  */
-void print_stack(stack_t* stack, simple_action print) {
+scl_error_t print_stack(stack_t* stack, simple_action print) {
     /* Check is stack is allocated */
     if (NULL != stack) {
 
@@ -179,7 +185,11 @@ void print_stack(stack_t* stack, simple_action print) {
             print(iterator->data);
             iterator = iterator->next;
         }
+
+        return SCL_OK;
     }
+
+    return SCL_NULL_STACK;
 }
 
 /**
@@ -189,10 +199,10 @@ void print_stack(stack_t* stack, simple_action print) {
  * it will return false. A NULL stack is also considered as an
  * empty stack
  * 
- * @param stack a stack obecjt
- * @return int 1(True) if stack is not allocated or empty and 0(False) otherwise
+ * @param stack a stack object
+ * @return uint8_t 1(True) if stack is not allocated or empty and 0(False) otherwise
  */
-int is_stack_empty(stack_t* stack) {
+uint8_t is_stack_empty(stack_t* stack) {
     if ((NULL == stack) || (NULL == stack->top)) {
         return 1;
     }
@@ -205,12 +215,12 @@ int is_stack_empty(stack_t* stack) {
  * allocated then function will return -1 value.
  * 
  * @param stack a stack object
- * @return int -1 if stack is not allocated or
+ * @return size_t -1 if stack is not allocated or
  * stack size
  */
-int get_stack_size(stack_t* stack) {
+size_t get_stack_size(stack_t* stack) {
     if (NULL == stack) {
-        return -1;
+        return SIZE_MAX;
     }
 
     return stack->size;
@@ -223,18 +233,19 @@ int get_stack_size(stack_t* stack) {
  * @param new_data pointer to the new data type
  * @param data_size size of the data type
  * @return int 1 for failure, 0 otherwise
+ * @return scl_error_t enum object for handling errors
  */
-int change_stack_data(void* old_data, const void* new_data, size_t data_size) {
+scl_error_t change_stack_data(void* old_data, const void* new_data, size_t data_size) {
     /* Check if input data is valid */
     if ((NULL == old_data) || (NULL == new_data) || (0 == data_size)) {
-        return 1;
+        return SCL_CANNOT_CHANGE_DATA;
     }
 
     /* Copy bytes from new data to old data */
     memcpy(old_data, new_data, data_size);
 
     /* Return success */
-    return 0;
+    return SCL_OK;
 }
 
 /**
@@ -264,13 +275,16 @@ void* stack_top(stack_t* stack) {
  * @param stack a stack object
  * @param data pointer to an address of a generic data type
  * @param data_size size of a generic data type element
- * @return int 1(Fail) if function failed or 0(Success) if
- * pushing on the stack went successfully
+ * @return scl_error_t enum object for handling errors
  */
-int stack_push(stack_t* stack, const void* data, size_t data_size) {
+scl_error_t stack_push(stack_t* stack, const void* data, size_t data_size) {
     /* Check if stack and data addresses are valid */
-    if ((NULL == stack) || (NULL == data)) {
-        return 1;
+    if (NULL == stack) {
+        return SCL_NULL_STACK;
+    }
+
+    if (NULL == data) {
+        return SCL_INVALID_DATA;
     }
 
     /* Create a new stack node */
@@ -278,7 +292,7 @@ int stack_push(stack_t* stack, const void* data, size_t data_size) {
 
     /* Check if new node was allocated */
     if (NULL == new_node) {
-        return 1;
+        return SCL_NOT_ENOUGHT_MEM_FOR_NODE;
     }
 
     /* Insert node into stack */
@@ -297,7 +311,7 @@ int stack_push(stack_t* stack, const void* data, size_t data_size) {
     ++(stack->size);
 
     /* Pushing went successfully */
-    return 0;
+    return SCL_OK;
 }
 
 /**
@@ -308,13 +322,17 @@ int stack_push(stack_t* stack, const void* data, size_t data_size) {
  * function provided by the user at creation of the stack.
  * 
  * @param stack a stack object
- * @return int 1(Fail) if function failed or 0(Success) if
- * popping on the stack went successfully
+ * @return scl_error_t enum object for handling errors
  */
-int stack_pop(stack_t* stack) {
+scl_error_t stack_pop(stack_t* stack) {
     /* Check if stack is allocated and it is not empty */
-    if ((NULL == stack) || (NULL == stack->top) || (0 == stack->size))
-        return 1;
+    if (NULL == stack) {
+        return SCL_NULL_STACK;
+    }
+
+    if ((NULL == stack->top) || (0 == stack->size)) {
+        return SCL_DELETE_FROM_EMPTY_OBJECT;
+    }
 
     /* Pointer to current wipe node */
     stack_node_t* delete_node = stack->top;
@@ -347,5 +365,5 @@ int stack_pop(stack_t* stack) {
     delete_node = NULL;
 
     /* Popping went successfully */
-    return 0;
+    return SCL_OK;
 }

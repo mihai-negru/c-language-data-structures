@@ -180,8 +180,9 @@ static void free_bst_helper(bst_tree_t* tree, bst_tree_node_t* root) {
  * allocated elements.
  * 
  * @param tree an allocated binary search tree object
+ * @return scl_error_t enum object for handling errors
  */
-void free_bst(bst_tree_t* tree) {
+scl_error_t free_bst(bst_tree_t* tree) {
     /* Check if tree needs to be freed */
     if (NULL != tree) {
 
@@ -198,7 +199,11 @@ void free_bst(bst_tree_t* tree) {
 
         /* Set tree pointer as NULL */
         tree = NULL;
+
+        return SCL_OK;
     }
+
+    return SCL_NULL_BST;
 }
 
 /**
@@ -211,13 +216,20 @@ void free_bst(bst_tree_t* tree) {
  * @param tree an allocated binary search tree object
  * @param data pointer to an address of a generic data type
  * @param data_size size of a generic data type element
- * @return int 1(Fail) if function failed or 0(Success) if
- * inserting in bst went successfully
+ * @return scl_error_t enum object for handling errors
  */
-int bst_insert(bst_tree_t* tree, const void* data, size_t data_size) {
+scl_error_t bst_insert(bst_tree_t* tree, const void* data, size_t data_size) {
     /* Check if tree and data are valid */
-    if ((NULL == tree) || (NULL == data) || (0 == data_size)) {
-        return 1;
+    if (NULL == tree) {
+        return SCL_NULL_BST;
+    }
+
+    if (NULL == data) {
+        return SCL_INVALID_DATA;
+    }
+
+    if (0 == data_size) {
+        return SCL_DATA_SIZE_ZERO;
     }
 
     /* Set iterator pointers   */
@@ -248,7 +260,7 @@ int bst_insert(bst_tree_t* tree, const void* data, size_t data_size) {
 
     /* Check if new bst node was created */
     if (tree->nil == new_node) { 
-        return 1;
+        return SCL_NOT_ENOUGHT_MEM_FOR_NODE;
     }
         
     if (tree->nil != parent_iterator) {
@@ -272,7 +284,7 @@ int bst_insert(bst_tree_t* tree, const void* data, size_t data_size) {
     ++(tree->size);
 
     /* Insertion in bst went successfully */
-    return 0;
+    return SCL_OK;
 }
 
 /**
@@ -319,11 +331,16 @@ bst_tree_node_t* bst_find_data(bst_tree_t* tree, const void* data) {
  * @param dest_node bst node object to rewrite data bytes from src_node
  * @param src_node bst node object to copy data bytes
  * @param data_size size of a generic data type element
+ * @return scl_error_t enum object for handling errors
  */
-static void bst_change_data(bst_tree_node_t* dest_node, const bst_tree_node_t* src_node, size_t data_size) {
+static scl_error_t bst_change_data(bst_tree_node_t* dest_node, const bst_tree_node_t* src_node, size_t data_size) {
     /* Check if data pointers are allocated */
-    if ((NULL == dest_node->data) || (NULL == src_node->data) || (0 == data_size)) {
-        return;
+    if ((NULL == dest_node->data) || (NULL == src_node->data)) {
+        return SCL_CANNOT_CHANGE_DATA;
+    }
+
+    if (0 == data_size) {
+        return SCL_DATA_SIZE_ZERO;
     }
 
     /* Rewrite bytes into dest_node from src_node */
@@ -331,6 +348,8 @@ static void bst_change_data(bst_tree_node_t* dest_node, const bst_tree_node_t* s
 
     /* Update count parameter */
     dest_node->count = src_node->count;
+
+    return SCL_OK;
 }
 
 /**
@@ -340,16 +359,16 @@ static void bst_change_data(bst_tree_node_t* dest_node, const bst_tree_node_t* s
  * 
  * @param tree an allocated binary search tree object
  * @param base_node bst node object to calculate its level
- * @return int level of input bst object node
+ * @return int32_t level of input bst object node
  */
-int bst_node_level(bst_tree_t* tree, const bst_tree_node_t* base_node) {
+int32_t bst_node_level(bst_tree_t* tree, const bst_tree_node_t* base_node) {
     /* Check if input data is valid */
     if (tree->nil == base_node) {
         return -1;
     }
 
     /* Set level of node as -1 */
-    int level_count = -1;
+    int32_t level_count = -1;
 
     /* Compute level of input node */
     while (tree->nil != base_node) {
@@ -366,10 +385,10 @@ int bst_node_level(bst_tree_t* tree, const bst_tree_node_t* base_node) {
  * searc tree object is empty or not.
  * 
  * @param tree an allocated binary search tree
- * @return int 1 if bst tree is empty or not allocated
+ * @return uint8_t 1 if bst tree is empty or not allocated
  * 0 if it is not empty
  */
-int is_bst_empty(bst_tree_t* tree) {
+uint8_t is_bst_empty(bst_tree_t* tree) {
     if ((NULL == tree) || (tree->nil == tree->root) || (0 == tree->size)) {
         return 1;
     }
@@ -400,7 +419,7 @@ bst_tree_node_t* get_bst_root(bst_tree_t* tree) {
  */
 size_t get_bst_size(bst_tree_t* tree) {
     if (NULL == tree) {
-        return __SIZE_MAX__;
+        return SIZE_MAX;
     }
 
     return tree->size;
@@ -491,13 +510,24 @@ void* bst_min_data(bst_tree_t* tree, bst_tree_node_t* root) {
  * @param tree an allocated binary search tree object
  * @param data pointer to an address of a generic data to be deleted
  * @param data_size size of one generic data
- * @return int 1(Fail) if function failed or 0(Success) if
- * deletion from bst went successfully
+ * @return scl_error_t enum object for handling errors
  */
-int bst_delete(bst_tree_t* tree, void* data, size_t data_size) {
+scl_error_t bst_delete(bst_tree_t* tree, void* data, size_t data_size) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (tree->nil == tree->root) || (NULL == data) || (0 == data_size)) {
-        return 1;
+    if (NULL == tree) {
+        return SCL_NULL_BST;
+    }
+
+    if (tree->nil == tree->root) {
+        return SCL_DELETE_FROM_EMPTY_OBJECT;
+    }
+
+    if (NULL == data) {
+        return SCL_INVALID_DATA;
+    }
+
+    if (0 == data_size) {
+        return SCL_DATA_SIZE_ZERO;
     }
 
     /* Find current node (root) in binary search tree */
@@ -505,7 +535,7 @@ int bst_delete(bst_tree_t* tree, void* data, size_t data_size) {
 
     /* Bst node was not found exit process */
     if (tree->nil == delete_node) {
-        return 1;
+        return SCL_DATA_NOT_FOUND_FOR_DELETE;
     }
 
     /* Delete selected node */
@@ -517,8 +547,12 @@ int bst_delete(bst_tree_t* tree, void* data, size_t data_size) {
         bst_tree_node_t* delete_succecessor = bst_min_node(tree, delete_node->right);
                 
         /* Replace the selected bst node and remove the dublicate */
-        bst_change_data(delete_node, delete_succecessor, data_size);
+        scl_error_t err = bst_change_data(delete_node, delete_succecessor, data_size);
         
+        if (SCL_OK != err) {
+            return err;
+        }
+
         /* Set the new node to delete*/
         delete_node = delete_succecessor;
     }
@@ -617,7 +651,7 @@ int bst_delete(bst_tree_t* tree, void* data, size_t data_size) {
     --(tree->size); 
 
     /* Deletion went successfully */
-    return 0;
+    return SCL_OK;
 }
 
 /**
@@ -863,11 +897,16 @@ static void bst_traverse_inorder_helper(bst_tree_t* tree, bst_tree_node_t* root,
  * @param tree current working binary search tree object
  * @param action a pointer to a function that will perform an action
  * on every bst node object from current working tree
+ * @return scl_error_t enum object for handling errors
  */
-void bst_traverse_inorder(bst_tree_t* tree, bst_action action) {
+scl_error_t bst_traverse_inorder(bst_tree_t* tree, bst_action action) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == action)) {
-        return;
+    if (NULL == tree) {
+        return SCL_NULL_AVL;
+    }
+
+    if (NULL == action) {
+        return SCL_NULL_ACTION_FUNC;
     }
 
     if (tree->nil == tree->root) {
@@ -879,6 +918,8 @@ void bst_traverse_inorder(bst_tree_t* tree, bst_action action) {
         /* Call helper function and traverse all nodes */
         bst_traverse_inorder_helper(tree, tree->root, action);
     }
+
+    return SCL_OK;
 }
 
 /**
@@ -917,11 +958,16 @@ static void bst_traverse_preorder_helper(bst_tree_t* tree, bst_tree_node_t* root
  * @param tree current working binary search tree object
  * @param action a pointer to a function that will perform an action
  * on every bst node object from current working tree
+ * @return scl_error_t enum object for handling errors
  */
-void bst_traverse_preorder(bst_tree_t* tree, bst_action action) {
+scl_error_t bst_traverse_preorder(bst_tree_t* tree, bst_action action) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == action)) {
-        return;
+    if (NULL == tree) {
+        return SCL_NULL_AVL;
+    }
+
+    if (NULL == action) {
+        return SCL_NULL_ACTION_FUNC;
     }
 
     if (tree->nil == tree->root) {
@@ -933,6 +979,8 @@ void bst_traverse_preorder(bst_tree_t* tree, bst_action action) {
         /* Call helper function and traverse all nodes */
         bst_traverse_preorder_helper(tree, tree->root, action);
     }
+
+    return SCL_OK;
 }
 
 /**
@@ -971,11 +1019,16 @@ static void bst_traverse_postorder_helper(bst_tree_t* tree, bst_tree_node_t* roo
  * @param tree current working binary search tree object
  * @param action a pointer to a function that will perform an action
  * on every bst node object from current working tree
+ * @return scl_error_t enum object for handling errors
  */
-void bst_traverse_postorder(bst_tree_t* tree, bst_action action) {
+scl_error_t bst_traverse_postorder(bst_tree_t* tree, bst_action action) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == action)) {
-        return;
+    if (NULL == tree) {
+        return SCL_NULL_AVL;
+    }
+
+    if (NULL == action) {
+        return SCL_NULL_ACTION_FUNC;
     }
 
     if (tree->nil == tree->root) {
@@ -987,6 +1040,8 @@ void bst_traverse_postorder(bst_tree_t* tree, bst_action action) {
         /* Call helper function and traverse all nodes */
         bst_traverse_postorder_helper(tree, tree->root, action);
     }
+
+    return SCL_OK;
 }
 
 /**
@@ -1000,11 +1055,16 @@ void bst_traverse_postorder(bst_tree_t* tree, bst_action action) {
  * @param tree current working binary search tree object
  * @param action a pointer to a function that will perform an action
  * on every bst node object from current working tree
+ * @return scl_error_t enum object for handling errors
  */
-void bst_traverse_level(bst_tree_t* tree, bst_action action) {
+scl_error_t bst_traverse_level(bst_tree_t* tree, bst_action action) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == action)) {
-        return;
+    if (NULL == tree) {
+        return SCL_NULL_AVL;
+    }
+
+    if (NULL == action) {
+        return SCL_NULL_ACTION_FUNC;
     }
 
     if (tree->nil == tree->root) {
@@ -1019,8 +1079,14 @@ void bst_traverse_level(bst_tree_t* tree, bst_action action) {
         /* Check if queue was created successfully */
         if (NULL != level_queue) {
 
+            scl_error_t err = SCL_OK;
+
             /* Push pointer to root node into qeuue */
-            queue_push(level_queue, &tree->root, sizeof(tree->root));
+            err = queue_push(level_queue, &tree->root, sizeof(tree->root));
+
+            if (SCL_OK != err) {
+                return err;
+            }
 
             /* Traverse all nodes */
             while (!is_queue_empty(level_queue)) {
@@ -1029,24 +1095,38 @@ void bst_traverse_level(bst_tree_t* tree, bst_action action) {
                 bst_tree_node_t *front_node = *(bst_tree_node_t **)queue_front(level_queue);
 
                 /* Remove front node from queue */
-                queue_pop(level_queue);
+                err = queue_pop(level_queue);
+
+                if (SCL_OK != err) {
+                    return err;
+                }
 
                 /* Call action function on front node */
                 action(tree, front_node);
 
                 /* Push on queue front left child if it exists */
                 if (tree->nil != front_node->left) {
-                    queue_push(level_queue, &front_node->left, sizeof(front_node->left));
+                    err = queue_push(level_queue, &front_node->left, sizeof(front_node->left));
+
+                    if (SCL_OK != err) {
+                        return err;
+                    }
                 }
                 
                 /* Push on queue front right child if it exists */
                 if (tree->nil != front_node->right) {
-                    queue_push(level_queue, &front_node->right, sizeof(front_node->right));
+                    err = queue_push(level_queue, &front_node->right, sizeof(front_node->right));
+
+                    if (SCL_OK != err) {
+                        return err;
+                    } 
                 }
             }
 
             /* Free queue object from heap */
-            free_queue(level_queue);
+            return free_queue(level_queue);
         }
     }
+
+    return SCL_NULL_QUEUE;
 }
