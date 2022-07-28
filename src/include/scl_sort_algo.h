@@ -33,14 +33,16 @@
 #include "scl_priority_queue.h"
 #include "scl_config.h"
 
-scl_error_t         quick_sort          (void* arr, size_t number_of_arr, size_t arr_elem_size, compare_func cmp);
-scl_error_t         merge_sort          (void* arr, size_t number_of_arr, size_t arr_elem_size, compare_func cmp);
-scl_error_t         bubble_sort         (void* arr, size_t number_of_arr, size_t arr_elem_size, compare_func cmp);
-scl_error_t         radix_sort          (void* arr, size_t number_of_arr, size_t arr_elem_size, compare_func cmp);
-scl_error_t         bucket_sort         (void* arr, size_t number_of_arr, size_t arr_elem_size, compare_func cmp);
-scl_error_t         shell_sort          (void* arr, size_t number_of_arr, size_t arr_elem_size, compare_func cmp);
-scl_error_t         insertion_sort      (void* arr, size_t number_of_arr, size_t arr_elem_size, compare_func cmp);
-scl_error_t         selection_sort      (void* arr, size_t number_of_arr, size_t arr_elem_size, compare_func cmp);
-scl_error_t         reverse_array       (void* arr, size_t number_of_arr, size_t arr_elem_size);
+scl_error_t         quick_sort          (void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp); //
+scl_error_t         merge_sort          (void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp); //
+scl_error_t         bubble_sort         (void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp); //
+scl_error_t         radix_sort          (uint64_t* arr, size_t number_of_elem);                                     //
+scl_error_t         bucket_sort         (void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp);
+scl_error_t         shell_sort          (void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp);
+scl_error_t         insertion_sort      (void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp);
+scl_error_t         selection_sort      (void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp);
+
+scl_error_t         reverse_array       (void* arr, size_t number_of_elem, size_t arr_elem_size); //
+void*               binary_search       (void* arr, void* data, size_t number_of_elem, size_t arr_elem_size, compare_func cmp); //
 
 #endif /* SORT_ALGORITHMS_H_ */

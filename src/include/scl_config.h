@@ -71,10 +71,16 @@ typedef enum {
     SCL_NULL_ACTION_FUNC                        = -28,
 
     SCL_NOT_ENOUGHT_MEM_FOR_NODE                = -29,
+    SCL_NOT_ENOUGHT_MEM_FOR_OBJ                 = -30,
 
-    SCL_DELETE_FROM_EMPTY_OBJECT                = -30,
+    SCL_DELETE_FROM_EMPTY_OBJECT                = -31,
     
-    SCL_INDEX_OVERFLOWS_SIZE                    = -31
+    SCL_INDEX_OVERFLOWS_SIZE                    = -32,
+
+    SCL_NULL_SIMPLE_ARRAY                       = -33,
+    SCL_NUMBER_OF_ELEMS_ZERO                    = -34,
+    SCL_SIMPLE_ELEM_ARRAY_SIZE_ZERO             = -35,
+    SCL_SIMPLE_ARRAY_COMPAR_FUNC_NULL           = -36
 } scl_error_t;
 
 /**

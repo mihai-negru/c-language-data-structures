@@ -887,8 +887,20 @@ uint8_t is_priq_empty(priority_queue_t* pqueue) {
  */
 scl_error_t heap_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
     /* Check if input data is valid */
-    if ((NULL == arr) || (0 == number_of_elem) || (0 == arr_elem_size) || (NULL == cmp)) {
-        return SCL_INVALID_INPUT;
+    if (NULL == arr) {
+        return SCL_NULL_SIMPLE_ARRAY;
+    }
+
+    if (0 == number_of_elem) {
+        return SCL_NUMBER_OF_ELEMS_ZERO;
+    }
+
+    if (0 == arr_elem_size) {
+        return SCL_SIMPLE_ELEM_ARRAY_SIZE_ZERO;
+    }
+
+    if (NULL == cmp) {
+        return SCL_SIMPLE_ARRAY_COMPAR_FUNC_NULL;
     }
 
     /* Heapify the input array in O(N) complexity */
