@@ -55,8 +55,6 @@ typedef struct priority_queue{
     size_t size;                                            /* Current size of the priority queue */
 } priority_queue_t;
 
-typedef void (*pri_action)(const pri_node_t*);
-
 priority_queue_t*   create_priority_queue       (size_t init_capacity, compare_func cmp_dt, compare_func cmp_pr, free_func frd_dt, free_func frd_pr);
 scl_error_t         free_priority_queue         (priority_queue_t* pqueue);
 priority_queue_t*   heapify                     (const void* data, const void* priority, size_t data_size, size_t pri_size, size_t number_of_data, compare_func cmp_dt, compare_func cmp_pr, free_func frd_dt, free_func frd_pr);
@@ -71,7 +69,7 @@ scl_error_t         pri_queue_push              (priority_queue_t* pqueue, const
 const void*         pri_queue_top               (priority_queue_t* pqueue);
 const void*         pri_queue_top_pri           (priority_queue_t* pqueue);
 scl_error_t         pri_queue_pop               (priority_queue_t* pqueue);
-scl_error_t         pri_queue_traverse          (priority_queue_t* pqueue, pri_action action);
+scl_error_t         pri_queue_traverse          (priority_queue_t* pqueue, action_func action);
 
 size_t              pri_queue_size              (priority_queue_t* pqueue);
 uint8_t             is_priq_empty               (priority_queue_t* pqueue);

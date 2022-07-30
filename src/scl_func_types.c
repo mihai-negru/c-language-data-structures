@@ -53,55 +53,55 @@ long_double_t   LongDouble_def      (void) { return (long_double_t){.pass = 12, 
  * 
  * @param data pointer to data type location
  */
-void print_all_data(const void* data) {
+void print_all_data(const void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Extract type from data */
-    const char pass = *(const char*)data;
+    const char pass = *(const char *)data;
 
     /* Print data type based on pass variable */
     switch (pass) {
         case 0:
-            printf("%hd ", ((const short_int_t*)data)->val);
+            printf("%hd ", ((const short_int_t * const)data)->val);
             break;
         case 1:
-            printf("%hd ", ((const ushort_int_t*)data)->val);
+            printf("%hd ", ((const ushort_int_t * const)data)->val);
             break;
         case 2:
-            printf("%u ", ((const uint_t*)data)->val);
+            printf("%u ", ((const uint_t * const)data)->val);
             break;
         case 3:
-            printf("%d ", ((const int_t*)data)->val);
+            printf("%d ", ((const int_t * const)data)->val);
             break;
         case 4:
-            printf("%ld ", ((const long_int_t*)data)->val);
+            printf("%ld ", ((const long_int_t * const)data)->val);
             break;
         case 5:
-            printf("%lu ", ((const ulong_int_t*)data)->val);
+            printf("%lu ", ((const ulong_int_t * const)data)->val);
             break;
         case 6:
-            printf("%lld ", ((const ll_int_t*)data)->val);
+            printf("%lld ", ((const ll_int_t * const)data)->val);
             break;
         case 7:
-            printf("%llu ", ((const ull_int_t*)data)->val);
+            printf("%llu ", ((const ull_int_t * const)data)->val);
             break;
         case 8:
-            printf("%c ", ((const char_t*)data)->val);
+            printf("%c ", ((const char_t * const)data)->val);
             break;
         case 9:
-            printf("%c ", ((const uchar_t*)data)->val);
+            printf("%c ", ((const uchar_t * const)data)->val);
             break;
         case 10:
-            printf("%f ", ((const float_t*)data)->val);
+            printf("%f ", ((const float_t * const)data)->val);
             break;
         case 11:
-            printf("%lf ", ((const double_t*)data)->val);
+            printf("%lf ", ((const double_t * const)data)->val);
             break;
         case 12:
-            printf("%Lf ", ((const long_double_t*)data)->val);
+            printf("%Lf ", ((const long_double_t * const)data)->val);
             break;
         default:
             errno = EINVAL;
@@ -116,14 +116,14 @@ void print_all_data(const void* data) {
  * 
  * @param data pointer to data type location
  */
-void print_short_int(const void* data) {
+void print_short_int(const void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Print data */
-    printf("%hd ", *(const short int*)data);
+    printf("%hd ", *(const short int * const)data);
 }
 
 /**
@@ -133,14 +133,14 @@ void print_short_int(const void* data) {
  * 
  * @param data pointer to data type location
  */
-void print_ushort_int(const void* data) {
+void print_ushort_int(const void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Print data */
-    printf("%hd ", *(const unsigned short int*)data);
+    printf("%hd ", *(const unsigned short int * const)data);
 }
 
 /**
@@ -150,14 +150,14 @@ void print_ushort_int(const void* data) {
  * 
  * @param data pointer to data type location
  */
-void print_uint(const void* data) {
+void print_uint(const void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Print data */
-    printf("%u ", *(const unsigned int*)data);
+    printf("%u ", *(const unsigned int * const)data);
 }
 
 /**
@@ -167,14 +167,14 @@ void print_uint(const void* data) {
  * 
  * @param data pointer to data type location
  */
-void print_int(const void* data) {
+void print_int(const void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Print data */
-    printf("%d ", *(const int*)data);
+    printf("%d ", *(const int * const)data);
 }
 
 /**
@@ -184,14 +184,14 @@ void print_int(const void* data) {
  * 
  * @param data pointer to data type location
  */
-void print_long_int(const void* data) {
+void print_long_int(const void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Print data */
-    printf("%ld ", *(const long int*)data);
+    printf("%ld ", *(const long int * const)data);
 }
 
 /**
@@ -201,14 +201,14 @@ void print_long_int(const void* data) {
  * 
  * @param data pointer to data type location
  */
-void print_ulong_int(const void* data) {
+void print_ulong_int(const void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Print data */
-    printf("%lu ", *(const unsigned long int*)data);
+    printf("%lu ", *(const unsigned long int * const)data);
 }
 
 /**
@@ -218,14 +218,14 @@ void print_ulong_int(const void* data) {
  * 
  * @param data pointer to data type location
  */
-void print_llong_int(const void* data) {
+void print_llong_int(const void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Print data */
-    printf("%lld ", *(const long long int*)data);
+    printf("%lld ", *(const long long int * const)data);
 }
 
 /**
@@ -235,14 +235,14 @@ void print_llong_int(const void* data) {
  * 
  * @param data pointer to data type location
  */
-void print_ullong_int(const void* data) {
+void print_ullong_int(const void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Print data */
-    printf("%llu ", *(const unsigned long long int*)data);
+    printf("%llu ", *(const unsigned long long int * const)data);
 }
 
 /**
@@ -252,14 +252,14 @@ void print_ullong_int(const void* data) {
  * 
  * @param data pointer to data type location
  */
-void print_char(const void* data) {
+void print_char(const void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Print data */
-    printf("%c ", *(const char*)data);
+    printf("%c ", *(const char * const)data);
 }
 
 /**
@@ -269,14 +269,14 @@ void print_char(const void* data) {
  * 
  * @param data pointer to data type location
  */
-void print_uchar(const void* data) {
+void print_uchar(const void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Print data */
-    printf("%c ", *(const unsigned char*)data);
+    printf("%c ", *(const unsigned char * const)data);
 }
 
 /**
@@ -286,14 +286,14 @@ void print_uchar(const void* data) {
  * 
  * @param data pointer to data type location
  */
-void print_float(const void* data) {
+void print_float(const void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Print data */
-    printf("%f ", *(const float*)data);
+    printf("%f ", *(const float * const)data);
 }
 
 /**
@@ -303,14 +303,14 @@ void print_float(const void* data) {
  * 
  * @param data pointer to data type location
  */
-void print_double(const void* data) {
+void print_double(const void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Print data */
-    printf("%lf ", *(const double*)data);
+    printf("%lf ", *(const double * const)data);
 }
 
 /**
@@ -320,14 +320,14 @@ void print_double(const void* data) {
  * 
  * @param data pointer to data type location
  */
-void print_long_double(const void* data) {
+void print_long_double(const void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Print data */
-    printf("%Lf ", *(const long double*)data);
+    printf("%Lf ", *(const long double * const)data);
 }
 
 /**
@@ -337,14 +337,14 @@ void print_long_double(const void* data) {
  * 
  * @param data pointer to data type location
  */
-void print_string(const void* data) {
+void print_string(const void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Print data */
-    printf("%s ", (const char*)data);
+    printf("%s ", (const char * const)data);
 }
 
 /**
@@ -357,7 +357,7 @@ void print_string(const void* data) {
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_short_int(const void* data1, const void* data2) {
+int compare_short_int(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -366,8 +366,8 @@ int compare_short_int(const void* data1, const void* data2) {
     }
 
     /* Cast data types to working type */
-    const short int* typed_data1 = data1;
-    const short int* typed_data2 = data2;
+    const short int * const typed_data1 = data1;
+    const short int * const typed_data2 = data2;
 
     /* Compare data type */
     return (*typed_data1 - *typed_data2);
@@ -383,7 +383,7 @@ int compare_short_int(const void* data1, const void* data2) {
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_ushort_int(const void* data1, const void* data2) {
+int compare_ushort_int(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -392,8 +392,8 @@ int compare_ushort_int(const void* data1, const void* data2) {
     }
 
     /* Cast data types to working type */
-    const unsigned short int* typed_data1 = data1;
-    const unsigned short int* typed_data2 = data2;
+    const unsigned short int * const typed_data1 = data1;
+    const unsigned short int * const typed_data2 = data2;
 
     /* Compare data type */
     if (*typed_data1 > *typed_data2) {
@@ -415,7 +415,7 @@ int compare_ushort_int(const void* data1, const void* data2) {
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_uint(const void* data1, const void* data2) {
+int compare_uint(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -424,8 +424,8 @@ int compare_uint(const void* data1, const void* data2) {
     }
 
     /* Cast data types to working type */
-    const unsigned int* typed_data1 = data1;
-    const unsigned int* typed_data2 = data2;
+    const unsigned int * const typed_data1 = data1;
+    const unsigned int * const typed_data2 = data2;
 
     /* Compare data type */
     if (*typed_data1 > *typed_data2) {
@@ -447,7 +447,7 @@ int compare_uint(const void* data1, const void* data2) {
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_int(const void* data1, const void* data2) {
+int compare_int(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -456,8 +456,8 @@ int compare_int(const void* data1, const void* data2) {
     }
 
     /* Cast data types to working type */
-    const int* typed_data1 = data1;
-    const int* typed_data2 = data2;
+    const int * const typed_data1 = data1;
+    const int * const typed_data2 = data2;
 
     /* Compare data type */
     return (*typed_data1 - *typed_data2);
@@ -473,7 +473,7 @@ int compare_int(const void* data1, const void* data2) {
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_long_int(const void* data1, const void* data2) {
+int compare_long_int(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -482,8 +482,8 @@ int compare_long_int(const void* data1, const void* data2) {
     }
 
     /* Cast data types to working type */
-    const long int* typed_data1 = data1;
-    const long int* typed_data2 = data2;
+    const long int * const typed_data1 = data1;
+    const long int * const typed_data2 = data2;
 
     /* Compare data type */
     return (*typed_data1 - *typed_data2);
@@ -499,7 +499,7 @@ int compare_long_int(const void* data1, const void* data2) {
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_ulong_int(const void* data1, const void* data2) {
+int compare_ulong_int(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -508,8 +508,8 @@ int compare_ulong_int(const void* data1, const void* data2) {
     }
 
     /* Cast data types to working type */
-    const unsigned long int* typed_data1 = data1;
-    const unsigned long int* typed_data2 = data2;
+    const unsigned long int * const typed_data1 = data1;
+    const unsigned long int * const typed_data2 = data2;
 
     /* Compare data type */
     if (*typed_data1 > *typed_data2) {
@@ -531,7 +531,7 @@ int compare_ulong_int(const void* data1, const void* data2) {
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_llong_int(const void* data1, const void* data2) {
+int compare_llong_int(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -540,8 +540,8 @@ int compare_llong_int(const void* data1, const void* data2) {
     }
 
     /* Cast data types to working type */
-    const long long int* typed_data1 = data1;
-    const long long int* typed_data2 = data2;
+    const long long int * const typed_data1 = data1;
+    const long long int * const typed_data2 = data2;
 
     /* Compare data type */
     return (*typed_data1 - *typed_data2);
@@ -557,7 +557,7 @@ int compare_llong_int(const void* data1, const void* data2) {
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_ullong_int(const void* data1, const void* data2) {
+int compare_ullong_int(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -566,8 +566,8 @@ int compare_ullong_int(const void* data1, const void* data2) {
     }
 
     /* Cast data types to working type */
-    const unsigned long long int* typed_data1 = data1;
-    const unsigned long long int* typed_data2 = data2;
+    const unsigned long long int * const typed_data1 = data1;
+    const unsigned long long int * const typed_data2 = data2;
 
     /* Compare data type */
     if (*typed_data1 > *typed_data2) {
@@ -589,7 +589,7 @@ int compare_ullong_int(const void* data1, const void* data2) {
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_char(const void* data1, const void* data2) {
+int compare_char(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -598,8 +598,8 @@ int compare_char(const void* data1, const void* data2) {
     }
 
     /* Cast data types to working type */
-    const char* typed_data1 = data1;
-    const char* typed_data2 = data2;
+    const char * const typed_data1 = data1;
+    const char * const typed_data2 = data2;
 
     /* Compare data type */
     if (*typed_data1 > *typed_data2) {
@@ -621,7 +621,7 @@ int compare_char(const void* data1, const void* data2) {
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_uchar(const void* data1, const void* data2) {
+int compare_uchar(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -630,8 +630,8 @@ int compare_uchar(const void* data1, const void* data2) {
     }
 
     /* Cast data types to working type */
-    const unsigned char* typed_data1 = data1;
-    const unsigned char* typed_data2 = data2;
+    const unsigned char * const typed_data1 = data1;
+    const unsigned char * const typed_data2 = data2;
 
     /* Compare data type */
     if (*typed_data1 > *typed_data2) {
@@ -653,7 +653,7 @@ int compare_uchar(const void* data1, const void* data2) {
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_float(const void* data1, const void* data2) {
+int compare_float(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -662,8 +662,8 @@ int compare_float(const void* data1, const void* data2) {
     }
 
     /* Cast data types to working type */
-    const float* typed_data1 = data1;
-    const float* typed_data2 = data2;
+    const float * const typed_data1 = data1;
+    const float * const typed_data2 = data2;
 
     /* Compare data type */
     if (*typed_data1 > *typed_data2) {
@@ -685,7 +685,7 @@ int compare_float(const void* data1, const void* data2) {
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_double(const void* data1, const void* data2) {
+int compare_double(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -694,8 +694,8 @@ int compare_double(const void* data1, const void* data2) {
     }
 
     /* Cast data types to working type */
-    const double* typed_data1 = data1;
-    const double* typed_data2 = data2;
+    const double *const typed_data1 = data1;
+    const double *const typed_data2 = data2;
 
     /* Compare data type */
     if (*typed_data1 > *typed_data2) {
@@ -717,7 +717,7 @@ int compare_double(const void* data1, const void* data2) {
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_long_double(const void* data1, const void* data2) {
+int compare_long_double(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -726,8 +726,8 @@ int compare_long_double(const void* data1, const void* data2) {
     }
 
     /* Cast data types to working type */
-    const long double* typed_data1 = data1;
-    const long double* typed_data2 = data2;
+    const long double * const typed_data1 = data1;
+    const long double * const typed_data2 = data2;
 
     /* Compare data type */
     if (*typed_data1 > *typed_data2) {
@@ -750,7 +750,7 @@ int compare_long_double(const void* data1, const void* data2) {
  * than data1 length, 0 if data1 length is equal
  * with data2 length
  */
-int compare_string_size(const void* data1, const void* data2) {
+int compare_string_size(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -759,8 +759,8 @@ int compare_string_size(const void* data1, const void* data2) {
     }
 
     /* Cast data types to working type */
-    size_t data1_len = strlen((const char*)data1);
-    size_t data2_len = strlen((const char*)data2);
+    size_t data1_len = strlen((const char * const)data1);
+    size_t data2_len = strlen((const char * const)data2);
 
     /* Compare data type */
     if (data1_len > data2_len) {
@@ -783,7 +783,7 @@ int compare_string_size(const void* data1, const void* data2) {
  * data1 is equal with data2. Elements are compared
  * lexicographycally
  */
-int compare_string_lexi(const void* data1, const void* data2) {
+int compare_string_lexi(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -792,7 +792,7 @@ int compare_string_lexi(const void* data1, const void* data2) {
     }
 
     /* Compare data type */
-    return strcmp((const char*)data1, (const char*)data2);
+    return strcmp((const char * const)data1, (const char * const)data2);
 }
 
 /**
@@ -809,7 +809,7 @@ int compare_string_lexi(const void* data1, const void* data2) {
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_string(const void* data1, const void* data2) {
+int compare_string(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -818,8 +818,8 @@ int compare_string(const void* data1, const void* data2) {
     }
 
     /* Cast data types to working type */
-    const char* typed_data1 = data1;
-    const char* typed_data2 = data2;
+    const char * const typed_data1 = data1;
+    const char * const typed_data2 = data2;
 
     size_t data1_size = strlen(typed_data1);
     size_t data2_size = strlen(typed_data2);

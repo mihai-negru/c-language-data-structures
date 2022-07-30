@@ -34,7 +34,7 @@
  */
 stack_t* create_stack(free_func frd) {
     /* Allocate a new stack on the heap */
-    stack_t* new_stack = malloc(sizeof(*new_stack));
+    stack_t *new_stack = malloc(sizeof(*new_stack));
 
     /* Check if stack allocation went right */
     if (NULL != new_stack) {
@@ -64,14 +64,14 @@ stack_t* create_stack(free_func frd) {
  * @param data_size size of one generic data
  * @return stack_node_t* new allocated stack node object or NULL
  */
-static stack_node_t* create_stack_node(const void* data, size_t data_size) {
+static stack_node_t* create_stack_node(const void *data, size_t data_size) {
     /* Check if data address is valid */
     if (NULL == data) {
         return NULL;
     }
 
     /* Allocate a new node on the heap */
-    stack_node_t* new_node = malloc(sizeof(*new_node));
+    stack_node_t *new_node = malloc(sizeof(*new_node));
 
     /* Check if node allocation went successfully */
     if (NULL != new_node) {
@@ -110,13 +110,13 @@ static stack_node_t* create_stack_node(const void* data, size_t data_size) {
  * @param stack an allocated stack object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t free_stack(stack_t* stack) {
+scl_error_t free_stack(stack_t *stack) {
     /* Check if stack needs to be freed */
     if (NULL != stack) {
 
         /* Iterate through every node from stack */
         while (NULL != stack->top) {
-            stack_node_t* iterator = stack->top;
+            stack_node_t *iterator = stack->top;
 
             /* Update new top of the stack */
             stack->top = stack->top->next;
@@ -146,9 +146,6 @@ scl_error_t free_stack(stack_t* stack) {
         /* Free stack object */
         free(stack);
 
-        /* Set stack pointer as NULL */
-        stack = NULL;
-
         return SCL_OK;
     }
 
@@ -166,7 +163,7 @@ scl_error_t free_stack(stack_t* stack) {
  * @param print a pointer to a function to print content of data pointer
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t print_stack(stack_t* stack, simple_action print) {
+scl_error_t print_stack(stack_t *stack, const_action_func print) {
     /* Check is stack is allocated */
     if (NULL != stack) {
 
@@ -175,7 +172,7 @@ scl_error_t print_stack(stack_t* stack, simple_action print) {
             printf("[ ]");
         }
 
-        stack_node_t* iterator = stack->top;
+        stack_node_t *iterator = stack->top;
 
         /*
          * Print every node according
@@ -202,7 +199,7 @@ scl_error_t print_stack(stack_t* stack, simple_action print) {
  * @param stack a stack object
  * @return uint8_t 1(True) if stack is not allocated or empty and 0(False) otherwise
  */
-uint8_t is_stack_empty(stack_t* stack) {
+uint8_t is_stack_empty(stack_t *stack) {
     if ((NULL == stack) || (NULL == stack->top)) {
         return 1;
     }
@@ -218,7 +215,7 @@ uint8_t is_stack_empty(stack_t* stack) {
  * @return size_t -1 if stack is not allocated or
  * stack size
  */
-size_t get_stack_size(stack_t* stack) {
+size_t get_stack_size(stack_t *stack) {
     if (NULL == stack) {
         return SIZE_MAX;
     }
@@ -235,7 +232,7 @@ size_t get_stack_size(stack_t* stack) {
  * @return int 1 for failure, 0 otherwise
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t change_stack_data(void* old_data, const void* new_data, size_t data_size) {
+scl_error_t change_stack_data(void *old_data, const void *new_data, size_t data_size) {
     /* Check if input data is valid */
     if ((NULL == old_data) || (NULL == new_data) || (0 == data_size)) {
         return SCL_CANNOT_CHANGE_DATA;
@@ -257,7 +254,7 @@ scl_error_t change_stack_data(void* old_data, const void* new_data, size_t data_
  * @param stack a stack object
  * @return void* a pointer to top element data
  */
-void* stack_top(stack_t* stack) {
+void* stack_top(stack_t *stack) {
     if ((NULL == stack) || (NULL == stack->top)) {
         return NULL;
     }
@@ -277,7 +274,7 @@ void* stack_top(stack_t* stack) {
  * @param data_size size of a generic data type element
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t stack_push(stack_t* stack, const void* data, size_t data_size) {
+scl_error_t stack_push(stack_t *stack, const void *data, size_t data_size) {
     /* Check if stack and data addresses are valid */
     if (NULL == stack) {
         return SCL_NULL_STACK;
@@ -288,7 +285,7 @@ scl_error_t stack_push(stack_t* stack, const void* data, size_t data_size) {
     }
 
     /* Create a new stack node */
-    stack_node_t* new_node = create_stack_node(data, data_size);
+    stack_node_t *new_node = create_stack_node(data, data_size);
 
     /* Check if new node was allocated */
     if (NULL == new_node) {
@@ -324,7 +321,7 @@ scl_error_t stack_push(stack_t* stack, const void* data, size_t data_size) {
  * @param stack a stack object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t stack_pop(stack_t* stack) {
+scl_error_t stack_pop(stack_t *stack) {
     /* Check if stack is allocated and it is not empty */
     if (NULL == stack) {
         return SCL_NULL_STACK;
@@ -335,7 +332,7 @@ scl_error_t stack_pop(stack_t* stack) {
     }
 
     /* Pointer to current wipe node */
-    stack_node_t* delete_node = stack->top;
+    stack_node_t *delete_node = stack->top;
 
     /* Update the top pointer of the stack */
     stack->top = stack->top->next;

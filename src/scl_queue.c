@@ -34,7 +34,7 @@
  */
 queue_t* create_queue(free_func frd) {
     /* Allocate a new queue on the heap */
-    queue_t* new_queue = malloc(sizeof(*new_queue));
+    queue_t *new_queue = malloc(sizeof(*new_queue));
 
     /* Check if queue allocation went right */
     if (NULL != new_queue) {
@@ -64,7 +64,7 @@ queue_t* create_queue(free_func frd) {
  * @param data_size size of one generic data
  * @return queue_node_t* new allocated queue node object or NULL
  */
-static queue_node_t* create_queue_node(const void* data, size_t data_size) {
+static queue_node_t* create_queue_node(const void *data, size_t data_size) {
     /* Check if data address is valid */
     if (NULL == data) {
         return NULL;
@@ -110,13 +110,13 @@ static queue_node_t* create_queue_node(const void* data, size_t data_size) {
  * @param queue an allocated queue object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t free_queue(queue_t* queue) {
+scl_error_t free_queue(queue_t *queue) {
     /* Check if queue needs to be freed */
     if (NULL != queue) {
 
         /* Iterate through every node from queue */
         while (NULL != queue->front) {
-            queue_node_t* iterator = queue->front;
+            queue_node_t *iterator = queue->front;
 
             /* Update new front of the queue */
             queue->front = queue->front->next;
@@ -166,7 +166,7 @@ scl_error_t free_queue(queue_t* queue) {
  * @param print a pointer to a function to print content of data pointer
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t print_queue(queue_t* queue, simple_action print) {
+scl_error_t print_queue(queue_t *queue, const_action_func print) {
     /* Check is queue is allocated */
     if (NULL != queue) {
 
@@ -175,7 +175,7 @@ scl_error_t print_queue(queue_t* queue, simple_action print) {
             printf("[ ]");
         }
 
-        queue_node_t* iterator = queue->front;
+        queue_node_t *iterator = queue->front;
 
         /*
          * Print every node according
@@ -202,7 +202,7 @@ scl_error_t print_queue(queue_t* queue, simple_action print) {
  * @param queue queue object
  * @return uint8_t 1(True) if queue is not allocated or empty and 0(False) otherwise
  */
-uint8_t is_queue_empty(queue_t* queue) {
+uint8_t is_queue_empty(queue_t *queue) {
     if ((NULL == queue) || (NULL == queue->front)) {
         return 1;
     }
@@ -218,7 +218,7 @@ uint8_t is_queue_empty(queue_t* queue) {
  * @return size_t -1 if queue is not allocated or
  * queue size
  */
-size_t get_queue_size(queue_t* queue) {
+size_t get_queue_size(queue_t *queue) {
     if (NULL == queue) {
         return SIZE_MAX;
     }
@@ -234,7 +234,7 @@ size_t get_queue_size(queue_t* queue) {
  * @param data_size size of the data type
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t change_queue_data(void* old_data, const void* new_data, size_t data_size) {
+scl_error_t change_queue_data(void *old_data, const void *new_data, size_t data_size) {
     /* Check if input data is valid */
     if ((NULL == old_data) || (NULL == new_data) || (0 == data_size)) {
         return SCL_CANNOT_CHANGE_DATA;
@@ -256,7 +256,7 @@ scl_error_t change_queue_data(void* old_data, const void* new_data, size_t data_
  * @param queue a queue object
  * @return void* a pointer to front element data
  */
-void* queue_front(queue_t* queue) {
+void* queue_front(queue_t *queue) {
     if ((NULL == queue) || (NULL == queue->front)) {
         return NULL;
     }
@@ -273,7 +273,7 @@ void* queue_front(queue_t* queue) {
  * @param queue a queue object
  * @return void* a pointer to front element data
  */
-void* queue_back(queue_t* queue) {
+void* queue_back(queue_t *queue) {
     if ((NULL == queue) || (NULL == queue->back)) {
         return NULL;
     }
@@ -293,7 +293,7 @@ void* queue_back(queue_t* queue) {
  * @param dataSize size of a generic data type element
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t queue_push(queue_t* queue, const void* data, size_t data_size) {
+scl_error_t queue_push(queue_t *queue, const void *data, size_t data_size) {
     /* Check if queue and data addresses are valid */
     if (NULL == queue) {
         return SCL_NULL_QUEUE;
@@ -304,7 +304,7 @@ scl_error_t queue_push(queue_t* queue, const void* data, size_t data_size) {
     }
 
     /* Create a new queue node */
-    queue_node_t* new_node = create_queue_node(data, data_size);
+    queue_node_t *new_node = create_queue_node(data, data_size);
 
     /* Check if new node was allocated */
     if (NULL == new_node) {
@@ -341,7 +341,7 @@ scl_error_t queue_push(queue_t* queue, const void* data, size_t data_size) {
  * @param queue a queue object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t queue_pop(queue_t* queue) {
+scl_error_t queue_pop(queue_t *queue) {
     /* Check if queue is allocated and it is not empty */
     if (NULL == queue) {
         return SCL_NULL_QUEUE;
@@ -353,7 +353,7 @@ scl_error_t queue_pop(queue_t* queue) {
 
 
     /* Pointer to current wipe node */
-    queue_node_t* delete_node = queue->front;
+    queue_node_t *delete_node = queue->front;
 
     /* Update the front pointer of the queue */
     queue->front = queue->front->next;

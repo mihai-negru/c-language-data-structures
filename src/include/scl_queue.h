@@ -37,8 +37,8 @@
  * 
  */
 typedef struct queue_node {
-    void* data;                     /* Pointer to data */
-    struct queue_node* next;        /* Pointer to next data node */
+    void *data;                     /* Pointer to data */
+    struct queue_node *next;        /* Pointer to next data node */
 } queue_node_t;
 
 /**
@@ -46,23 +46,23 @@ typedef struct queue_node {
  * 
  */
 typedef struct {
-    queue_node_t* front;            /* Pointer to beginning of queue */
-    queue_node_t* back;             /* Pointer to end of queue */
+    queue_node_t *front;            /* Pointer to beginning of queue */
+    queue_node_t *back;             /* Pointer to end of queue */
     free_func frd;                  /* Function to free one data */
     size_t size;                    /* Size of the queue */
 } queue_t;
 
 queue_t*        create_queue        (free_func frd);
-scl_error_t     free_queue          (queue_t* queue);
-scl_error_t     print_queue         (queue_t* queue, simple_action print);
+scl_error_t     free_queue          (queue_t *queue);
+scl_error_t     print_queue         (queue_t *queue, const_action_func print);
 
-uint8_t         is_queue_empty      (queue_t* queue);
-size_t          get_queue_size      (queue_t* queue);
+uint8_t         is_queue_empty      (queue_t *queue);
+size_t          get_queue_size      (queue_t *queue);
 
-scl_error_t     change_queue_data   (void* old_data, const void* new_data, size_t data_size);
-void*           queue_front         (queue_t* queue);
-void*           queue_back          (queue_t* queue);
-scl_error_t     queue_push          (queue_t* queue, const void* data, size_t data_size);
-scl_error_t     queue_pop           (queue_t* queue);
+scl_error_t     change_queue_data   (void *old_data, const void *new_data, size_t data_size);
+void*           queue_front         (queue_t *queue);
+void*           queue_back          (queue_t *queue);
+scl_error_t     queue_push          (queue_t *queue, const void *data, size_t data_size);
+scl_error_t     queue_pop           (queue_t *queue);
 
 #endif /* QUEUE_UTILS_H_ */

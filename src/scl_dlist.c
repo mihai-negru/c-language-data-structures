@@ -37,7 +37,7 @@
  * @return dlist_t* return a new dynamically allocated list or NULL if
  * allocation went wrong
  */
-dlist_t* create_dlist(compare_func cmp, simple_action print, free_func frd) {
+dlist_t* create_dlist(compare_func cmp, const_action_func print, free_func frd) {
     /*
      * It is required for every linked list to have a compare and a print function
      * The free function is optional
@@ -49,7 +49,7 @@ dlist_t* create_dlist(compare_func cmp, simple_action print, free_func frd) {
     }
 
     /* Allocate a new list on heap */
-    dlist_t* new_list = malloc(sizeof(*new_list));
+    dlist_t *new_list = malloc(sizeof(*new_list));
 
     /* Check if new list was allocated */
     if (NULL != new_list) {
@@ -81,14 +81,14 @@ dlist_t* create_dlist(compare_func cmp, simple_action print, free_func frd) {
  * @param data_size size of an element
  * @return dlist_node_t* return a new allocated node object
  */
-static dlist_node_t* create_dlist_node(const void* data, size_t data_size) {
+static dlist_node_t* create_dlist_node(const void *data, size_t data_size) {
     /* It is required for data to be a valid pointer */
     if (NULL == data) {
         return NULL;
     }
 
     /* Allocate a new Node on heap */
-    dlist_node_t* new_node = malloc(sizeof(*new_node));
+    dlist_node_t *new_node = malloc(sizeof(*new_node));
 
     /* Check if new node was allocated */
     if (NULL != new_node) {
@@ -129,7 +129,7 @@ static dlist_node_t* create_dlist_node(const void* data, size_t data_size) {
  * @param list a double linked list objects
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t print_front_dlist(dlist_t* list) {
+scl_error_t print_front_dlist(dlist_t *list) {
     if (NULL != list) {
 
         /* If list is empty, print [] */
@@ -137,7 +137,7 @@ scl_error_t print_front_dlist(dlist_t* list) {
             printf("[ ]");
         }
 
-        dlist_node_t* iterator = list->head;
+        dlist_node_t *iterator = list->head;
 
         /* Print every node data */
         while (NULL != iterator) {
@@ -162,7 +162,7 @@ scl_error_t print_front_dlist(dlist_t* list) {
  * @param list a double linked list objects
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t print_back_dlist(dlist_t* list) {
+scl_error_t print_back_dlist(dlist_t *list) {
     if (NULL != list) {
 
         /* If list is empty, print [] */
@@ -170,7 +170,7 @@ scl_error_t print_back_dlist(dlist_t* list) {
             printf("[ ]");
         }
 
-        dlist_node_t* iterator = list->tail;
+        dlist_node_t *iterator = list->tail;
 
         /* Print every node data from back */
         while (NULL != iterator) {
@@ -195,13 +195,13 @@ scl_error_t print_back_dlist(dlist_t* list) {
  * no operation will be needed
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t free_dlist(dlist_t* list) {
+scl_error_t free_dlist(dlist_t *list) {
     /* Check if list needs to be deallocated */
     if (NULL != list) {
 
         /* Iterate through every node */
         while (NULL != list->head) {
-            dlist_node_t* iterator = list->head;
+            dlist_node_t *iterator = list->head;
 
             list->head = list->head->next;
 
@@ -230,9 +230,6 @@ scl_error_t free_dlist(dlist_t* list) {
         /* Free list */
         free(list);
 
-        /* Set list pointer as NULL */
-        list = NULL;
-
         return SCL_OK;
     }
 
@@ -250,7 +247,7 @@ scl_error_t free_dlist(dlist_t* list) {
  * @return uint8_t true(1) if list is empty and false(0) if list is not
  * empty
  */
-uint8_t is_dlist_empty(dlist_t* list) {
+uint8_t is_dlist_empty(dlist_t *list) {
     if ((NULL == list) || (NULL == list->head)) {
         return 1;
     }
@@ -266,7 +263,7 @@ uint8_t is_dlist_empty(dlist_t* list) {
  * @return size_t -1 if list is not allocated or
  * list size
  */
-size_t get_dlist_size(dlist_t* list) {
+size_t get_dlist_size(dlist_t *list) {
     if (NULL == list) {
         return SIZE_MAX;
     }
@@ -281,7 +278,7 @@ size_t get_dlist_size(dlist_t* list) {
  * @return dlist_node_t* NULL if list is not allocated
  * or actual head of the list
  */
-dlist_node_t* get_dlist_head(dlist_t* list) {
+dlist_node_t* get_dlist_head(dlist_t *list) {
     if (NULL == list) {
         return NULL;
     }
@@ -296,7 +293,7 @@ dlist_node_t* get_dlist_head(dlist_t* list) {
  * @return dlist_node_t* NULL if list is not allocated
  * or actual tail of the list
  */
-dlist_node_t* get_dlist_tail(dlist_t* list) {
+dlist_node_t* get_dlist_tail(dlist_t *list) {
     if (NULL == list) {
         return NULL;
     }
@@ -314,7 +311,7 @@ dlist_node_t* get_dlist_tail(dlist_t* list) {
  * @param second_node second double linked list node
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t dlist_swap_data(dlist_node_t* first_node, dlist_node_t* second_node) {
+scl_error_t dlist_swap_data(dlist_node_t *first_node, dlist_node_t *second_node) {
     /* Check if list and input nodes are allocated */
     if ((NULL == first_node) || (NULL == second_node)) {
         return SCL_CANNOT_SWAP_DATA;
@@ -349,7 +346,7 @@ scl_error_t dlist_swap_data(dlist_node_t* first_node, dlist_node_t* second_node)
  * @param data_size size of the new data
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t dlist_change_data(const dlist_node_t* base_node, const void* new_data, size_t data_size) {
+scl_error_t dlist_change_data(dlist_node_t *base_node, const void *new_data, size_t data_size) {
     /* Check if input is valid */
     if ((NULL == base_node) || (NULL == base_node->data) || (NULL == new_data)) {
         return SCL_CANNOT_CHANGE_DATA;
@@ -369,7 +366,7 @@ scl_error_t dlist_change_data(const dlist_node_t* base_node, const void* new_dat
  * @param data_size the size of current data type
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t dlist_insert(dlist_t* list, const void* data, size_t data_size) {
+scl_error_t dlist_insert(dlist_t *list, const void *data, size_t data_size) {
     /* Check if list and data are valid */
     if (NULL == list) {
         return SCL_NULL_DLIST;
@@ -384,7 +381,7 @@ scl_error_t dlist_insert(dlist_t* list, const void* data, size_t data_size) {
     }
 
     /* Create a new linked list node */
-    dlist_node_t* new_node = create_dlist_node(data, data_size);
+    dlist_node_t *new_node = create_dlist_node(data, data_size);
 
     /* Check if node was allocated */
     if (NULL == new_node) {
@@ -425,7 +422,7 @@ scl_error_t dlist_insert(dlist_t* list, const void* data, size_t data_size) {
  * @param data_size the size of current data type
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t dlist_insert_order(dlist_t* list, const void* data, size_t data_size) {
+scl_error_t dlist_insert_order(dlist_t *list, const void *data, size_t data_size) {
     /* Check if list and data are valid */
     if (NULL == list) {
         return SCL_NULL_DLIST;
@@ -440,7 +437,7 @@ scl_error_t dlist_insert_order(dlist_t* list, const void* data, size_t data_size
     }
 
     /* Create a new linked list node */
-    dlist_node_t* new_node = create_dlist_node(data, data_size);
+    dlist_node_t *new_node = create_dlist_node(data, data_size);
 
     /* Check if node was allocated */
     if (NULL == new_node) {
@@ -457,7 +454,7 @@ scl_error_t dlist_insert_order(dlist_t* list, const void* data, size_t data_size
         list->head = new_node;
         list->tail = new_node;
     } else {
-        dlist_node_t* iterator = list->head;
+        dlist_node_t *iterator = list->head;
 
         /* Find the position for the new element */
         while ((NULL != iterator) && (list->cmp(new_node->data, iterator->data) > 0)) {
@@ -504,7 +501,7 @@ scl_error_t dlist_insert_order(dlist_t* list, const void* data, size_t data_size
  * @param data_size the size of current data type
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t dlist_insert_front(dlist_t* list, const void* data, size_t data_size) {
+scl_error_t dlist_insert_front(dlist_t *list, const void *data, size_t data_size) {
     /* Check if list and data are valid */
     if (NULL == list) {
         return SCL_NULL_DLIST;
@@ -519,7 +516,7 @@ scl_error_t dlist_insert_front(dlist_t* list, const void* data, size_t data_size
     }
 
     /* Create a new linked list node */
-    dlist_node_t* new_node = create_dlist_node(data, data_size);
+    dlist_node_t *new_node = create_dlist_node(data, data_size);
 
     /* Check if node was allocated */
     if (NULL == new_node) {
@@ -567,7 +564,7 @@ scl_error_t dlist_insert_front(dlist_t* list, const void* data, size_t data_size
  * @param data_index the index in the double linked list to insert an element
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t dlist_insert_index(dlist_t* list, const void* data, size_t data_size, size_t data_index) {
+scl_error_t dlist_insert_index(dlist_t *list, const void *data, size_t data_size, size_t data_index) {
     /* Check if list and data are valid */
     if (NULL == list) {
         return SCL_NULL_DLIST;
@@ -592,14 +589,14 @@ scl_error_t dlist_insert_index(dlist_t* list, const void* data, size_t data_size
     }
 
     /* Create a new linked list node */
-    dlist_node_t* new_node = create_dlist_node(data, data_size);
+    dlist_node_t *new_node = create_dlist_node(data, data_size);
 
     /* Check if new node was allocated */
     if (NULL == new_node) {
         return SCL_NOT_ENOUGHT_MEM_FOR_NODE;
     }
 
-    dlist_node_t* iterator = list->head;
+    dlist_node_t *iterator = list->head;
 
     /*
      * Find node that point on the
@@ -632,7 +629,7 @@ scl_error_t dlist_insert_index(dlist_t* list, const void* data, size_t data_size
  * @return dlist_node_t* double linked list node from list at specified
  * index
  */
-dlist_node_t* dlist_find_index(dlist_t* list, size_t data_index) {
+dlist_node_t* dlist_find_index(dlist_t *list, size_t data_index) {
     /* Check if list and index are valid */
     if ((NULL == list) || (data_index >= list->size)) {
         return NULL;
@@ -643,7 +640,7 @@ dlist_node_t* dlist_find_index(dlist_t* list, size_t data_index) {
         return list->tail;
     }
 
-    dlist_node_t* iterator = list->head;
+    dlist_node_t *iterator = list->head;
 
     /* Iterate in list until hit indexed node */
     while (data_index--) {
@@ -664,7 +661,7 @@ dlist_node_t* dlist_find_index(dlist_t* list, size_t data_index) {
  * @return dlist_node_t* NULL if data is not found or a pointer
  * to a double linked list node containing given data
  */
-dlist_node_t* dlist_find_data(dlist_t* list, const void* data) {
+dlist_node_t* dlist_find_data(dlist_t *list, const void *data) {
     /*
      * Check if list and data are valid and
      * check if list is not empty
@@ -673,7 +670,7 @@ dlist_node_t* dlist_find_data(dlist_t* list, const void* data) {
         return NULL;
     }
 
-    dlist_node_t* iterator = list->head;
+    dlist_node_t *iterator = list->head;
 
     /* Find node */
     while ((NULL != iterator) && (list->cmp(iterator->data, data) != 0)) {
@@ -695,7 +692,7 @@ dlist_node_t* dlist_find_data(dlist_t* list, const void* data) {
  * @param data a pointer to a typed data to be removed 
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t dlist_delete_data(dlist_t* list, void* data) {
+scl_error_t dlist_delete_data(dlist_t *list, void *data) {
     /*
      * Check if list is allocated and it is not empty
      * Check if data pointer is valid
@@ -712,7 +709,7 @@ scl_error_t dlist_delete_data(dlist_t* list, void* data) {
         return SCL_INVALID_DATA;
     }
 
-    dlist_node_t* iterator = list->head;
+    dlist_node_t *iterator = list->head;
 
     /* Find list data associated with data pointer */
     while ((NULL != iterator) && (list->cmp(iterator->data, data) != 0)) {
@@ -775,7 +772,7 @@ scl_error_t dlist_delete_data(dlist_t* list, void* data) {
  * @param data_index node index in the list to be removed starts from 0
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t dlist_delete_index(dlist_t* list, size_t data_index) {
+scl_error_t dlist_delete_index(dlist_t *list, size_t data_index) {
     /*
      * Check if list is allocated and it is not empty
      * Check if data pointer is valid
@@ -792,7 +789,7 @@ scl_error_t dlist_delete_index(dlist_t* list, size_t data_index) {
         return SCL_INDEX_OVERFLOWS_SIZE;
     }
 
-    dlist_node_t* iterator = list->head;
+    dlist_node_t *iterator = list->head;
 
     /* Find node from index */
     while (data_index--) {
@@ -851,7 +848,7 @@ scl_error_t dlist_delete_index(dlist_t* list, size_t data_index) {
  * @param right_index right index to finish deletion
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t dlist_erase(dlist_t* list, size_t left_index, size_t right_index) {
+scl_error_t dlist_erase(dlist_t *list, size_t left_index, size_t right_index) {
     /* Check if list is allocated and it is not empty */
     if (NULL == list) {
         return SCL_NULL_DLIST;
@@ -881,7 +878,7 @@ scl_error_t dlist_erase(dlist_t* list, size_t left_index, size_t right_index) {
         right_index = list->size - 1;
     }
 
-    dlist_node_t* iterator = list->head;
+    dlist_node_t *iterator = list->head;
 
     /* Compute number of nodes from range */
     size_t delete_num = right_index - left_index + 1;
@@ -915,7 +912,7 @@ scl_error_t dlist_erase(dlist_t* list, size_t left_index, size_t right_index) {
         }
 
         /* Save a pointer to memory to delete */
-        dlist_node_t* delete_node = iterator;
+        dlist_node_t *delete_node = iterator;
 
         /* Update iterator pointer to next cell */
         iterator = iterator->next;
@@ -958,7 +955,7 @@ scl_error_t dlist_erase(dlist_t* list, size_t left_index, size_t right_index) {
  * @return dlist_t* a filtered linked list object with smaller
  * or equal size of the original linked list object
  */
-dlist_t* dlist_filter(dlist_t* list, filter_func filter, size_t data_size) {
+dlist_t* dlist_filter(dlist_t *list, filter_func filter, size_t data_size) {
     /*
      * Check if input is valid
      * Filter function has to be different from NULL pointer
@@ -968,11 +965,11 @@ dlist_t* dlist_filter(dlist_t* list, filter_func filter, size_t data_size) {
     }
 
     /* Create a new double linked list object */
-    dlist_t* filter_list = create_dlist(list->cmp, list->print, list->frd);
+    dlist_t *filter_list = create_dlist(list->cmp, list->print, list->frd);
 
     /* Check if list was created */
     if (NULL != filter_list) {
-        dlist_node_t* iterator = list->head;
+        dlist_node_t *iterator = list->head;
 
         /* Iterate through all list nodes */
         while (NULL != iterator) {
@@ -1011,7 +1008,7 @@ dlist_t* dlist_filter(dlist_t* list, filter_func filter, size_t data_size) {
  * @param data_size size of a single element
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t dlist_map(dlist_t* list, map_func map, size_t data_size) {
+scl_error_t dlist_map(dlist_t *list, map_func map, size_t data_size) {
     /*
      * Check if list is allocated and is not empty
      * Check if user provided a valid map function
@@ -1028,7 +1025,7 @@ scl_error_t dlist_map(dlist_t* list, map_func map, size_t data_size) {
         return SCL_NULL_ACTION_FUNC;
     }
 
-    dlist_node_t* iterator = list->head;
+    dlist_node_t *iterator = list->head;
 
     /*
      * Iterate through every element in the list

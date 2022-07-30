@@ -114,7 +114,7 @@ static void quick_sort_helper(void *arr_left, void *arr_right, size_t arr_elem_s
     if (left_ptr < right_ptr) {
 
         /* Get pivot pointer */
-        uint8_t* partition_ptr = quick_sort_partition(left_ptr, right_ptr, arr_elem_size, cmp);
+        uint8_t *partition_ptr = quick_sort_partition(left_ptr, right_ptr, arr_elem_size, cmp);
 
         /* Sort left part (smaller than pivot) */
         if (partition_ptr > left_ptr) {
@@ -283,7 +283,7 @@ static void merge_sort_helper(void *arr_left, void *arr_right, size_t arr_elem_s
     if (left_ptr < right_ptr) {
 
         /* Compute middle pointer */
-        uint8_t* middle_ptr = left_ptr + arr_elem_size * ((right_ptr - left_ptr) / (2 * arr_elem_size));
+        uint8_t *middle_ptr = left_ptr + arr_elem_size * ((right_ptr - left_ptr) / (2 * arr_elem_size));
 
         /* Sort left subarray */
         merge_sort_helper(left_ptr, middle_ptr, arr_elem_size, cmp);
@@ -348,7 +348,7 @@ scl_error_t merge_sort(void *arr, size_t number_of_elem, size_t arr_elem_size, c
  * @param cmp pointer to a function to compare two sets of data from array
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t bubble_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
+scl_error_t bubble_sort(void *arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
     /* Check if most left pointer and most right pointer of the array are valid */
     if ((NULL == arr) || (NULL == (uint8_t *)arr + (number_of_elem - 1) * arr_elem_size)) {
         return SCL_NULL_SIMPLE_ARRAY;
@@ -370,7 +370,7 @@ scl_error_t bubble_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, 
     }
 
     /* Set pointer to the last array element */
-    uint8_t *arr_end = (uint8_t*)arr + (number_of_elem - 1) * arr_elem_size;
+    uint8_t *arr_end = (uint8_t *)arr + (number_of_elem - 1) * arr_elem_size;
 
     /* Set flag to check if data swapping occured */
     uint8_t swap_flag = 0;
@@ -382,7 +382,7 @@ scl_error_t bubble_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, 
         swap_flag = 0;
 
         /* Compute new last element pointer form array */
-        uint8_t *second_arr_end = (uint8_t*)arr + (arr_end - iter_i);
+        uint8_t *second_arr_end = (uint8_t *)arr + (arr_end - iter_i);
         
         /* Check bubbles */
         for (uint8_t *iter_j = arr; iter_j < second_arr_end; iter_j = iter_j + arr_elem_size) {
@@ -412,7 +412,7 @@ scl_error_t bubble_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, 
  * @param number_of_elem 
  * @return uint64_t 
  */
-static uint64_t maximum_array_element(uint64_t* arr, size_t number_of_elem){
+static uint64_t maximum_array_element(uint64_t *arr, size_t number_of_elem){
 	uint64_t max_elem = arr[0];
 
 	for (size_t iter_i = 1; iter_i < number_of_elem; ++iter_i) {
@@ -475,7 +475,7 @@ static uint64_t get_whole_number_digit(uint64_t number, size_t digit_pos) {
  * @param number_of_elem number of elements within the selected array
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t radix_sort(uint64_t* arr, size_t number_of_elem) {
+scl_error_t radix_sort(uint64_t *arr, size_t number_of_elem) {
     /* Check if most left pointer and most right pointer of the array are valid */
     if ((NULL == arr) || (NULL == arr + number_of_elem - 1)) {
         return SCL_NULL_SIMPLE_ARRAY;
@@ -574,7 +574,7 @@ scl_error_t radix_sort(uint64_t* arr, size_t number_of_elem) {
  * @param cmp pointer to a function to compare two sets of data from array
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t bucket_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
+scl_error_t bucket_sort(void *arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
     /* Check if most left pointer and most right pointer of the array are valid */
     if ((NULL == arr) || (NULL == (uint8_t *)arr + (number_of_elem - 1) * arr_elem_size)) {
         return SCL_NULL_SIMPLE_ARRAY;
@@ -610,7 +610,7 @@ scl_error_t bucket_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, 
  * @param cmp pointer to a function to compare two sets of data from array
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t shell_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
+scl_error_t shell_sort(void *arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
     /* Check if most left pointer and most right pointer of the array are valid */
     if ((NULL == arr) || (NULL == (uint8_t *)arr + (number_of_elem - 1) * arr_elem_size)) {
         return SCL_NULL_SIMPLE_ARRAY;
@@ -646,7 +646,7 @@ scl_error_t shell_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, c
  * @param cmp pointer to a function to compare two sets of data from array
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t insertion_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
+scl_error_t insertion_sort(void *arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
     /* Check if most left pointer and most right pointer of the array are valid */
     if ((NULL == arr) || (NULL == (uint8_t *)arr + (number_of_elem - 1) * arr_elem_size)) {
         return SCL_NULL_SIMPLE_ARRAY;
@@ -682,7 +682,7 @@ scl_error_t insertion_sort(void* arr, size_t number_of_elem, size_t arr_elem_siz
  * @param cmp pointer to a function to compare two sets of data from array
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t selection_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
+scl_error_t selection_sort(void *arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
     /* Check if most left pointer and most right pointer of the array are valid */
     if ((NULL == arr) || (NULL == (uint8_t *)arr + (number_of_elem - 1) * arr_elem_size)) {
         return SCL_NULL_SIMPLE_ARRAY;
@@ -716,7 +716,7 @@ scl_error_t selection_sort(void* arr, size_t number_of_elem, size_t arr_elem_siz
  * @param arr_elem_size size of one element from selected array
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t reverse_array(void* arr, size_t number_of_elem, size_t arr_elem_size) {
+scl_error_t reverse_array(void *arr, size_t number_of_elem, size_t arr_elem_size) {
     /* Check if most left pointer and most right pointer of the array are valid */
     if ((NULL == arr) || (NULL == (uint8_t *)arr + (number_of_elem - 1) * arr_elem_size)) {
         return SCL_NULL_SIMPLE_ARRAY;
@@ -733,8 +733,8 @@ scl_error_t reverse_array(void* arr, size_t number_of_elem, size_t arr_elem_size
     }
 
     /* Set left and right element pointers */
-    uint8_t* left_iter = arr;
-    uint8_t* right_iter = (uint8_t*)arr + (number_of_elem - 1) * arr_elem_size;
+    uint8_t *left_iter = arr;
+    uint8_t *right_iter = (uint8_t *)arr + (number_of_elem - 1) * arr_elem_size;
 
     /* Swap elements */
     while (left_iter < right_iter) {
@@ -767,7 +767,7 @@ scl_error_t reverse_array(void* arr, size_t number_of_elem, size_t arr_elem_size
  * @return void* pointer to data memory location from array or NULL if
  * data was not found in the array
  */
-void* binary_search(void* arr, void* data, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
+void* binary_search(void *arr, void *data, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
     /* Check if most left pointer and most right pointer of the array are valid */
     if ((NULL == arr) || (NULL == (uint8_t *)arr + (number_of_elem - 1) * arr_elem_size)) {
         return NULL;
@@ -794,8 +794,8 @@ void* binary_search(void* arr, void* data, size_t number_of_elem, size_t arr_ele
     }
 
     /* Set left and right element pointers */
-    uint8_t* left_ptr = arr;
-    uint8_t* right_ptr = (uint8_t*)arr + (number_of_elem - 1) * arr_elem_size;
+    uint8_t *left_ptr = arr;
+    uint8_t *right_ptr = (uint8_t *)arr + (number_of_elem - 1) * arr_elem_size;
 
     /*
      * Find data in the array 
@@ -806,7 +806,7 @@ void* binary_search(void* arr, void* data, size_t number_of_elem, size_t arr_ele
     while (left_ptr < right_ptr) {
 
         /* Compute the middle element pointer */
-        uint8_t* middle_ptr = left_ptr + arr_elem_size * ((right_ptr - left_ptr) / (2 * arr_elem_size));
+        uint8_t *middle_ptr = left_ptr + arr_elem_size * ((right_ptr - left_ptr) / (2 * arr_elem_size));
 
         /* Compare middle data with input data */
         int32_t compare_data = cmp(middle_ptr, data);

@@ -87,11 +87,12 @@ typedef enum {
  * @brief Definition of the most used functions
  * 
  */
-typedef         int (*compare_func)         (const void*, const void*);
-typedef         void (*free_func)           (void*);
-typedef         void (*simple_action)       (const void*);
-typedef         int (*filter_func)          (const void*);
-typedef         const void* (*map_func)     (void*);
+typedef         int             (*compare_func)         (const void * const, const void * const);
+typedef         void            (*free_func)            (void *);
+typedef         void            (*const_action_func)    (const void * const);
+typedef         void            (*action_func)          (void * const);
+typedef         int             (*filter_func)          (const void * const);
+typedef         const void*     (*map_func)             (void * const);
 
 
 void            scl_error_message           (scl_error_t error_message);

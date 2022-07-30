@@ -37,8 +37,8 @@
  * 
  */
 typedef struct stack_node {
-    void* data;                     /* Pointer to data */
-    struct stack_node* next;        /* Pointer to next data node */
+    void *data;                     /* Pointer to data */
+    struct stack_node *next;        /* Pointer to next data node */
 } stack_node_t;
 
 /**
@@ -46,21 +46,21 @@ typedef struct stack_node {
  * 
  */
 typedef struct {
-    stack_node_t* top;              /* Pointer to top data node */
+    stack_node_t *top;              /* Pointer to top data node */
     free_func frd;                  /* Function to free one data */
     size_t size;                    /* Size of the stack */
 } stack_t;
 
 stack_t*        create_stack        (free_func frd);
-scl_error_t     free_stack          (stack_t* stack);
-scl_error_t     print_stack         (stack_t* stack, simple_action print);
+scl_error_t     free_stack          (stack_t *stack);
+scl_error_t     print_stack         (stack_t *stack, const_action_func print);
 
-uint8_t         is_stack_empty      (stack_t* stack);
-size_t          get_stack_size      (stack_t* stack);
+uint8_t         is_stack_empty      (stack_t *stack);
+size_t          get_stack_size      (stack_t *stack);
 
-scl_error_t     change_stack_data   (void* old_data, const void* new_data, size_t data_size);
-void*           stack_top           (stack_t* stack);
-scl_error_t     stack_push          (stack_t* stack, const void* data, size_t data_size);
-scl_error_t     stack_pop           (stack_t* stack);
+scl_error_t     change_stack_data   (void *old_data, const void *new_data, size_t data_size);
+void*           stack_top           (stack_t *stack);
+scl_error_t     stack_push          (stack_t *stack, const void *data, size_t data_size);
+scl_error_t     stack_pop           (stack_t *stack);
 
 #endif /* STACK_UTILS_H_ */

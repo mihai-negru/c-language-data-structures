@@ -50,7 +50,7 @@ avl_tree_t* create_avl(compare_func cmp, free_func frd) {
     }
 
     /* Allocate a new avl tree object on heap */
-    avl_tree_t* new_tree = malloc(sizeof(*new_tree));
+    avl_tree_t *new_tree = malloc(sizeof(*new_tree));
 
     /* Check if avl tree object was allocated */
     if (NULL != new_tree) {
@@ -97,14 +97,14 @@ avl_tree_t* create_avl(compare_func cmp, free_func frd) {
  * @param data_size size of one generic data
  * @return avl_tree_node_t* a new allocated avl tree node object or NULL
  */
-static avl_tree_node_t* create_avl_node(avl_tree_t* tree, const void* data, size_t data_size) {
+static avl_tree_node_t* create_avl_node(avl_tree_t *tree, const void *data, size_t data_size) {
     /* Check if data address is valid */
     if (NULL == data) {
         return tree->nil;
     }
 
     /* Allocate a new node on the heap */
-    avl_tree_node_t* new_node = malloc(sizeof(*new_node));
+    avl_tree_node_t *new_node = malloc(sizeof(*new_node));
 
     /* Check if allocation went successfully */
     if (NULL != new_node) {
@@ -148,7 +148,7 @@ static avl_tree_node_t* create_avl_node(avl_tree_t* tree, const void* data, size
  * @param tree an allocated avl tree object
  * @param root pointer to current avl node object
  */
-static void free_avl_helper(avl_tree_t* tree, avl_tree_node_t* root) {
+static void free_avl_helper(avl_tree_t *tree, avl_tree_node_t *root) {
     /* Check if current node is valid */
     if (tree->nil == root) {
         return;
@@ -191,7 +191,7 @@ static void free_avl_helper(avl_tree_t* tree, avl_tree_node_t* root) {
  * @param tree an allocated avl tree object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t free_avl(avl_tree_t* tree) {
+scl_error_t free_avl(avl_tree_t *tree) {
     /* Check if tree needs to be freed */
     if (NULL != tree) {
 
@@ -206,9 +206,6 @@ scl_error_t free_avl(avl_tree_t* tree) {
         /* Free avl tree object */
         free(tree);
 
-        /* Set tree pointer as NULL */
-        tree = NULL;
-
         return SCL_OK;
     }
 
@@ -222,7 +219,7 @@ scl_error_t free_avl(avl_tree_t* tree) {
  * @param tree an allocated avl tree object
  * @param fix_node an avl tree node object to update its height
  */
-static void avl_update_node_height(avl_tree_t* tree, avl_tree_node_t* fix_node) {
+static void avl_update_node_height(avl_tree_t *tree, avl_tree_node_t *fix_node) {
     /* Check if input data is valid */
     if (tree->nil != fix_node) {
 
@@ -240,7 +237,7 @@ static void avl_update_node_height(avl_tree_t* tree, avl_tree_node_t* fix_node) 
  * @param tree an allocated avl tree object
  * @param fix_node pointer to avl tree node object to rotate
  */
-static void avl_rotate_left(avl_tree_t* tree, avl_tree_node_t* fix_node) {
+static void avl_rotate_left(avl_tree_t *tree, avl_tree_node_t *fix_node) {
     /* Check if input data is valid */
     if ((NULL == tree) || (tree->nil == fix_node)) {
         return;
@@ -252,7 +249,7 @@ static void avl_rotate_left(avl_tree_t* tree, avl_tree_node_t* fix_node) {
     }
 
     /* Set new rotated sub-root */
-    avl_tree_node_t* rotate_node = fix_node->right;
+    avl_tree_node_t *rotate_node = fix_node->right;
 
     /* Update child of fix_node */
     fix_node->right = rotate_node->left;
@@ -296,7 +293,7 @@ static void avl_rotate_left(avl_tree_t* tree, avl_tree_node_t* fix_node) {
  * @param tree an allocated avl tree object
  * @param fix_node pointer to avl tree node object to rotate
  */
-static void avl_rotate_right(avl_tree_t* tree, avl_tree_node_t* fix_node) {
+static void avl_rotate_right(avl_tree_t *tree, avl_tree_node_t *fix_node) {
     /* Check if input data is valid */
     if ((NULL == tree) || (tree->nil == fix_node)) {
         return;
@@ -308,7 +305,7 @@ static void avl_rotate_right(avl_tree_t* tree, avl_tree_node_t* fix_node) {
     }
 
     /* Set new rotated sub-root */
-    avl_tree_node_t* rotate_node = fix_node->left;
+    avl_tree_node_t *rotate_node = fix_node->left;
 
     /* Update child of fix_node */
     fix_node->left = rotate_node->right;
@@ -350,7 +347,7 @@ static void avl_rotate_right(avl_tree_t* tree, avl_tree_node_t* fix_node) {
  * @param fix_node pointer to avl tree node object
  * @return int balance factor of the fix_node avl_tree_node_t
  */
-static int32_t avl_get_node_balance(avl_tree_node_t* fix_node) {
+static int32_t avl_get_node_balance(avl_tree_node_t *fix_node) {
     /* Return balance factor of the node */
     return (fix_node->left->height - fix_node->right->height);
 }
@@ -365,7 +362,7 @@ static int32_t avl_get_node_balance(avl_tree_node_t* fix_node) {
  * fixing the balance
  * @return scl_error_t enum object for handling errors 
  */
-static scl_error_t avl_insert_fix_node_up(avl_tree_t* tree, avl_tree_node_t* fix_node) {
+static scl_error_t avl_insert_fix_node_up(avl_tree_t *tree, avl_tree_node_t *fix_node) {
     /* Check if input data is valid */
     if (NULL == tree) {
         return SCL_NULL_AVL;
@@ -427,7 +424,7 @@ static scl_error_t avl_insert_fix_node_up(avl_tree_t* tree, avl_tree_node_t* fix
  * @param data_size size of a generic data type element
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t avl_insert(avl_tree_t* tree, const void* data, size_t data_size) {
+scl_error_t avl_insert(avl_tree_t *tree, const void *data, size_t data_size) {
     /* Check if tree and data are valid */
     if (NULL == tree) {
         return SCL_NULL_AVL;
@@ -442,8 +439,8 @@ scl_error_t avl_insert(avl_tree_t* tree, const void* data, size_t data_size) {
     }
 
     /* Set iterator pointers */
-    avl_tree_node_t* iterator = tree->root;
-    avl_tree_node_t* parent_iterator = tree->nil;
+    avl_tree_node_t *iterator = tree->root;
+    avl_tree_node_t *parent_iterator = tree->nil;
 
     /* Find a valid position for insertion */
     while (tree->nil != iterator) {
@@ -465,7 +462,7 @@ scl_error_t avl_insert(avl_tree_t* tree, const void* data, size_t data_size) {
     }
 
     /* Create a new avl node object */
-    avl_tree_node_t* new_node = create_avl_node(tree, data, data_size);
+    avl_tree_node_t *new_node = create_avl_node(tree, data, data_size);
 
     /* Check if new avl node was created */
     if (tree->nil == new_node) {
@@ -510,14 +507,14 @@ scl_error_t avl_insert(avl_tree_t* tree, const void* data, size_t data_size) {
  * @return avl_tree_node_t* avl tree node object containing
  * data value or NULL in case no such node exists
  */
-avl_tree_node_t* avl_find_data(avl_tree_t* tree, const void* data) {
+avl_tree_node_t *avl_find_data(avl_tree_t *tree, const void *data) {
     /* Check if input data is valid */
     if ((NULL == tree) || (tree->nil == tree->root)) {
         return tree->nil;
     }
 
     /* Set iterator pointer */
-    avl_tree_node_t* iterator = tree->root;
+    avl_tree_node_t *iterator = tree->root;
 
     /* Search for imput data (void *data) in all tree */
     while (tree->nil != iterator) {
@@ -546,7 +543,7 @@ avl_tree_node_t* avl_find_data(avl_tree_t* tree, const void* data) {
  * @param data_size size of a generic data type element
  * @return scl_error_t enum object for handling errors
  */
-static scl_error_t avl_change_data(avl_tree_node_t* dest_node, const avl_tree_node_t* src_node, size_t data_size) {
+static scl_error_t avl_change_data(avl_tree_node_t *dest_node, const avl_tree_node_t *src_node, size_t data_size) {
     /* Check if data pointers are allocated */
     if ((NULL == dest_node->data) || (NULL == src_node->data)) {
         return SCL_CANNOT_CHANGE_DATA;
@@ -575,7 +572,7 @@ static scl_error_t avl_change_data(avl_tree_node_t* dest_node, const avl_tree_no
  * @param base_node avl node object to calculate its level
  * @return int32_t level of input avl object node
  */
-int32_t avl_node_level(avl_tree_t* tree, const avl_tree_node_t* base_node) {
+int32_t avl_node_level(avl_tree_t *tree, const avl_tree_node_t *base_node) {
     /* Check if input data is valid */
     if (tree->nil == base_node) {
         return -1;
@@ -602,7 +599,7 @@ int32_t avl_node_level(avl_tree_t* tree, const avl_tree_node_t* base_node) {
  * @return uint8_t 1 if avl tree is empty or not allocated
  * 0 if it is not empty
  */
-uint8_t is_avl_empty(avl_tree_t* tree) {
+uint8_t is_avl_empty(avl_tree_t *tree) {
     if ((NULL == tree) || (tree->nil == tree->root) || (0 == tree->size)) {
         return 1;
     }
@@ -616,7 +613,7 @@ uint8_t is_avl_empty(avl_tree_t* tree) {
  * @param tree an allocated avl tree object
  * @return avl_tree_node_t* the root node of the current avl tree
  */
-avl_tree_node_t* get_avl_root(avl_tree_t* tree) {
+avl_tree_node_t* get_avl_root(avl_tree_t *tree) {
     if (NULL == tree) {
         return tree->nil;
     }
@@ -630,7 +627,7 @@ avl_tree_node_t* get_avl_root(avl_tree_t* tree) {
  * @param tree an allocated avl tree object
  * @return size_t size of the current avl tree
  */
-size_t get_avl_size(avl_tree_t* tree) {
+size_t get_avl_size(avl_tree_t *tree) {
     if (NULL == tree) {
         return SIZE_MAX;
     }
@@ -647,7 +644,7 @@ size_t get_avl_size(avl_tree_t* tree) {
  * @param root pointer to current working avl node object
  * @return avl_tree_node_t* pointer to maximum node value from avl
  */
-avl_tree_node_t* avl_max_node(avl_tree_t* tree, avl_tree_node_t* root) {
+avl_tree_node_t* avl_max_node(avl_tree_t *tree, avl_tree_node_t *root) {
     if (tree->nil != root) {
         while (tree->nil != root->right) {
             root = root->right;
@@ -666,7 +663,7 @@ avl_tree_node_t* avl_max_node(avl_tree_t* tree, avl_tree_node_t* root) {
  * @param root pointer to current working avl node object
  * @return avl_tree_node_t* pointer to minimum node value from avl
  */
-avl_tree_node_t* avl_min_node(avl_tree_t* tree, avl_tree_node_t* root) {
+avl_tree_node_t* avl_min_node(avl_tree_t *tree, avl_tree_node_t *root) {
     if (tree->nil != root) {
         while (tree->nil != root->left) {
             root = root->left;
@@ -685,7 +682,7 @@ avl_tree_node_t* avl_min_node(avl_tree_t* tree, avl_tree_node_t* root) {
  * @param root pointer to current working avl node object
  * @return void* pointer to maximum data value from avl tree
  */
-void* avl_max_data(avl_tree_t* tree, avl_tree_node_t* root) {
+void* avl_max_data(avl_tree_t *tree, avl_tree_node_t *root) {
     /* Check if input data is valid */
     if (tree->nil == root) {
         return NULL;
@@ -704,7 +701,7 @@ void* avl_max_data(avl_tree_t* tree, avl_tree_node_t* root) {
  * @param root pointer to current working avl node object
  * @return void* pointer to minimum data value from avl tree
  */
-void* avl_min_data(avl_tree_t* tree, avl_tree_node_t* root) {
+void* avl_min_data(avl_tree_t *tree, avl_tree_node_t *root) {
     /* Check if input data is valid */
     if (tree->nil == root) {
         return NULL;
@@ -724,7 +721,7 @@ void* avl_min_data(avl_tree_t* tree, avl_tree_node_t* root) {
  * fixing the balance
  * @return scl_error_t enum object for handling errors
  */
-static scl_error_t avl_delete_fix_node_up(avl_tree_t* tree, avl_tree_node_t* fix_node) {
+static scl_error_t avl_delete_fix_node_up(avl_tree_t *tree, avl_tree_node_t *fix_node) {
     /* Check if input data is valid */
     if (NULL == tree) {
         return SCL_NULL_AVL;
@@ -785,7 +782,7 @@ static scl_error_t avl_delete_fix_node_up(avl_tree_t* tree, avl_tree_node_t* fix
  * @param data_size size of one generic data
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t avl_delete(avl_tree_t* tree, void* data, size_t data_size) {
+scl_error_t avl_delete(avl_tree_t *tree, void *data, size_t data_size) {
     /* Check if input data is valid */
     if (NULL == tree) {
         return SCL_NULL_AVL;
@@ -804,7 +801,7 @@ scl_error_t avl_delete(avl_tree_t* tree, void* data, size_t data_size) {
     }
 
     /* Find current node (root) in avl tree */
-    avl_tree_node_t* delete_node = avl_find_data(tree, data);
+    avl_tree_node_t *delete_node = avl_find_data(tree, data);
 
     /* Bst node was not found exit process */
     if (tree->nil == delete_node) {
@@ -817,7 +814,7 @@ scl_error_t avl_delete(avl_tree_t* tree, void* data, size_t data_size) {
         /* Selected node has two children */
 
         /* Find a replacement for selected node */
-        avl_tree_node_t* delete_succecessor = avl_min_node(tree, delete_node->right);
+        avl_tree_node_t *delete_succecessor = avl_min_node(tree, delete_node->right);
                 
         /* Replace the selected avl node and remove the dublicate */
         scl_error_t err = avl_change_data(delete_node, delete_succecessor, data_size);
@@ -901,7 +898,7 @@ scl_error_t avl_delete(avl_tree_t* tree, void* data, size_t data_size) {
         }
     }
 
-    avl_tree_node_t* parent_delete_node = delete_node->parent;
+    avl_tree_node_t *parent_delete_node = delete_node->parent;
 
     /* Free content of the data pointer */
     if ((NULL != tree->frd) && (NULL != delete_node->data)) {
@@ -942,14 +939,14 @@ scl_error_t avl_delete(avl_tree_t* tree, void* data, size_t data_size) {
  * @return avl_tree_node_t* NULL or inorder predecessor of the
  * node containing (void *data) value.
  */
-avl_tree_node_t* avl_predecessor_node(avl_tree_t* tree, const void* data) {
+avl_tree_node_t* avl_predecessor_node(avl_tree_t *tree, const void *data) {
     /* Check if input data is valid */
     if ((NULL == tree) || (tree->nil == tree->root) || (NULL == data)) {
         return tree->nil;
     }
 
     /* Find node containing the data value */
-    avl_tree_node_t* iterator = avl_find_data(tree, data);
+    avl_tree_node_t *iterator = avl_find_data(tree, data);
 
     /* If node is not in avl than return NULL */
     if (tree->nil == iterator) {
@@ -965,7 +962,7 @@ avl_tree_node_t* avl_predecessor_node(avl_tree_t* tree, const void* data) {
     }
 
     /* Set parent iterator */
-    avl_tree_node_t* parent_iterator = iterator->parent;
+    avl_tree_node_t *parent_iterator = iterator->parent;
 
     /* Find predecessor node */
     while ((tree->nil != parent_iterator) && (parent_iterator->left == iterator)) {
@@ -989,14 +986,14 @@ avl_tree_node_t* avl_predecessor_node(avl_tree_t* tree, const void* data) {
  * @return avl_tree_node_t* NULL or inorder successor of the
  * node containing (void *data) value.
  */
-avl_tree_node_t* avl_successor_node(avl_tree_t* tree, const void* data) {
+avl_tree_node_t* avl_successor_node(avl_tree_t *tree, const void *data) {
     /* Check if input data is valid */
     if ((NULL == tree) || (tree->nil == tree->root) || (NULL == data)) {
         return tree->nil;
     }
 
     /* Find node containing the data value */
-    avl_tree_node_t* iterator = avl_find_data(tree, data);
+    avl_tree_node_t *iterator = avl_find_data(tree, data);
 
     /* If node is not in avl than return NULL */
     if (tree->nil == iterator) {
@@ -1012,7 +1009,7 @@ avl_tree_node_t* avl_successor_node(avl_tree_t* tree, const void* data) {
     }
 
     /* Set parent iterator */
-    avl_tree_node_t* parent_iterator = iterator->parent;
+    avl_tree_node_t *parent_iterator = iterator->parent;
 
     /* Find successor node */
     while ((tree->nil != parent_iterator) && (parent_iterator->right == iterator)) {
@@ -1036,7 +1033,7 @@ avl_tree_node_t* avl_successor_node(avl_tree_t* tree, const void* data) {
  * @return void* NULL or data of inorder predecessor of the
  * node containing (void *data) value.
  */
-void* avl_predecessor_data(avl_tree_t* tree, const void* data) {
+void* avl_predecessor_data(avl_tree_t *tree, const void *data) {
     /* Check if input data is valid */
     if ((NULL == tree) || (NULL == data)) {
         return tree->nil;
@@ -1058,7 +1055,7 @@ void* avl_predecessor_data(avl_tree_t* tree, const void* data) {
  * @return void* NULL or data of inorder successor of the
  * node containing (void *data) value.
  */
-void* avl_succecessor_data(avl_tree_t* tree, const void* data) {
+void* avl_succecessor_data(avl_tree_t *tree, const void *data) {
     /* Check if input data is valid */
     if ((NULL == tree) || (NULL == data)) {
         return tree->nil;
@@ -1082,7 +1079,7 @@ void* avl_succecessor_data(avl_tree_t* tree, const void* data) {
  * @return avl_tree_node_t* pointer to a avl node object that is the lowest
  * common ancestor node of the two nodes containing data1 and data2
  */
-avl_tree_node_t* avl_lowest_common_ancestor_node(avl_tree_t* tree, const void* data1, const void* data2) {
+avl_tree_node_t* avl_lowest_common_ancestor_node(avl_tree_t *tree, const void *data1, const void *data2) {
     /* Check if input data is valid */
     if ((NULL == tree) || (NULL == data1) || NULL == data2) {
         return tree->nil;
@@ -1094,7 +1091,7 @@ avl_tree_node_t* avl_lowest_common_ancestor_node(avl_tree_t* tree, const void* d
     }
 
     /* Set iterator pointer */
-    avl_tree_node_t* iterator = tree->root;
+    avl_tree_node_t *iterator = tree->root;
 
     /* Find the lowest common ancestor */
     while (tree->nil != iterator) {
@@ -1127,7 +1124,7 @@ avl_tree_node_t* avl_lowest_common_ancestor_node(avl_tree_t* tree, const void* d
  * @return void* pointer to a avl node object data that is the lowest
  * common ancestor node of the two nodes containing data1 and data2
  */
-void* avl_lowest_common_ancestor_data(avl_tree_t* tree, const void* data1, const void* data2) {
+void* avl_lowest_common_ancestor_data(avl_tree_t *tree, const void *data1, const void *data2) {
     /* Check if input data is valid */
     if ((NULL == tree) || (NULL == data1) || (NULL == data2)) {
         return NULL;
@@ -1146,7 +1143,7 @@ void* avl_lowest_common_ancestor_data(avl_tree_t* tree, const void* data1, const
  * @param root starting point of the avl tree traversal
  * @param action a pointer function to perform an action on one avl node object
  */
-static void avl_traverse_inorder_helper(avl_tree_t* tree, avl_tree_node_t* root, avl_action action) {
+static void avl_traverse_inorder_helper(avl_tree_t *tree, avl_tree_node_t *root, action_func action) {
     /* Check if current working avl node is not NULL */
     if (tree->nil == root) {
         return;
@@ -1156,7 +1153,7 @@ static void avl_traverse_inorder_helper(avl_tree_t* tree, avl_tree_node_t* root,
     avl_traverse_inorder_helper(tree, root->left, action);
     
     /* Call action function */
-    action(tree, root);
+    action(root->data);
 
     /* Traverse in the right sub-tree */
     avl_traverse_inorder_helper(tree, root->right, action);
@@ -1176,7 +1173,7 @@ static void avl_traverse_inorder_helper(avl_tree_t* tree, avl_tree_node_t* root,
  * @return scl_error_t enum object for handling errors
  * 
  */
-scl_error_t avl_traverse_inorder(avl_tree_t* tree, avl_action action) {
+scl_error_t avl_traverse_inorder(avl_tree_t *tree, action_func action) {
     /* Check if input data is valid */
     if (NULL == tree) {
         return SCL_NULL_AVL;
@@ -1209,14 +1206,14 @@ scl_error_t avl_traverse_inorder(avl_tree_t* tree, avl_action action) {
  * @param root starting point of the avl tree traversal
  * @param action a pointer function to perform an action on one avl node object
  */
-static void avl_traverse_preorder_helper(avl_tree_t* tree, avl_tree_node_t* root, avl_action action) {
+static void avl_traverse_preorder_helper(avl_tree_t *tree, avl_tree_node_t *root, action_func action) {
     /* Check if current working avl node is not NULL */
     if (tree->nil == root) {
         return;
     }
 
     /* Call action function */
-    action(tree, root);
+    action(root->data);
 
     /* Traverse in the left sub-tree */
     avl_traverse_preorder_helper(tree, root->left, action);
@@ -1238,7 +1235,7 @@ static void avl_traverse_preorder_helper(avl_tree_t* tree, avl_tree_node_t* root
  * on every avl node object from current working tree
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t avl_traverse_preorder(avl_tree_t* tree, avl_action action) {
+scl_error_t avl_traverse_preorder(avl_tree_t *tree, action_func action) {
     /* Check if input data is valid */
     if (NULL == tree) {
         return SCL_NULL_AVL;
@@ -1270,7 +1267,7 @@ scl_error_t avl_traverse_preorder(avl_tree_t* tree, avl_action action) {
  * @param root starting point of the avl tree traversal
  * @param action a pointer function to perform an action on one avl node object
  */
-static void avl_traverse_postorder_helper(avl_tree_t* tree, avl_tree_node_t* root, avl_action action) {
+static void avl_traverse_postorder_helper(avl_tree_t *tree, avl_tree_node_t *root, action_func action) {
     /* Check if current working avl node is not NULL */
     if (tree->nil == root) {
         return;
@@ -1283,7 +1280,7 @@ static void avl_traverse_postorder_helper(avl_tree_t* tree, avl_tree_node_t* roo
     avl_traverse_postorder_helper(tree, root->right, action);
 
     /* Call action function */
-    action(tree, root);
+    action(root->data);
 }
 
 /**
@@ -1299,7 +1296,7 @@ static void avl_traverse_postorder_helper(avl_tree_t* tree, avl_tree_node_t* roo
  * on every avl node object from current working tree
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t avl_traverse_postorder(avl_tree_t* tree, avl_action action) {
+scl_error_t avl_traverse_postorder(avl_tree_t *tree, action_func action) {
     /* Check if input data is valid */
     if (NULL == tree) {
         return SCL_NULL_AVL;
@@ -1335,7 +1332,7 @@ scl_error_t avl_traverse_postorder(avl_tree_t* tree, avl_action action) {
  * on every avl node object from current working tree
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t avl_traverse_level(avl_tree_t* tree, avl_action action) {
+scl_error_t avl_traverse_level(avl_tree_t *tree, action_func action) {
     /* Check if input data is valid */
     if (NULL == tree) {
         return SCL_NULL_AVL;
@@ -1352,7 +1349,7 @@ scl_error_t avl_traverse_level(avl_tree_t* tree, avl_action action) {
     } else {
 
         /* Create a queue for bfs tree traversal */
-        queue_t* level_queue = create_queue(NULL);
+        queue_t *level_queue = create_queue(NULL);
 
         /* Check if queue was created successfully */
         if (NULL != level_queue) {
@@ -1370,7 +1367,7 @@ scl_error_t avl_traverse_level(avl_tree_t* tree, avl_action action) {
             while (!is_queue_empty(level_queue)) {
 
                 /* Get front node from queue */
-                avl_tree_node_t* front_node = *(avl_tree_node_t **)queue_front(level_queue);
+                avl_tree_node_t *front_node = *(avl_tree_node_t **)queue_front(level_queue);
 
                 /* Remove front node from queue */
                 err = queue_pop(level_queue);
@@ -1380,7 +1377,7 @@ scl_error_t avl_traverse_level(avl_tree_t* tree, avl_action action) {
                 }
 
                 /* Call action function on front node */
-                action(tree, front_node);
+                action(front_node->data);
 
                 /* Push on queue front left child if it exists */
                 if (tree->nil != front_node->left) {
