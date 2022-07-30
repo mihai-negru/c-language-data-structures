@@ -163,7 +163,7 @@ scl_error_t free_stack(stack_t *stack) {
  * @param print a pointer to a function to print content of data pointer
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t print_stack(stack_t *stack, const_action_func print) {
+scl_error_t print_stack(const stack_t * const stack, const_action_func print) {
     /* Check is stack is allocated */
     if (NULL != stack) {
 
@@ -172,7 +172,7 @@ scl_error_t print_stack(stack_t *stack, const_action_func print) {
             printf("[ ]");
         }
 
-        stack_node_t *iterator = stack->top;
+        const stack_node_t *iterator = stack->top;
 
         /*
          * Print every node according
@@ -199,7 +199,7 @@ scl_error_t print_stack(stack_t *stack, const_action_func print) {
  * @param stack a stack object
  * @return uint8_t 1(True) if stack is not allocated or empty and 0(False) otherwise
  */
-uint8_t is_stack_empty(stack_t *stack) {
+uint8_t is_stack_empty(const stack_t * const stack) {
     if ((NULL == stack) || (NULL == stack->top)) {
         return 1;
     }
@@ -215,7 +215,7 @@ uint8_t is_stack_empty(stack_t *stack) {
  * @return size_t -1 if stack is not allocated or
  * stack size
  */
-size_t get_stack_size(stack_t *stack) {
+size_t get_stack_size(const stack_t * const stack) {
     if (NULL == stack) {
         return SIZE_MAX;
     }
@@ -232,7 +232,7 @@ size_t get_stack_size(stack_t *stack) {
  * @return int 1 for failure, 0 otherwise
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t change_stack_data(void *old_data, const void *new_data, size_t data_size) {
+scl_error_t change_stack_data(void * const old_data, const void * const new_data, size_t data_size) {
     /* Check if input data is valid */
     if ((NULL == old_data) || (NULL == new_data) || (0 == data_size)) {
         return SCL_CANNOT_CHANGE_DATA;
@@ -254,7 +254,7 @@ scl_error_t change_stack_data(void *old_data, const void *new_data, size_t data_
  * @param stack a stack object
  * @return void* a pointer to top element data
  */
-void* stack_top(stack_t *stack) {
+void* stack_top(const stack_t * const stack) {
     if ((NULL == stack) || (NULL == stack->top)) {
         return NULL;
     }
@@ -274,7 +274,7 @@ void* stack_top(stack_t *stack) {
  * @param data_size size of a generic data type element
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t stack_push(stack_t *stack, const void *data, size_t data_size) {
+scl_error_t stack_push(stack_t * const stack, const void * const data, size_t data_size) {
     /* Check if stack and data addresses are valid */
     if (NULL == stack) {
         return SCL_NULL_STACK;
@@ -321,7 +321,7 @@ scl_error_t stack_push(stack_t *stack, const void *data, size_t data_size) {
  * @param stack a stack object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t stack_pop(stack_t *stack) {
+scl_error_t stack_pop(stack_t * const stack) {
     /* Check if stack is allocated and it is not empty */
     if (NULL == stack) {
         return SCL_NULL_STACK;

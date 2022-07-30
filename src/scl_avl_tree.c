@@ -148,36 +148,35 @@ static avl_tree_node_t* create_avl_node(avl_tree_t *tree, const void *data, size
  * @param tree an allocated avl tree object
  * @param root pointer to current avl node object
  */
-static void free_avl_helper(avl_tree_t *tree, avl_tree_node_t *root) {
+static void free_avl_helper(avl_tree_t *tree, avl_tree_node_t **root) {
     /* Check if current node is valid */
-    if (tree->nil == root) {
+    if (tree->nil == *root) {
         return;
     }
 
     /* Recursive calls */
-    free_avl_helper(tree, root->left);
-    free_avl_helper(tree, root->right);
+    free_avl_helper(tree, &(*root)->left);
+    free_avl_helper(tree, &(*root)->right);
 
     /* Free content of the data pointer */
-    if ((NULL != tree->frd) && (NULL != root->data)) {
-        tree->frd(root->data);
+    if ((NULL != tree->frd) && (NULL != (*root)->data)) {
+        tree->frd((*root)->data);
     }
 
     /* Free data pointer */
-    if (NULL != root->data) {
-        free(root->data);
+    if (NULL != (*root)->data) {
+        free((*root)->data);
     }
 
     /* Set data pointer as NULL */
-    root->data = NULL;
+    (*root)->data = NULL;
 
     /* Free avl node pointer */
-    if (tree->nil != root) {
-        free(root);
-    }
+    if (tree->nil != *root) {
+        free(*root);
 
-    /* Set avl node pointer as NULL */
-    root = tree->nil;
+        *root = tree->nil;
+    }
 }
 
 /**
@@ -196,7 +195,7 @@ scl_error_t free_avl(avl_tree_t *tree) {
     if (NULL != tree) {
 
         /* Free every node from avl -> tree */
-        free_avl_helper(tree, tree->root);
+        free_avl_helper(tree, &tree->root);
         
         /* Free nil cell*/
         free(tree->nil);

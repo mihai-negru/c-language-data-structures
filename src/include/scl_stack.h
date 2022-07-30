@@ -53,14 +53,14 @@ typedef struct {
 
 stack_t*        create_stack        (free_func frd);
 scl_error_t     free_stack          (stack_t *stack);
-scl_error_t     print_stack         (stack_t *stack, const_action_func print);
+scl_error_t     print_stack         (const stack_t * const stack, const_action_func print);
 
-uint8_t         is_stack_empty      (stack_t *stack);
-size_t          get_stack_size      (stack_t *stack);
+uint8_t         is_stack_empty      (const stack_t * const stack);
+size_t          get_stack_size      (const stack_t * const stack);
 
-scl_error_t     change_stack_data   (void *old_data, const void *new_data, size_t data_size);
-void*           stack_top           (stack_t *stack);
-scl_error_t     stack_push          (stack_t *stack, const void *data, size_t data_size);
-scl_error_t     stack_pop           (stack_t *stack);
+scl_error_t     change_stack_data   (void * const old_data, const void * const new_data, size_t data_size);
+void*           stack_top           (const stack_t * const stack);
+scl_error_t     stack_push          (stack_t * const stack, const void * const data, size_t data_size);
+scl_error_t     stack_pop           (stack_t * const stack);
 
 #endif /* STACK_UTILS_H_ */

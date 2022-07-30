@@ -139,36 +139,35 @@ static bst_tree_node_t* create_bst_node(bst_tree_t *tree, const void *data, size
  * @param tree an allocated binary search tree object
  * @param root pointer to current bst node object
  */
-static void free_bst_helper(bst_tree_t *tree, bst_tree_node_t *root) {
+static void free_bst_helper(bst_tree_t *tree, bst_tree_node_t **root) {
     /* Check if current node is valid */
-    if (tree->nil == root) {
+    if (tree->nil == *root) {
         return;
     }
 
     /* Recursive calls */
-    free_bst_helper(tree, root->left);
-    free_bst_helper(tree, root->right);
+    free_bst_helper(tree, &(*root)->left);
+    free_bst_helper(tree, &(*root)->right);
 
     /* Free content of the data pointer */
-    if ((NULL != tree->frd) && (NULL != root->data)) {
-        tree->frd(root->data);
+    if ((NULL != tree->frd) && (NULL != (*root)->data)) {
+        tree->frd((*root)->data);
     }
 
     /* Free data pointer */
-    if (NULL != root->data) {
-        free(root->data);
+    if (NULL != (*root)->data) {
+        free((*root)->data);
     }
 
     /* Set data pointer as NULL */
-    root->data = NULL;
+    (*root)->data = NULL;
 
     /* Free bst node pointer */
-    if (tree->nil != root) {
-        free(root);
-    }
+    if (tree->nil != *root) {
+        free(*root);
 
-    /* Set bst node pointer as NULL */
-    root = tree->nil;
+        *root = tree->nil;
+    }
 }
 
 /**
@@ -187,7 +186,7 @@ scl_error_t free_bst(bst_tree_t *tree) {
     if (NULL != tree) {
 
         /* Free every node from bst -> tree */
-        free_bst_helper(tree, tree->root);
+        free_bst_helper(tree, &tree->root);
         
         /* Free nil cell*/
         free(tree->nil);
