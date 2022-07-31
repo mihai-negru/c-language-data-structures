@@ -77,8 +77,8 @@ uint8_t                 is_rbk_empty                        (const rbk_tree_t * 
 const void*             get_rbk_root                        (const rbk_tree_t * const tree);
 size_t                  get_rbk_size                        (const rbk_tree_t * const tree);
 
-const void*             rbk_max_data                        (const rbk_tree_t * const tree, const void * const start_data);
-const void*             rbk_min_data                        (const rbk_tree_t * const tree, const void * const start_data);
+const void*             rbk_max_data                        (const rbk_tree_t * const tree, const void * const subroot_data);
+const void*             rbk_min_data                        (const rbk_tree_t * const tree, const void * const subroot_data);
 
 scl_error_t             rbk_delete                          (rbk_tree_t * const tree, const void * const data, size_t data_size);
 

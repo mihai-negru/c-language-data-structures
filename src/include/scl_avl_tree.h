@@ -58,33 +58,28 @@ typedef struct {
 } avl_tree_t;
 
 avl_tree_t*             create_avl                          (compare_func cmp, free_func frd);
-scl_error_t             free_avl                            (avl_tree_t *tree);
+scl_error_t             free_avl                            (avl_tree_t * const tree);
 
-scl_error_t             avl_insert                          (avl_tree_t *tree, const void *data, size_t data_size);
-avl_tree_node_t*        avl_find_data                       (avl_tree_t *tree, const void *data);
-int32_t                 avl_node_level                      (avl_tree_t *tree, const avl_tree_node_t *base_node);
+scl_error_t             avl_insert                          (avl_tree_t * const tree, const void * const data, size_t data_size);
+const void*             avl_find_data                       (const avl_tree_t * const tree, const void * const data);
+int32_t                 avl_data_level                      (const avl_tree_t * const tree, const void * const data);
 
-uint8_t                 is_avl_empty                        (avl_tree_t *tree);
-avl_tree_node_t*        get_avl_root                        (avl_tree_t *tree);
-size_t                  get_avl_size                        (avl_tree_t *tree);
+uint8_t                 is_avl_empty                        (const avl_tree_t * const tree);
+const void*             get_avl_root                        (const avl_tree_t * const tree);
+size_t                  get_avl_size                        (const avl_tree_t * const tree);
 
-avl_tree_node_t*        avl_max_node                        (avl_tree_t *tree, avl_tree_node_t *root);
-avl_tree_node_t*        avl_min_node                        (avl_tree_t *tree, avl_tree_node_t *root);
-void*                   avl_max_data                        (avl_tree_t *tree, avl_tree_node_t *root);
-void*                   avl_min_data                        (avl_tree_t *tree, avl_tree_node_t *root);
+const void*             avl_max_data                        (const avl_tree_t * const tree, const void * const subroot_data);
+const void*             avl_min_data                        (const avl_tree_t * const tree, const void * const subroot_data);
 
-scl_error_t             avl_delete                          (avl_tree_t *tree, void *data, size_t data_size);
+scl_error_t             avl_delete                          (avl_tree_t * const tree, const void * const data, size_t data_size);
 
-avl_tree_node_t*        avl_predecessor_node                (avl_tree_t *tree, const void *data);
-avl_tree_node_t*        avl_successor_node                  (avl_tree_t *tree, const void *data);
-void*                   avl_predecessor_data                (avl_tree_t *tree, const void *data);
-void*                   avl_succecessor_data                (avl_tree_t *tree, const void *data);
-avl_tree_node_t*        avl_lowest_common_ancestor_node     (avl_tree_t *tree, const void *data1, const void *data2);
-void*                   avl_lowest_common_ancestor_data     (avl_tree_t *tree, const void *data1, const void *data2);
+const void*             avl_predecessor_data                (const avl_tree_t * const tree, const void * const data);
+const void*             avl_succecessor_data                (const avl_tree_t * const tree, const void * const data);
+const void*             avl_lowest_common_ancestor_data     (const avl_tree_t * const tree, const void * const data1, const void * const data2);
 
-scl_error_t             avl_traverse_inorder                (avl_tree_t *tree, action_func action);
-scl_error_t             avl_traverse_preorder               (avl_tree_t *tree, action_func action);
-scl_error_t             avl_traverse_postorder              (avl_tree_t *tree, action_func action);
-scl_error_t             avl_traverse_level                  (avl_tree_t *tree, action_func action);
+scl_error_t             avl_traverse_inorder                (const avl_tree_t * const tree, action_func action);
+scl_error_t             avl_traverse_preorder               (const avl_tree_t * const tree, action_func action);
+scl_error_t             avl_traverse_postorder              (const avl_tree_t * const tree, action_func action);
+scl_error_t             avl_traverse_level                  (const avl_tree_t * const tree, action_func action);
 
 #endif /* AVLTREE_UTILS_H_ */

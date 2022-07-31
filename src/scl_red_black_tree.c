@@ -717,14 +717,14 @@ static rbk_tree_node_t* rbk_min_node(const rbk_tree_t * const tree, rbk_tree_nod
  * @param root pointer to current working red-black node object
  * @return void* pointer to maximum data value from red-black tree
  */
-const void* rbk_max_data(const rbk_tree_t * const tree, const void * const data) {
+const void* rbk_max_data(const rbk_tree_t * const tree, const void * const subroot_data) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == data)) {
+    if ((NULL == tree) || (NULL == subroot_data)) {
         return NULL;
     }
 
     /* Get maximum data from red-black or NULL is node is nil*/
-    return rbk_max_node(tree, rbk_find_node(tree, data))->data;
+    return rbk_max_node(tree, rbk_find_node(tree, subroot_data))->data;
 }
 
 /**
@@ -736,14 +736,14 @@ const void* rbk_max_data(const rbk_tree_t * const tree, const void * const data)
  * @param root pointer to current working red-black node object
  * @return void* pointer to minimum data value from red-black tree
  */
-const void* rbk_min_data(const rbk_tree_t * const tree, const void * const data) {
+const void* rbk_min_data(const rbk_tree_t * const tree, const void * const subroot_data) {
     /* Check if input data is valid */
-    if ((NULL == tree) || (NULL == data)) {
+    if ((NULL == tree) || (NULL == subroot_data)) {
         return NULL;
     }
 
     /* Get minimum data from red-black or NULL is node is nil*/
-    return rbk_min_node(tree, rbk_find_node(tree, data))->data;
+    return rbk_min_node(tree, rbk_find_node(tree, subroot_data))->data;
 }
 
 /**
@@ -1294,7 +1294,7 @@ const void* rbk_lowest_common_ancestor_data(const rbk_tree_t * const tree, const
  * @param root starting point of the red-black tree traversal
  * @param action a pointer function to perform an action on one red-black node object
  */
-static void rbk_traverse_inorder_helper(const rbk_tree_t * const tree, const rbk_tree_node_t * const root, action_func action) {
+static void rbk_traverse_inorder_helper(const rbk_tree_t * const tree, rbk_tree_node_t * const root, action_func action) {
     /* Check if current working red-black node is not NULL */
     if (tree->nil == root) {
         return;
@@ -1356,7 +1356,7 @@ scl_error_t rbk_traverse_inorder(const rbk_tree_t * const tree, action_func acti
  * @param root starting point of the red-black tree traversal
  * @param action a pointer function to perform an action on one red-black node object
  */
-static void rbk_traverse_preorder_helper(const rbk_tree_t * const tree, const rbk_tree_node_t * const root, action_func action) {
+static void rbk_traverse_preorder_helper(const rbk_tree_t * const tree, rbk_tree_node_t * const root, action_func action) {
     /* Check if current working red-black node is not NULL */
     if (tree->nil == root) {
         return;
@@ -1417,7 +1417,7 @@ scl_error_t rbk_traverse_preorder(const rbk_tree_t * const tree, action_func act
  * @param root starting point of the red-black tree traversal
  * @param action a pointer function to perform an action on one red-black node object
  */
-static void rbk_traverse_postorder_helper(const rbk_tree_t * const tree, const rbk_tree_node_t * const root, action_func action) {
+static void rbk_traverse_postorder_helper(const rbk_tree_t * const tree, rbk_tree_node_t * const root, action_func action) {
     /* Check if current working red-black node is not NULL */
     if (tree->nil == root) {
         return;
@@ -1499,7 +1499,7 @@ scl_error_t rbk_traverse_level(const rbk_tree_t * const tree, action_func action
     } else {
 
         /* Create a queue for bfs tree traversal */
-        queue_t *level_queue = create_queue(NULL);
+        queue_t * const level_queue = create_queue(NULL);
 
         /* Check if queue was created successfully */
         if (NULL != level_queue) {
@@ -1517,7 +1517,7 @@ scl_error_t rbk_traverse_level(const rbk_tree_t * const tree, action_func action
             while (!is_queue_empty(level_queue)) {
 
                 /* Get front node from queue */
-                const rbk_tree_node_t * const front_node = *(rbk_tree_node_t **)queue_front(level_queue);
+                rbk_tree_node_t * const front_node = *(rbk_tree_node_t ** const)queue_front(level_queue);
 
                 /* Remove front node from queue */
                 err = queue_pop(level_queue);
