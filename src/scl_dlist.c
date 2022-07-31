@@ -44,7 +44,7 @@ dlist_t* create_dlist(compare_func cmp, free_func frd) {
      */
     if (NULL == cmp) {
         errno = EINVAL;
-        perror("Compare or print functions undefined for linked list");
+        perror("Compare function undefined for linked list");
         return NULL;
     }
 

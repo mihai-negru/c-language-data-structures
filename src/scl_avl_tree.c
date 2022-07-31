@@ -127,6 +127,9 @@ static avl_tree_node_t* create_avl_node(const avl_tree_t * const tree, const voi
              */
             memcpy(new_node->data, data, data_size);
         } else {
+            free(new_node);
+            new_node = tree->nil;
+
             errno = ENOMEM;
             perror("Not enough memory for node avl data allocation");
         }
@@ -146,7 +149,7 @@ static avl_tree_node_t* create_avl_node(const avl_tree_t * const tree, const voi
  * by Left-Right-Root principle.
  * 
  * @param tree an allocated avl tree object
- * @param root pointer to current avl node object
+ * @param root pointer to pointer of current avl node object
  */
 static void free_avl_helper(const avl_tree_t * const tree, avl_tree_node_t ** const root) {
     /* Check if current node is valid */
@@ -344,7 +347,7 @@ static void avl_rotate_right(avl_tree_t * const tree, avl_tree_node_t * const fi
  * avl tree node object from current working tree
  * 
  * @param fix_node pointer to avl tree node object
- * @return int balance factor of the fix_node avl_tree_node_t
+ * @return int32_t balance factor of the fix_node avl_tree_node_t
  */
 static int32_t avl_get_node_balance(const avl_tree_node_t * const fix_node) {
     /* Return balance factor of the node */
@@ -530,13 +533,23 @@ static avl_tree_node_t* avl_find_node(const avl_tree_t * const tree, const void 
     return tree->nil;
 }
 
+/**
+ * @brief Function to search data in avl tree O(log N).
+ * Function will start searching from avl tree root and will
+ * search the data value in all tree.
+ * 
+ * @param tree an allocated avl tree object
+ * @param data pointer to an address of a generic data type
+ * @return const void* pointer to data pointer found in the tree or NULL
+ * if data was not found
+ */
 const void* avl_find_data(const avl_tree_t * const tree, const void * const data) {
     /* Check if input data is valid */
     if ((NULL == tree) || (NULL == data)) {
         return NULL;
     }
 
-    /* Get the predecessor data or NULL if node is nil */
+    /* Get data from found node or NULL if node is nil */
     return avl_find_node(tree, data)->data;
 }
 
@@ -558,6 +571,7 @@ static scl_error_t avl_change_data(avl_tree_node_t * const dest_node, const avl_
         return SCL_CANNOT_CHANGE_DATA;
     }
 
+    /* Check if data size is valid */
     if (0 == data_size) {
         return SCL_DATA_SIZE_ZERO;
     }
@@ -600,11 +614,22 @@ static int32_t avl_node_level(const avl_tree_t * const tree, const avl_tree_node
     return level_count;
 }
 
+/**
+ * @brief Function to calculate the level(depth) of
+ * a node in avl tree. Function may fail if input node
+ * is not valid (allocated).
+ * 
+ * @param tree an allocated avl tree object
+ * @param base_node avl node object to calculate its level
+ * @return int32_t level of input avl object node
+ */
 int32_t avl_data_level(const avl_tree_t * const tree, const void * const data) {
+    /* Check if input data is valid */
     if ((NULL == tree) || (NULL == data)) {
         return -1;
     }
 
+    /* Return level of the node according to data */
     return avl_node_level(tree, avl_find_node(tree, data));
 }
 
@@ -628,7 +653,7 @@ uint8_t is_avl_empty(const avl_tree_t * const tree) {
  * @brief Function to get root node of the avl tree.
  * 
  * @param tree an allocated avl tree object
- * @return avl_tree_node_t* the root node of the current avl tree
+ * @return const void* the root node data of the current avl tree
  */
 const void* get_avl_root(const avl_tree_t * const tree) {
     if (NULL == tree) {
@@ -696,8 +721,8 @@ static avl_tree_node_t* avl_min_node(const avl_tree_t * const tree, avl_tree_nod
  * as the beginning of the tree (root != tree(root))
  * 
  * @param tree an allocated avl tree object
- * @param root pointer to current working avl node object
- * @return void* pointer to maximum data value from avl tree
+ * @param subroot_data pointer to current working data
+ * @return const void* pointer to maximum data value from avl tree
  */
 const void* avl_max_data(const avl_tree_t * const tree, const void * const subroot_data) {
     /* Check if input data is valid */
@@ -705,7 +730,7 @@ const void* avl_max_data(const avl_tree_t * const tree, const void * const subro
         return NULL;
     }
 
-    /* Get maximum data from red-black or NULL is node is nil*/
+    /* Get maximum data from avl tree or NULL is node is nil*/
     return avl_max_node(tree, avl_find_node(tree, subroot_data))->data;
 }
 
@@ -715,8 +740,8 @@ const void* avl_max_data(const avl_tree_t * const tree, const void * const subro
  * as the beginning of the tree (root != tree(root))
  * 
  * @param tree an allocated avl tree object
- * @param root pointer to current working avl node object
- * @return void* pointer to minimum data value from avl tree
+ * @param subroot_data pointer to current working data
+ * @return const void* pointer to minimum data value from avl tree
  */
 const void* avl_min_data(const avl_tree_t * const tree, const void * const subroot_data) {
     /* Check if input data is valid */
@@ -724,7 +749,7 @@ const void* avl_min_data(const avl_tree_t * const tree, const void * const subro
         return NULL;
     }
 
-    /* Get minimum data from red-black or NULL is node is nil*/
+    /* Get minimum data from avl tree or NULL is node is nil*/
     return avl_min_node(tree, avl_find_node(tree, subroot_data))->data;
 }
 
@@ -1047,7 +1072,7 @@ static avl_tree_node_t* avl_successor_node(const avl_tree_t * const tree, const 
  * 
  * @param tree an allocated avl tree object
  * @param data pointer to an address of a generic data type
- * @return void* NULL or data of inorder predecessor of the
+ * @return const void* NULL or data of inorder predecessor of the
  * node containing (void *data) value.
  */
 const void* avl_predecessor_data(const avl_tree_t * const tree, const void * const data) {
@@ -1069,7 +1094,7 @@ const void* avl_predecessor_data(const avl_tree_t * const tree, const void * con
  * 
  * @param tree an allocated avl tree object
  * @param data pointer to an address of a generic data type
- * @return void* NULL or data of inorder successor of the
+ * @return const void* NULL or data of inorder successor of the
  * node containing (void *data) value.
  */
 const void* avl_succecessor_data(const avl_tree_t * const tree, const void * const data) {
@@ -1138,7 +1163,7 @@ static avl_tree_node_t* avl_lowest_common_ancestor_node(const avl_tree_t * const
  * @param tree an allocated avl tree object
  * @param data1 pointer to an address of a generic data
  * @param data2 pointer to an address of a generic data
- * @return void* pointer to a avl node object data that is the lowest
+ * @return const void* pointer to a avl node object data that is the lowest
  * common ancestor node of the two nodes containing data1 and data2
  */
 const void* avl_lowest_common_ancestor_data(const avl_tree_t * const tree, const void * const data1, const void * const data2) {
