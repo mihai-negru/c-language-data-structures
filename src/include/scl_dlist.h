@@ -50,14 +50,13 @@ typedef struct {
     dlist_node_t *head;                                 /* head of linked list */
     dlist_node_t *tail;                                 /* tail of linked list */
     compare_func cmp;                                   /* function to compare items */
-    const_action_func print;                            /* function to print item */
     free_func frd;                                      /* function to free item */
     size_t size;                                        /* size of linked list */
 } dlist_t;
 
-dlist_t*          create_dlist            (compare_func cmp, const_action_func print, free_func frd);
-scl_error_t       print_front_dlist       (const dlist_t * const list);
-scl_error_t       print_back_dlist        (const dlist_t * const list);
+dlist_t*          create_dlist            (compare_func cmp, free_func frd);
+scl_error_t       print_front_dlist       (const dlist_t * const list, const_action_func print);
+scl_error_t       print_back_dlist        (const dlist_t * const list, const_action_func print);
 scl_error_t       free_dlist              (dlist_t * const list);
 
 uint8_t           is_dlist_empty          (const dlist_t * const list);

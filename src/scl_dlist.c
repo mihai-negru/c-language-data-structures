@@ -37,12 +37,12 @@
  * @return dlist_t* return a new dynamically allocated list or NULL if
  * allocation went wrong
  */
-dlist_t* create_dlist(compare_func cmp, const_action_func print, free_func frd) {
+dlist_t* create_dlist(compare_func cmp, free_func frd) {
     /*
      * It is required for every linked list to have a compare and a print function
      * The free function is optional
      */
-    if ((NULL == cmp) || (NULL == print)) {
+    if (NULL == cmp) {
         errno = EINVAL;
         perror("Compare or print functions undefined for linked list");
         return NULL;
@@ -56,7 +56,6 @@ dlist_t* create_dlist(compare_func cmp, const_action_func print, free_func frd) 
 
         /* Set pointer functions in linked list class */
         new_list->cmp = cmp;
-        new_list->print = print;
         new_list->frd = frd;
 
         /* Initialize head, tail and size of new list */
@@ -129,26 +128,29 @@ static dlist_node_t* create_dlist_node(const void * const data, size_t data_size
  * @param list a double linked list objects
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t print_front_dlist(const dlist_t * const list) {
-    if (NULL != list) {
+scl_error_t print_front_dlist(const dlist_t * const list, const_action_func print) {
+    if (NULL == list) {
+        return SCL_NULL_DLIST;
+    }
 
-        /* If list is empty, print [] */
-        if (NULL == list->head) {
-            printf("[ ]");
-        }
+    if (NULL == print) {
+        return SCL_NULL_ACTION_FUNC;
+    }
 
+    /* If list is empty, print [] */
+    if (NULL == list->head) {
+        printf("[ ]");
+    } else {
         const dlist_node_t *iterator = list->head;
 
         /* Print every node data */
         while (NULL != iterator) {
-            list->print(iterator->data);
+            print(iterator->data);
             iterator = iterator->next;
         }
-
-        return SCL_OK;
     }
 
-    return SCL_NULL_DLIST;
+    return SCL_OK;
 }
 
 /**
@@ -162,26 +164,29 @@ scl_error_t print_front_dlist(const dlist_t * const list) {
  * @param list a double linked list objects
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t print_back_dlist(const dlist_t * const list) {
-    if (NULL != list) {
+scl_error_t print_back_dlist(const dlist_t * const list, const_action_func print) {
+    if (NULL == list) {
+        return SCL_NULL_DLIST;
+    }
 
-        /* If list is empty, print [] */
-        if (NULL == list->head) {
-            printf("[ ]");
-        }
+    if (NULL == print) {
+        return SCL_NULL_ACTION_FUNC;
+    }
 
+    /* If list is empty, print [] */
+    if (NULL == list->head) {
+        printf("[ ]");
+    } else {
         const dlist_node_t *iterator = list->tail;
 
         /* Print every node data from back */
         while (NULL != iterator) {
-            list->print(iterator->data);
+            print(iterator->data);
             iterator = iterator->prev;
-        }
-
-        return SCL_OK;
+        }        
     }
 
-    return SCL_NULL_DLIST;
+    return SCL_OK;
 }
 
 /**
@@ -988,7 +993,7 @@ dlist_t* dlist_filter(const dlist_t * const list, filter_func filter, size_t dat
     }
 
     /* Create a new double linked list object */
-    dlist_t *filter_list = create_dlist(list->cmp, list->print, list->frd);
+    dlist_t *filter_list = create_dlist(list->cmp, list->frd);
 
     /* Check if list was created */
     if (NULL != filter_list) {

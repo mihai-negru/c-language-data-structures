@@ -37,12 +37,12 @@
  * @return list_t* return a new dynamically allocated list or NULL if
  * allocation went wrong
  */
-list_t* create_list(compare_func cmp, const_action_func print, free_func frd) {
+list_t* create_list(compare_func cmp, free_func frd) {
     /*
      * It is required for every linked list to have a compare and a print function
      * The free function is optional
      */
-    if ((NULL == cmp) || (NULL == print)) {
+    if (NULL == cmp) {
         errno = EINVAL;
         perror("Compare or print functions undefined for linked list");
         return NULL;
@@ -56,7 +56,6 @@ list_t* create_list(compare_func cmp, const_action_func print, free_func frd) {
 
         /* Set pointer functions in linked list class */
         new_list->cmp = cmp;
-        new_list->print = print;
         new_list->frd = frd;
 
         /* Initialize head, tail and size of new list */
@@ -129,23 +128,27 @@ static list_node_t* create_list_node(const void * const data, size_t data_size) 
  * @param list a linked list object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t print_list(const list_t * const list) {
-    if (NULL != list) {
-        if (NULL == list->head) {
-            printf("[ ]");
-        }
+scl_error_t print_list(const list_t * const list, const_action_func print) {
+    if (NULL == list) {
+        return SCL_NULL_LIST;
+    }
 
+    if (NULL == print) {
+        return SCL_NULL_ACTION_FUNC;
+    }
+
+    if (NULL == list->head) {
+        printf("[ ]");
+    } else {
         const list_node_t *iterator = list->head;
 
         while (NULL != iterator) {
-            list->print(iterator->data);
+            print(iterator->data);
             iterator = iterator->next;
         }
-
-        return SCL_OK;
     }
 
-    return SCL_NULL_LIST;
+    return SCL_OK;
 }
 
 /**
@@ -948,7 +951,7 @@ list_t* list_filter(const list_t * const list, filter_func filter, size_t data_s
     }
 
     /* Create a new linked list object */
-    list_t *filter_list = create_list(list->cmp, list->print, list->frd);
+    list_t *filter_list = create_list(list->cmp, list->frd);
 
     /* Check if list was created */
     if (NULL != filter_list) {

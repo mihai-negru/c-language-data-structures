@@ -49,13 +49,12 @@ typedef struct {
     list_node_t *head;                                  /* head of linked list */
     list_node_t *tail;                                  /* tail of linked list */
     compare_func cmp;                                   /* function to compare items */
-    const_action_func print;                            /* function to print item */
     free_func frd;                                      /* function to free item */
     size_t size;                                        /* size of linked list */
 } list_t;
 
-list_t*         create_list         (compare_func cmp, const_action_func print, free_func frd);
-scl_error_t     print_list          (const list_t * const list);
+list_t*         create_list         (compare_func cmp, free_func frd);
+scl_error_t     print_list          (const list_t * const list, const_action_func print);
 scl_error_t     free_list           (list_t * const list);
 
 uint8_t         is_list_empty       (const list_t * const list);
