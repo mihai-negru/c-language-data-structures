@@ -55,29 +55,29 @@ typedef struct {
 } list_t;
 
 list_t*         create_list         (compare_func cmp, const_action_func print, free_func frd);
-scl_error_t     print_list          (list_t *list);
-scl_error_t     free_list           (list_t *list);
+scl_error_t     print_list          (const list_t * const list);
+scl_error_t     free_list           (list_t * const list);
 
-uint8_t         is_list_empty       (list_t *list);
-size_t          get_list_size       (list_t *list);
-list_node_t*    get_list_head       (list_t *list);
-list_node_t*    get_list_tail       (list_t *list);
+uint8_t         is_list_empty       (const list_t * const list);
+size_t          get_list_size       (const list_t * const list);
+void*           get_list_head       (const list_t * const list);
+void*           get_list_tail       (const list_t * const list);
 
-scl_error_t     list_swap_data      (list_node_t *first_node, list_node_t *second_node);
-scl_error_t     list_change_data    (list_node_t *base_node, const void *new_data, size_t data_size);
-scl_error_t     list_insert         (list_t *list, const void *data, size_t data_size);
-scl_error_t     list_insert_order   (list_t *list, const void *data, size_t data_size);
-scl_error_t     list_insert_front   (list_t *list, const void *data, size_t data_size);
-scl_error_t     list_insert_index   (list_t *list, const void *data, size_t data_size, size_t data_index);
+scl_error_t     list_swap_data      (const list_t * const list, void * const first_data, void * const second_data, size_t data_size);
+scl_error_t     list_change_data    (const list_t * const list, void * const base_data, const void * const new_data, size_t data_size);
+scl_error_t     list_insert         (list_t * const list, const void * const data, size_t data_size);
+scl_error_t     list_insert_order   (list_t * const list, const void * const data, size_t data_size);
+scl_error_t     list_insert_front   (list_t * const list, const void * const data, size_t data_size);
+scl_error_t     list_insert_index   (list_t * const list, const void * const data, size_t data_size, size_t data_index);
 
-list_node_t*    list_find_index     (list_t *list, size_t data_index);
-list_node_t*    list_find_data      (list_t *list, const void *data);
+void*           list_find_index     (const list_t * const list, size_t data_index);
+void*           list_find_data      (const list_t * const list, const void * const data);
 
-scl_error_t     list_delete_data    (list_t *list, void *data);
-scl_error_t     list_delete_index   (list_t *list, size_t data_index);
-scl_error_t     list_erase          (list_t *list, size_t left_index, size_t right_index);
+scl_error_t     list_delete_data    (list_t * const list, const void * const data);
+scl_error_t     list_delete_index   (list_t * const list, size_t data_index);
+scl_error_t     list_erase          (list_t * const list, size_t left_index, size_t right_index);
 
-list_t*         list_filter         (list_t *list, filter_func filter, size_t data_size);
-scl_error_t     list_map            (list_t *list, map_func map, size_t data_size);
+list_t*         list_filter         (const list_t * const list, filter_func filter, size_t data_size);
+scl_error_t     list_map            (const list_t * const list, map_func map, size_t data_size);
 
 #endif /* LIST_UTILS_H_ */

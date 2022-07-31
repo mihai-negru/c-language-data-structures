@@ -110,7 +110,7 @@ static stack_node_t* create_stack_node(const void *data, size_t data_size) {
  * @param stack an allocated stack object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t free_stack(stack_t *stack) {
+scl_error_t free_stack(stack_t * const stack) {
     /* Check if stack needs to be freed */
     if (NULL != stack) {
 

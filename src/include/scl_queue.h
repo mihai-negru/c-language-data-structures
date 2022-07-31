@@ -53,16 +53,16 @@ typedef struct {
 } queue_t;
 
 queue_t*        create_queue        (free_func frd);
-scl_error_t     free_queue          (queue_t *queue);
-scl_error_t     print_queue         (queue_t *queue, const_action_func print);
+scl_error_t     free_queue          (queue_t * const queue);
+scl_error_t     print_queue         (const queue_t * const queue, const_action_func print);
 
-uint8_t         is_queue_empty      (queue_t *queue);
-size_t          get_queue_size      (queue_t *queue);
+uint8_t         is_queue_empty      (const queue_t * const queue);
+size_t          get_queue_size      (const queue_t * const queue);
 
-scl_error_t     change_queue_data   (void *old_data, const void *new_data, size_t data_size);
-void*           queue_front         (queue_t *queue);
-void*           queue_back          (queue_t *queue);
-scl_error_t     queue_push          (queue_t *queue, const void *data, size_t data_size);
-scl_error_t     queue_pop           (queue_t *queue);
+scl_error_t     change_queue_data   (void * const old_data, const void * const new_data, size_t data_size);
+void*           queue_front         (const queue_t * const queue);
+void*           queue_back          (const queue_t * const queue);
+scl_error_t     queue_push          (queue_t * const queue, const void * const data, size_t data_size);
+scl_error_t     queue_pop           (queue_t * const queue);
 
 #endif /* QUEUE_UTILS_H_ */

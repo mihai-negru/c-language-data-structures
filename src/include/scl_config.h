@@ -44,6 +44,7 @@ typedef enum {
     SCL_CANNOT_CHANGE_DATA                      = -6,
     SCL_UNDEFINED_DATA                          = -7,
     SCL_DATA_NOT_FOUND_FOR_DELETE               = -8,
+    SCL_DATA_NOT_FOUND                              ,
     
     SCL_NULL_LIST                               = -9,
     SCL_NULL_DLIST                              = -10,

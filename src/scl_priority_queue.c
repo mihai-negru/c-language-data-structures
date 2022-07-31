@@ -101,7 +101,7 @@ priority_queue_t* create_priority_queue(size_t init_capacity, compare_func cmp_d
  * @param pqueue an allocated priority queue object
  * @param free_node an allocated priority queue node object
  */
-static void free_priority_queue_node(priority_queue_t *pqueue, pri_node_t **free_node) {
+static void free_priority_queue_node(priority_queue_t * const pqueue, pri_node_t ** const free_node) {
     /* Check if node needs to be freed */
     if ((NULL != pqueue) && (NULL != free_node) && (NULL != *free_node)) {
 
@@ -146,7 +146,7 @@ static void free_priority_queue_node(priority_queue_t *pqueue, pri_node_t **free
  * @param pqueue an allocated priority queue object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t free_priority_queue(priority_queue_t *pqueue) {
+scl_error_t free_priority_queue(priority_queue_t * const pqueue) {
     /* Check if priority queue is valid */
     if (NULL != pqueue) {
 
@@ -197,14 +197,14 @@ scl_error_t free_priority_queue(priority_queue_t *pqueue) {
  * @param second_node priority queue node object
  * @return scl_error_t enum object for handling errors
  */
-static scl_error_t swap_pri_queue_nodes(pri_node_t **first_node, pri_node_t **second_node) {
+static scl_error_t swap_pri_queue_nodes(pri_node_t ** const first_node, pri_node_t ** const second_node) {
     /* Check if nodes can be swapped */
     if ((NULL == first_node) || (NULL == second_node) || (NULL == (*first_node)) || (NULL == (*second_node))) {
         return SCL_CANNOT_SWAP_DATA;
     }
 
     /* Swap node pointers */
-    pri_node_t* temp_node = *first_node;
+    pri_node_t* const temp_node = *first_node;
     *first_node = *second_node;
     *second_node = temp_node;
 
@@ -221,7 +221,7 @@ static scl_error_t swap_pri_queue_nodes(pri_node_t **first_node, pri_node_t **se
  * @param start_index starting index from priority queue
  * @return scl_error_t enum object for handling errors
  */
-static scl_error_t sift_node_up(priority_queue_t *pqueue, size_t start_index) {
+static scl_error_t sift_node_up(const priority_queue_t * const pqueue, size_t start_index) {
     /* Check if input data is valid */
     if (NULL == pqueue) {
         return SCL_NULL_PRIORITY_QUEUE;
@@ -264,7 +264,7 @@ static scl_error_t sift_node_up(priority_queue_t *pqueue, size_t start_index) {
  * @param start_index starting index from priority queue
  * @return scl_error_t enum object for handling errors
  */
-static scl_error_t sift_node_down(priority_queue_t *pqueue, size_t start_index) {
+static scl_error_t sift_node_down(const priority_queue_t * const pqueue, size_t start_index) {
     /* Check if input data is valid */
     if (NULL == pqueue) {
         return SCL_NULL_PRIORITY_QUEUE;
@@ -327,7 +327,7 @@ static scl_error_t sift_node_down(priority_queue_t *pqueue, size_t start_index) 
  * @param pri_size size of one element of priority type
  * @return pri_node_t* an allocated priority queue node object or `NULL` in case function fails
  */
-static pri_node_t* create_priority_queue_node(const void *data, const void *priority, size_t data_size, size_t pri_size) {
+static pri_node_t* create_priority_queue_node(const void * const data, const void * const priority, size_t data_size, size_t pri_size) {
     /* Check if input data is valid */
     if ((NULL == priority) || (0 == pri_size)) {
         return NULL;
@@ -409,7 +409,7 @@ static pri_node_t* create_priority_queue_node(const void *data, const void *prio
  * @param frd_pr a pointer to a function to free memory of one priority set
  * @return priority_queue_t* an allocated priority queue object or `NULL` if function fails
  */
-priority_queue_t* heapify(const void *data, const void *priority, size_t data_size, size_t pri_size, size_t number_of_data, compare_func cmp_dt, compare_func cmp_pr, free_func frd_dt, free_func frd_pr) {
+priority_queue_t* heapify(const void * const data, const void * const priority, size_t data_size, size_t pri_size, size_t number_of_data, compare_func cmp_dt, compare_func cmp_pr, free_func frd_dt, free_func frd_pr) {
     /* Check if input data is valid */
     if ((NULL == priority) || (0 == pri_size) || (0 == number_of_data) || (NULL == cmp_pr)) {
         return NULL;
@@ -429,9 +429,9 @@ priority_queue_t* heapify(const void *data, const void *priority, size_t data_si
 
             /* Create a new priority queue node depending by data pointer */
             if ((NULL != data) && (0 != data_size)) {
-                new_pqueue_node = create_priority_queue_node((uint8_t *)data + iter * data_size, (uint8_t *)priority + iter * pri_size, data_size, pri_size);
+                new_pqueue_node = create_priority_queue_node((const uint8_t * const)data + iter * data_size, (const uint8_t * const)priority + iter * pri_size, data_size, pri_size);
             } else {
-                new_pqueue_node = create_priority_queue_node(NULL, (uint8_t *)priority + iter * pri_size, 0, pri_size);
+                new_pqueue_node = create_priority_queue_node(NULL, (const uint8_t * const)priority + iter * pri_size, 0, pri_size);
             }
 
             /* Check if new priority queue node was created successfully */
@@ -469,7 +469,7 @@ priority_queue_t* heapify(const void *data, const void *priority, size_t data_si
  * @param pri_size size of the new priority element
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t change_node_priority(priority_queue_t *pqueue, size_t node_index, const void *new_pri, size_t pri_size) {
+scl_error_t change_node_priority(const priority_queue_t * const pqueue, size_t node_index, const void * const new_pri, size_t pri_size) {
     /* Check if input data is valid */
     if (NULL == pqueue) {
         return SCL_NULL_PRIORITY_QUEUE;
@@ -546,7 +546,7 @@ scl_error_t change_node_priority(priority_queue_t *pqueue, size_t node_index, co
  * @param data_size size of the new data element
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t change_node_data(priority_queue_t *pqueue, size_t node_index, const void *new_data, size_t data_size) {
+scl_error_t change_node_data(const priority_queue_t * const pqueue, size_t node_index, const void * const new_data, size_t data_size) {
     /* Check if input data is valid */
     if (NULL == pqueue) {
         return SCL_NULL_PRIORITY_QUEUE;
@@ -591,7 +591,7 @@ scl_error_t change_node_data(priority_queue_t *pqueue, size_t node_index, const 
  * @return size_t index of the found data from input or `SIZE_MAX` in case
  * data was not found in priority queue
  */
-size_t pri_find_data_index(priority_queue_t *pqueue, const void *data) {
+size_t pri_find_data_index(const priority_queue_t * const pqueue, const void * const data) {
     /* Check if input data is valid */
     if ((NULL == pqueue) || (0 == pqueue->size) || (NULL == pqueue->nodes) || (NULL == data) || (NULL == pqueue->cmp_dt)) {
         return SIZE_MAX;
@@ -619,7 +619,7 @@ size_t pri_find_data_index(priority_queue_t *pqueue, const void *data) {
  * @return size_t index of the found priority from input or
  * `SIZE_MAX` in case priority was not found in priority queue
  */
-size_t pri_find_pri_index(priority_queue_t *pqueue, const void *priority) {
+size_t pri_find_pri_index(const priority_queue_t * const pqueue, const void * const priority) {
     /* Check if input data is valid */
     if ((NULL == pqueue) || (0 == pqueue->size) || (NULL == pqueue->nodes) || (NULL == priority) || (NULL == pqueue->cmp_pr)) {
         return SIZE_MAX;
@@ -650,7 +650,7 @@ size_t pri_find_pri_index(priority_queue_t *pqueue, const void *priority) {
  * @param pri_size size of one priority element
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t pri_queue_push(priority_queue_t *pqueue, const void *data, const void *priority, size_t data_size, size_t pri_size) {
+scl_error_t pri_queue_push(priority_queue_t * const pqueue, const void * const data, const void * const priority, size_t data_size, size_t pri_size) {
     /* Check if input data is valid */
     if (NULL == pqueue) {
         return SCL_NULL_PRIORITY_QUEUE;
@@ -727,7 +727,7 @@ scl_error_t pri_queue_push(priority_queue_t *pqueue, const void *data, const voi
  * @return const void* pointer to first data element
  * from priority queue, user should not modify this pointer.
  */
-const void* pri_queue_top(priority_queue_t *pqueue) {
+const void* pri_queue_top(const priority_queue_t * const pqueue) {
     /* Check if input data is valid */
     if ((NULL == pqueue) || (NULL == pqueue->nodes) || (NULL == pqueue->nodes[0])) {
         return NULL;
@@ -745,7 +745,7 @@ const void* pri_queue_top(priority_queue_t *pqueue) {
  * @return const void* pointer to first priority element
  * from priority queue, user should not modify this pointer.
  */
-const void* pri_queue_top_pri(priority_queue_t *pqueue) {
+const void* pri_queue_top_pri(const priority_queue_t * const pqueue) {
     /* Check if input data is valid */
     if ((NULL == pqueue) || (NULL == pqueue->nodes) || (NULL == pqueue->nodes[0])) {
         return NULL;
@@ -763,7 +763,7 @@ const void* pri_queue_top_pri(priority_queue_t *pqueue) {
  * @param pqueue priority queue object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t pri_queue_pop(priority_queue_t *pqueue) {
+scl_error_t pri_queue_pop(priority_queue_t * const pqueue) {
     /* Check if input data is valid and if there are nodes to pop from priority queue */
     if (NULL == pqueue) {
         return SCL_NULL_PRIORITY_QUEUE;
@@ -812,7 +812,7 @@ scl_error_t pri_queue_pop(priority_queue_t *pqueue) {
  * @param action a pointer to a function that will perform an action
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t pri_queue_traverse(priority_queue_t *pqueue, action_func action) {
+scl_error_t pri_queue_traverse(const priority_queue_t * const pqueue, action_func action) {
     /* Check if input data value is valid */
         if (NULL == pqueue) {
         return SCL_NULL_PRIORITY_QUEUE;
@@ -847,7 +847,7 @@ scl_error_t pri_queue_traverse(priority_queue_t *pqueue, action_func action) {
  * @param pqueue an allocated priority queue object
  * @return size_t current size of the priority queue object
  */
-size_t pri_queue_size(priority_queue_t *pqueue) {
+size_t pri_queue_size(const priority_queue_t * const pqueue) {
     /* Check if priority queue is valid */
     if (NULL == pqueue) {
         return SIZE_MAX;
@@ -865,7 +865,7 @@ size_t pri_queue_size(priority_queue_t *pqueue) {
  * @return uint8_t 1 if priority queue object is not allocated or empty, 0 if
  * priority queue is not empty
  */
-uint8_t is_priq_empty(priority_queue_t *pqueue) {
+uint8_t is_priq_empty(const priority_queue_t * const pqueue) {
     /* Check fi priority queue is valid and if it is empty */
     if ((NULL == pqueue) || (0 == pqueue->capacity) || (NULL == pqueue->nodes) || (0 == pqueue->size)) {
         return 1;
@@ -921,7 +921,7 @@ scl_error_t heap_sort(void *arr, size_t number_of_elem, size_t arr_elem_size, co
 
     /* Rearrange input array data from heap structure in O(NlogN) complexity */
     for (size_t iter = 0; iter < number_of_elem; ++iter) {
-        memcpy((uint8_t *)arr + iter * arr_elem_size, pri_queue_top_pri(heap), arr_elem_size);
+        memcpy((uint8_t * const)arr + iter * arr_elem_size, pri_queue_top_pri(heap), arr_elem_size);
         scl_error_t err = pri_queue_pop(heap);
 
         if (SCL_OK != err) {
