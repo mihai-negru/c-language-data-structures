@@ -103,8 +103,11 @@ static dlist_node_t* create_dlist_node(const void * const data, size_t data_size
              * Copy all bytes from data pointer
              * to memory allocated on heap
              */
-            memcpy(new_node->data, data, data_size);
+            memcpy((uint8_t *)new_node->data, (const uint8_t * const)data, data_size);
         } else {
+            free(new_node);
+            new_node = NULL;
+
             errno = ENOMEM;
             perror("Not enough memory for node list allocation");
         }
@@ -126,9 +129,12 @@ static dlist_node_t* create_dlist_node(const void * const data, size_t data_size
  * then a set of paired square brakets will be printed on output.
  * 
  * @param list a double linked list objects
+ * @param print pointer to a function that does not modify the
+ * content of the data pointer but can access it
  * @return scl_error_t enum object for handling errors
  */
 scl_error_t print_front_dlist(const dlist_t * const list, const_action_func print) {
+    /* Check if input datat is valid */
     if (NULL == list) {
         return SCL_NULL_DLIST;
     }
@@ -162,6 +168,8 @@ scl_error_t print_front_dlist(const dlist_t * const list, const_action_func prin
  * then a set of paired square brakets will be printed on output.
  * 
  * @param list a double linked list objects
+ * @param print pointer to a function that does not modify the
+ * content of the data pointer but can access it
  * @return scl_error_t enum object for handling errors
  */
 scl_error_t print_back_dlist(const dlist_t * const list, const_action_func print) {
@@ -262,10 +270,10 @@ uint8_t is_dlist_empty(const dlist_t * const list) {
 
 /**
  * @brief Get the list size object. If list is not
- * allocated then function will return -1 value.
+ * allocated then function will return SIZE_MAX value.
  * 
  * @param list a double linked list object
- * @return size_t -1 if list is not allocated or
+ * @return size_t SIZE_MAX if list is not allocated or
  * list size
  */
 size_t get_dlist_size(const dlist_t * const list) {
@@ -280,8 +288,8 @@ size_t get_dlist_size(const dlist_t * const list) {
  * @brief Get the list head object
  * 
  * @param list a double linked list object
- * @return dlist_node_t* NULL if list is not allocated
- * or actual head of the list
+ * @return void* NULL if list is not allocated
+ * or actual head of the list data
  */
 void* get_dlist_head(const dlist_t * const list) {
     if ((NULL == list) || (NULL == list->head)) {
@@ -295,8 +303,8 @@ void* get_dlist_head(const dlist_t * const list) {
  * @brief Get the list tail object
  * 
  * @param list a double linked list object
- * @return dlist_node_t* NULL if list is not allocated
- * or actual tail of the list
+ * @return void* NULL if list is not allocated
+ * or actual tail of the list data
  */
 void* get_dlist_tail(const dlist_t * const list) {
     if ((NULL == list) || (NULL == list->tail)) {
@@ -312,8 +320,9 @@ void* get_dlist_tail(const dlist_t * const list) {
  * will swap data pointers not node pointers. Function may fail if
  * list is not allocated
  * 
- * @param first_node first double linked list node
- * @param second_node second double linked list node
+ * @param list an allocated double linked list object
+ * @param first_node pointer to value of the first data
+ * @param second_node pointer to value of the second data
  * @return scl_error_t enum object for handling errors
  */
 scl_error_t dlist_swap_data(const dlist_t * const list, void * const first_data, void * const second_data, size_t data_size) {
@@ -351,8 +360,9 @@ scl_error_t dlist_swap_data(const dlist_t * const list, void * const first_data,
  * than current one than function may have unknown behavior. Function may fail if instead
  * of baseNode pointer user sends a pointer(void *) to any different type of data.  
  * 
- * @param base_node a double linked list node object to change its data
- * @param new_data a pointer to new data
+ * @param list an allocated double linked list object
+ * @param base_node pointer to value of the base data
+ * @param new_data a pointer to value of the new data to replace
  * @param data_size size of the new data
  * @return scl_error_t enum object for handling errors
  */
@@ -362,14 +372,14 @@ scl_error_t dlist_change_data(const dlist_t * const list, void * const base_data
         return SCL_CANNOT_CHANGE_DATA;
     }
 
-    void * const list_base_data = dlist_find_data(list, base_data);
+    uint8_t *list_base_data = dlist_find_data(list, base_data);
 
     if (NULL == list_base_data) {
         return SCL_DATA_NOT_FOUND;
     }
 
     /* Copy all bytes from new data to current data */
-    memmove(list_base_data, new_data, data_size);
+    memcpy(list_base_data, (const uint8_t * const)new_data, data_size);
 
     return SCL_OK;
 }
@@ -642,8 +652,8 @@ scl_error_t dlist_insert_index(dlist_t * const list, const void * const data, si
  * 
  * @param list a double linked list object
  * @param data_index index to pick node from
- * @return dlist_node_t* double linked list node from list at specified
- * index
+ * @return void* double linked list node data from list at 
+ * specified index
  */
 void* dlist_find_index(const dlist_t * const list, size_t data_index) {
     /* Check if list and index are valid */
@@ -682,8 +692,8 @@ void* dlist_find_index(const dlist_t * const list, size_t data_index) {
  * 
  * @param list a double linked list object
  * @param data pointer to a typed data
- * @return dlist_node_t* NULL if data is not found or a pointer
- * to a double linked list node containing given data
+ * @return void* NULL if data is not found or a pointer
+ * to a double linked list node data containing given data
  */
 void* dlist_find_data(const dlist_t * const list, const void * const data) {
     /*
@@ -1063,7 +1073,7 @@ scl_error_t dlist_map(const dlist_t * const list, map_func map, size_t data_size
 
         /* Copy mapped bytes in data bytes */
         if (NULL != iterator->data) {
-            memmove(iterator->data, map(iterator->data), data_size);
+            memmove((uint8_t *)iterator->data, (const uint8_t * const)map(iterator->data), data_size);
         }
 
         iterator = iterator->next;

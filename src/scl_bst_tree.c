@@ -116,8 +116,11 @@ static bst_tree_node_t* create_bst_node(const bst_tree_t * const tree, const voi
              * Copy all bytes from data pointer
              * to memory allocated on heap
              */
-            memcpy(new_node->data, data, data_size);
+            memcpy((uint8_t *)new_node->data, (const uint8_t * const)data, data_size);
         } else {
+            free(new_node);
+            new_node = tree->nil;
+
             errno = ENOMEM;
             perror("Not enough memory for node bst data allocation");
         }
@@ -137,7 +140,7 @@ static bst_tree_node_t* create_bst_node(const bst_tree_t * const tree, const voi
  * by Left-Right-Root principle.
  * 
  * @param tree an allocated binary search tree object
- * @param root pointer to current bst node object
+ * @param root pointer to pointer to current bst node object
  */
 static void free_bst_helper(const bst_tree_t * const tree, bst_tree_node_t ** const root) {
     /* Check if current node is valid */
@@ -317,13 +320,26 @@ static bst_tree_node_t* bst_find_node(const bst_tree_t * const tree, const void 
     return tree->nil;
 }
 
+/**
+ * @brief Function to search data in binary search tree O(log h).
+ * Function will start searching from bst tree root and will
+ * search the data value in all tree.
+ * 
+ * @param tree an allocated binary search tree object
+ * @param data pointer to an address of a generic data type
+ * @return bst_tree_node_t* binary search tree node object containing
+ * data value or NULL in case no such node exists
+ */
 const void* bst_find_data(const bst_tree_t * const tree, const void * const data) {
     /* Check if input data is valid */
     if ((NULL == tree) || (NULL == data)) {
         return NULL;
     }
 
-    /* Get the predecessor data or NULL if node is nil */
+    /* 
+     * Find node according to data pointer and return pointer
+     * to location of the data from  node or NULL if node is nil
+     */
     return bst_find_node(tree, data)->data;
 }
 
@@ -350,7 +366,7 @@ static scl_error_t bst_change_data(bst_tree_node_t * const dest_node, const bst_
     }
 
     /* Rewrite bytes into dest_node from src_node */
-    memmove(dest_node->data, src_node->data, data_size);
+    memmove((uint8_t *)dest_node->data, (const uint8_t * const)src_node->data, data_size);
 
     /* Update count parameter */
     dest_node->count = src_node->count;
@@ -386,11 +402,23 @@ static int32_t bst_node_level(const bst_tree_t * const tree, const bst_tree_node
     return level_count;
 }
 
+/**
+ * @brief Function to calculate the level(depth) of
+ * a node in bst tree. Function may fail if input node
+ * is not valid (allocated).
+ * 
+ * @param tree an allocated binary search tree object
+ * @param data pointer to a value type to find level of node
+ * containing current data
+ * @return int32_t level of input bst object node
+ */
 int32_t bst_data_level(const bst_tree_t * const tree, const void * const data) {
+    /* Check if input data is valid */
     if ((NULL == tree) || (NULL == data)) {
         return -1;
     }
 
+    /* Return node level of the node according to data pointer */
     return bst_node_level(tree, bst_find_node(tree, data));
 }
 
@@ -414,7 +442,7 @@ uint8_t is_bst_empty(const bst_tree_t * const tree) {
  * @brief Function to get root node of the bst tree.
  * 
  * @param tree an allocated binary search tree object
- * @return bst_tree_node_t* the root node of the current binary
+ * @return const void* the root data node of the current binary
  * search tree
  */
 const void* get_bst_root(const bst_tree_t * const tree) {
@@ -483,8 +511,10 @@ static bst_tree_node_t* bst_min_node(const bst_tree_t * const tree, bst_tree_nod
  * as the beginning of the tree (root != tree(root))
  * 
  * @param tree an allocated binary search tree object
- * @param root pointer to current working bst node object
- * @return void* pointer to maximum data value from bst tree
+ * @param subroot_data pointer to a data value that represents a node
+ * to start searcing for maximum node, pointer may be NULL or not to be
+ * in the binary search tree
+ * @return const void* pointer to maximum data value from bst tree
  */
 const void* bst_max_data(const bst_tree_t * const tree, const void * const subroot_data) {
     /* Check if input data is valid */
@@ -492,7 +522,7 @@ const void* bst_max_data(const bst_tree_t * const tree, const void * const subro
         return NULL;
     }
 
-    /* Get maximum data from red-black or NULL is node is nil*/
+    /* Get maximum data from binary search tree or NULL is node is nil*/
     return bst_max_node(tree, bst_find_node(tree, subroot_data))->data;
 }
 
@@ -502,8 +532,10 @@ const void* bst_max_data(const bst_tree_t * const tree, const void * const subro
  * as the beginning of the tree (root != tree(root))
  * 
  * @param tree an allocated binary search tree object
- * @param root pointer to current working bst node object
- * @return void* pointer to minimum data value from bst tree
+ * @param subroot_data pointer to a data value that represents a node
+ * to start searcing for minimum node, pointer may be NULL or not to be
+ * in the binary search tree
+ * @return const void* pointer to minimum data value from bst tree
  */
 const void* bst_min_data(const bst_tree_t * const tree, const void * const subroot_data) {
     /* Check if input data is valid */
@@ -511,7 +543,7 @@ const void* bst_min_data(const bst_tree_t * const tree, const void * const subro
         return NULL;
     }
 
-    /* Get minimum data from red-black or NULL is node is nil*/
+    /* Get minimum data from binary search or NULL is node is nil*/
     return bst_min_node(tree, bst_find_node(tree, subroot_data))->data;
 }
 
@@ -677,7 +709,7 @@ scl_error_t bst_delete(bst_tree_t * const tree, const void * const data, size_t 
  * 
  * @param tree an allocated binary search tree object
  * @param data pointer to an address of a generic data type
- * @return bst_tree_node_t* NULL or inorder predecessor of the
+ * @return bst_tree_node_t* nil or inorder predecessor of the
  * node containing (void *data) value.
  */
 static bst_tree_node_t* bst_predecessor_node(const bst_tree_t * const tree, const void * const data) {
@@ -724,7 +756,7 @@ static bst_tree_node_t* bst_predecessor_node(const bst_tree_t * const tree, cons
  * 
  * @param tree an allocated binary search tree object
  * @param data pointer to an address of a generic data type
- * @return bst_tree_node_t* NULL or inorder successor of the
+ * @return bst_tree_node_t* nil or inorder successor of the
  * node containing (void *data) value.
  */
 static bst_tree_node_t* bst_successor_node(const bst_tree_t * const tree, const void * const data) {
@@ -771,7 +803,7 @@ static bst_tree_node_t* bst_successor_node(const bst_tree_t * const tree, const 
  * 
  * @param tree an allocated binary search tree object
  * @param data pointer to an address of a generic data type
- * @return void* NULL or data of inorder predecessor of the
+ * @return const void* NULL or data of inorder predecessor of the
  * node containing (void *data) value.
  */
 const void* bst_predecessor_data(const bst_tree_t * const tree, const void * const data) {
@@ -793,7 +825,7 @@ const void* bst_predecessor_data(const bst_tree_t * const tree, const void * con
  * 
  * @param tree an allocated binary search tree object
  * @param data pointer to an address of a generic data type
- * @return void* NULL or data of inorder successor of the
+ * @return const void* NULL or data of inorder successor of the
  * node containing (void *data) value.
  */
 const void* bst_succecessor_data(const bst_tree_t * const tree, const void * const data) {
@@ -862,7 +894,7 @@ static bst_tree_node_t* bst_lowest_common_ancestor_node(const bst_tree_t * const
  * @param tree an allocated binary search tree object
  * @param data1 pointer to an address of a generic data
  * @param data2 pointer to an address of a generic data
- * @return void* pointer to a bst node object data that is the lowest
+ * @return const void* pointer to a bst node object data that is the lowest
  * common ancestor node of the two nodes containing data1 and data2
  */
 const void* bst_lowest_common_ancestor_data(const bst_tree_t * const tree, const void * const data1, const void * const data2) {
@@ -884,7 +916,7 @@ const void* bst_lowest_common_ancestor_data(const bst_tree_t * const tree, const
  * @param root starting point of the binary search tree traversal
  * @param action a pointer function to perform an action on one bst node object
  */
-static void bst_traverse_inorder_helper(const bst_tree_t * const tree, bst_tree_node_t * const root, action_func action) {
+static void bst_traverse_inorder_helper(const bst_tree_t * const tree, const bst_tree_node_t * const root, action_func action) {
     /* Check if current working bst node is not NULL */
     if (tree->nil == root) {
         return;
@@ -945,7 +977,7 @@ scl_error_t bst_traverse_inorder(const bst_tree_t * const tree, action_func acti
  * @param root starting point of the binary search tree traversal
  * @param action a pointer function to perform an action on one bst node object
  */
-static void bst_traverse_preorder_helper(const bst_tree_t * const tree, bst_tree_node_t * const root, action_func action) {
+static void bst_traverse_preorder_helper(const bst_tree_t * const tree, const bst_tree_node_t * const root, action_func action) {
     /* Check if current working bst node is not NULL */
     if (tree->nil == root) {
         return;
@@ -1006,7 +1038,7 @@ scl_error_t bst_traverse_preorder(const bst_tree_t * const tree, action_func act
  * @param root starting point of the binary search tree traversal
  * @param action a pointer function to perform an action on one bst node object
  */
-static void bst_traverse_postorder_helper(const bst_tree_t * const tree, bst_tree_node_t * const root, action_func action) {
+static void bst_traverse_postorder_helper(const bst_tree_t * const tree, const bst_tree_node_t * const root, action_func action) {
     /* Check if current working bst node is not NULL */
     if (tree->nil == root) {
         return;
@@ -1106,7 +1138,7 @@ scl_error_t bst_traverse_level(const bst_tree_t * const tree, action_func action
             while (!is_queue_empty(level_queue)) {
 
                 /* Get front node from queue */
-                bst_tree_node_t * const front_node = *(bst_tree_node_t ** const)queue_front(level_queue);
+                const bst_tree_node_t * const front_node = *(const bst_tree_node_t ** const)queue_front(level_queue);
 
                 /* Remove front node from queue */
                 err = queue_pop(level_queue);

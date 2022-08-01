@@ -64,7 +64,7 @@ queue_t* create_queue(free_func frd) {
  * @param data_size size of one generic data
  * @return queue_node_t* new allocated queue node object or NULL
  */
-static queue_node_t* create_queue_node(const void *data, size_t data_size) {
+static queue_node_t* create_queue_node(const void * const data, size_t data_size) {
     /* Check if data address is valid */
     if (NULL == data) {
         return NULL;
@@ -86,8 +86,11 @@ static queue_node_t* create_queue_node(const void *data, size_t data_size) {
         if (new_node->data) {
 
             /* Copy all bytes from data address to new node's data */
-            memcpy(new_node->data, data, data_size);
+            memcpy((uint8_t *)new_node->data, (const uint8_t * const)data, data_size);
         } else {
+            free(new_node);
+            new_node = NULL;
+
             errno = ENOMEM;
             perror("Not enough memory for node queue allocation");
         }
@@ -164,14 +167,19 @@ scl_error_t free_queue(queue_t * const queue) {
  * @return scl_error_t enum object for handling errors
  */
 scl_error_t print_queue(const queue_t * const queue, const_action_func print) {
-    /* Check is queue is allocated */
-    if (NULL != queue) {
+    /* Check if input datat is valid */
+    if (NULL == queue) {
+        return SCL_NULL_QUEUE;
+    }
 
-        /* Queue is empty, print [] */
-        if (NULL == queue->front) {
-            printf("[ ]");
-        }
+    if (NULL == print) {
+        return SCL_NULL_ACTION_FUNC;
+    } 
 
+    /* Queue is empty, print [] */
+    if (NULL == queue->front) {
+        printf("[ ]");
+    } else {
         const queue_node_t *iterator = queue->front;
 
         /*
@@ -182,11 +190,9 @@ scl_error_t print_queue(const queue_t * const queue, const_action_func print) {
             print(iterator->data);
             iterator = iterator->next;
         }
-
-        return SCL_OK;
     }
-
-    return SCL_NULL_QUEUE;
+    
+    return SCL_OK;
 }
 
 /**
@@ -212,7 +218,7 @@ uint8_t is_queue_empty(const queue_t * const queue) {
  * allocated then function will return -1 value.
  * 
  * @param queue a queue object
- * @return size_t -1 if queue is not allocated or
+ * @return size_t SIZE_MAX if queue is not allocated or
  * queue size
  */
 size_t get_queue_size(const queue_t * const queue) {
@@ -238,7 +244,7 @@ scl_error_t change_queue_data(void * const old_data, const void * const new_data
     }
 
     /* Copy bytes from new data to old data */
-    memcpy(old_data, new_data, data_size);
+    memcpy((uint8_t * const)old_data, (const uint8_t * const)new_data, data_size);
 
     /* Return success */
     return SCL_OK;

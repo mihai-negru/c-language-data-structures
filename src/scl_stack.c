@@ -86,8 +86,11 @@ static stack_node_t* create_stack_node(const void *data, size_t data_size) {
         if (NULL != new_node->data) {
 
             /* Copy all bytes from data address to new node's data */
-            memcpy(new_node->data, data, data_size);
+            memcpy((uint8_t *)new_node->data, (const uint8_t * const)data, data_size);
         } else {
+            free(new_node);
+            new_node = NULL;
+
             errno = ENOMEM;
             perror("Not enough memory for node stack allocation");
         }
@@ -164,14 +167,19 @@ scl_error_t free_stack(stack_t * const stack) {
  * @return scl_error_t enum object for handling errors
  */
 scl_error_t print_stack(const stack_t * const stack, const_action_func print) {
-    /* Check is stack is allocated */
-    if (NULL != stack) {
+    /* Check if input datat is valid */
+    if (NULL == stack) {
+        return SCL_NULL_STACK;
+    }
 
-        /* Stack is empty, print [] */
-        if (NULL == stack->top) {
-            printf("[ ]");
-        }
+    if (NULL == print) {
+        return SCL_NULL_ACTION_FUNC;
+    } 
 
+    /* Queue is empty, print [] */
+    if (NULL == stack->top) {
+        printf("[ ]");
+    } else {
         const stack_node_t *iterator = stack->top;
 
         /*
@@ -182,11 +190,9 @@ scl_error_t print_stack(const stack_t * const stack, const_action_func print) {
             print(iterator->data);
             iterator = iterator->next;
         }
-
-        return SCL_OK;
     }
-
-    return SCL_NULL_STACK;
+    
+    return SCL_OK;
 }
 
 /**
@@ -212,7 +218,7 @@ uint8_t is_stack_empty(const stack_t * const stack) {
  * allocated then function will return -1 value.
  * 
  * @param stack a stack object
- * @return size_t -1 if stack is not allocated or
+ * @return size_t SIZE_MAX if stack is not allocated or
  * stack size
  */
 size_t get_stack_size(const stack_t * const stack) {
@@ -239,7 +245,7 @@ scl_error_t change_stack_data(void * const old_data, const void * const new_data
     }
 
     /* Copy bytes from new data to old data */
-    memcpy(old_data, new_data, data_size);
+    memcpy((uint8_t * const)old_data, (const uint8_t * const)new_data, data_size);
 
     /* Return success */
     return SCL_OK;

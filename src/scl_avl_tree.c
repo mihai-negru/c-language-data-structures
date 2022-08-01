@@ -125,7 +125,7 @@ static avl_tree_node_t* create_avl_node(const avl_tree_t * const tree, const voi
              * Copy all bytes from data pointer
              * to memory allocated on heap
              */
-            memcpy(new_node->data, data, data_size);
+            memcpy((uint8_t *)new_node->data, (const uint8_t * const)data, data_size);
         } else {
             free(new_node);
             new_node = tree->nil;
@@ -577,7 +577,7 @@ static scl_error_t avl_change_data(avl_tree_node_t * const dest_node, const avl_
     }
 
     /* Rewrite bytes into dest_node from src_node */
-    memmove(dest_node->data, src_node->data, data_size);
+    memmove((uint8_t *)dest_node->data, (const uint8_t * const)src_node->data, data_size);
 
     /* Update count parameter */
     dest_node->count = src_node->count;
@@ -620,7 +620,8 @@ static int32_t avl_node_level(const avl_tree_t * const tree, const avl_tree_node
  * is not valid (allocated).
  * 
  * @param tree an allocated avl tree object
- * @param base_node avl node object to calculate its level
+ * @param data pointer to a value type to find level of node
+ * containing current data
  * @return int32_t level of input avl object node
  */
 int32_t avl_data_level(const avl_tree_t * const tree, const void * const data) {
@@ -721,7 +722,9 @@ static avl_tree_node_t* avl_min_node(const avl_tree_t * const tree, avl_tree_nod
  * as the beginning of the tree (root != tree(root))
  * 
  * @param tree an allocated avl tree object
- * @param subroot_data pointer to current working data
+ * @param subroot_data pointer to a data value that represents a node
+ * to start searcing for maximum node, pointer may be NULL or not to be
+ * in the avl tree
  * @return const void* pointer to maximum data value from avl tree
  */
 const void* avl_max_data(const avl_tree_t * const tree, const void * const subroot_data) {
@@ -740,7 +743,9 @@ const void* avl_max_data(const avl_tree_t * const tree, const void * const subro
  * as the beginning of the tree (root != tree(root))
  * 
  * @param tree an allocated avl tree object
- * @param subroot_data pointer to current working data
+ * @param subroot_data pointer to a data value that represents a node
+ * to start searcing for minimum node, pointer may be NULL or not to be
+ * in the avl tree
  * @return const void* pointer to minimum data value from avl tree
  */
 const void* avl_min_data(const avl_tree_t * const tree, const void * const subroot_data) {
@@ -1185,7 +1190,7 @@ const void* avl_lowest_common_ancestor_data(const avl_tree_t * const tree, const
  * @param root starting point of the avl tree traversal
  * @param action a pointer function to perform an action on one avl node object
  */
-static void avl_traverse_inorder_helper(const avl_tree_t * const tree, avl_tree_node_t * const root, action_func action) {
+static void avl_traverse_inorder_helper(const avl_tree_t * const tree, const avl_tree_node_t * const root, action_func action) {
     /* Check if current working avl node is not NULL */
     if (tree->nil == root) {
         return;
@@ -1248,7 +1253,7 @@ scl_error_t avl_traverse_inorder(const avl_tree_t * const tree, action_func acti
  * @param root starting point of the avl tree traversal
  * @param action a pointer function to perform an action on one avl node object
  */
-static void avl_traverse_preorder_helper(const avl_tree_t * const tree, avl_tree_node_t * const root, action_func action) {
+static void avl_traverse_preorder_helper(const avl_tree_t * const tree, const avl_tree_node_t * const root, action_func action) {
     /* Check if current working avl node is not NULL */
     if (tree->nil == root) {
         return;
@@ -1309,7 +1314,7 @@ scl_error_t avl_traverse_preorder(const avl_tree_t * const tree, action_func act
  * @param root starting point of the avl tree traversal
  * @param action a pointer function to perform an action on one avl node object
  */
-static void avl_traverse_postorder_helper(const avl_tree_t * const tree, avl_tree_node_t * const root, action_func action) {
+static void avl_traverse_postorder_helper(const avl_tree_t * const tree, const avl_tree_node_t * const root, action_func action) {
     /* Check if current working avl node is not NULL */
     if (tree->nil == root) {
         return;
@@ -1409,7 +1414,7 @@ scl_error_t avl_traverse_level(const avl_tree_t * const tree, action_func action
             while (!is_queue_empty(level_queue)) {
 
                 /* Get front node from queue */
-                avl_tree_node_t * const front_node = *(avl_tree_node_t ** const)queue_front(level_queue);
+                const avl_tree_node_t * const front_node = *(const avl_tree_node_t ** const)queue_front(level_queue);
 
                 /* Remove front node from queue */
                 err = queue_pop(level_queue);

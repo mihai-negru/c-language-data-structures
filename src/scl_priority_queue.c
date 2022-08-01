@@ -99,7 +99,7 @@ priority_queue_t* create_priority_queue(size_t init_capacity, compare_func cmp_d
  * or node does not exist.
  * 
  * @param pqueue an allocated priority queue object
- * @param free_node an allocated priority queue node object
+ * @param free_node pointer to pointer of a node to delete from heap
  */
 static void free_priority_queue_node(priority_queue_t * const pqueue, pri_node_t ** const free_node) {
     /* Check if node needs to be freed */
@@ -193,8 +193,8 @@ scl_error_t free_priority_queue(priority_queue_t * const pqueue) {
 /**
  * @brief Function to swap data between two sets of data
  * 
- * @param first_node priority queue node object
- * @param second_node priority queue node object
+ * @param first_node pointer to pointer of priority queue node object
+ * @param second_node pointer to pointer of priority queue node object
  * @return scl_error_t enum object for handling errors
  */
 static scl_error_t swap_pri_queue_nodes(pri_node_t ** const first_node, pri_node_t ** const second_node) {
@@ -356,7 +356,7 @@ static pri_node_t* create_priority_queue_node(const void * const data, const voi
             }
 
             /* Copy all bytes from data to data node pointer */
-            memcpy(new_pri_queue_node->data, data, data_size);
+            memcpy((uint8_t *)new_pri_queue_node->data, (const uint8_t * const)data, data_size);
         } else {
 
             /* New node does not have data so set it to default value */
@@ -381,7 +381,7 @@ static pri_node_t* create_priority_queue_node(const void * const data, const voi
         }
 
         /* Copy all bytes from priority to priority node pointer */
-        memcpy(new_pri_queue_node->pri, priority, pri_size);
+        memcpy((uint8_t *)new_pri_queue_node->pri, (const uint8_t * const)priority, pri_size);
     } else {
         errno = ENOMEM;
         perror("Not enough memory for priority queue node allocation");
@@ -510,7 +510,7 @@ scl_error_t change_node_priority(const priority_queue_t * const pqueue, size_t n
     if (pqueue->cmp_pr(pqueue->nodes[node_index]->pri, new_pri) >= 1) {
 
         /* Copy new priority into old priority */
-        memmove(pqueue->nodes[node_index]->pri, new_pri, pri_size);
+        memmove((uint8_t *)pqueue->nodes[node_index]->pri, (const uint8_t * const)new_pri, pri_size);
 
         /* Sift node down */
         return sift_node_down(pqueue, node_index);
@@ -523,7 +523,7 @@ scl_error_t change_node_priority(const priority_queue_t * const pqueue, size_t n
     if (pqueue->cmp_pr(pqueue->nodes[node_index]->pri, new_pri) <= -1) {
 
         /* Copy new priority into old priority */
-        memmove(pqueue->nodes[node_index]->pri, new_pri, pri_size);
+        memmove((uint8_t *)pqueue->nodes[node_index]->pri, (const uint8_t * const)new_pri, pri_size);
 
         /* Sift node up */
         return sift_node_up(pqueue, node_index);
@@ -577,7 +577,7 @@ scl_error_t change_node_data(const priority_queue_t * const pqueue, size_t node_
     }
 
     /* Copy a new value in old data pointer */
-    memcpy(pqueue->nodes[node_index]->data, new_data, data_size);
+    memcpy((uint8_t *)pqueue->nodes[node_index]->data, (const uint8_t * const)new_data, data_size);
     
     return SCL_OK;
 }
@@ -921,7 +921,7 @@ scl_error_t heap_sort(void *arr, size_t number_of_elem, size_t arr_elem_size, co
 
     /* Rearrange input array data from heap structure in O(NlogN) complexity */
     for (size_t iter = 0; iter < number_of_elem; ++iter) {
-        memcpy((uint8_t * const)arr + iter * arr_elem_size, pri_queue_top_pri(heap), arr_elem_size);
+        memcpy((uint8_t *)arr + iter * arr_elem_size, pri_queue_top_pri(heap), arr_elem_size);
         scl_error_t err = pri_queue_pop(heap);
 
         if (SCL_OK != err) {
