@@ -566,78 +566,6 @@ scl_error_t radix_sort(uint64_t *arr, size_t number_of_elem) {
 /**
  * @brief Function to sort a continuous memory location
  * represented as an array statically or dynamically allocated
- * by bucket sorting algorithm.
- * 
- * @param arr an array of any type to sort its elements
- * @param number_of_elem number of elements within the selected array
- * @param arr_elem_size size of one element from selected array
- * @param cmp pointer to a function to compare two sets of data from array
- * @return scl_error_t enum object for handling errors
- */
-scl_error_t bucket_sort(void *arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
-    /* Check if most left pointer and most right pointer of the array are valid */
-    if ((NULL == arr) || (NULL == (uint8_t *)arr + (number_of_elem - 1) * arr_elem_size)) {
-        return SCL_NULL_SIMPLE_ARRAY;
-    }
-
-    /* Check if there are elements to sort */
-    if (0 == number_of_elem) {
-        return SCL_NUMBER_OF_ELEMS_ZERO;
-    }
-
-    /* Check if the size of one element is valid */
-    if (0 == arr_elem_size) {
-        return SCL_SIMPLE_ELEM_ARRAY_SIZE_ZERO;
-    }
-
-    /* Check if comparision function is valid */
-    if (NULL == cmp) {
-        return SCL_SIMPLE_ARRAY_COMPAR_FUNC_NULL;
-    }
-
-    /* All good */
-    return SCL_OK;
-}
-
-/**
- * @brief Function to sort a continuous memory location
- * represented as an array statically or dynamically allocated
- * by shell sorting algorithm.
- * 
- * @param arr an array of any type to sort its elements
- * @param number_of_elem number of elements within the selected array
- * @param arr_elem_size size of one element from selected array
- * @param cmp pointer to a function to compare two sets of data from array
- * @return scl_error_t enum object for handling errors
- */
-scl_error_t shell_sort(void *arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp) {
-    /* Check if most left pointer and most right pointer of the array are valid */
-    if ((NULL == arr) || (NULL == (uint8_t *)arr + (number_of_elem - 1) * arr_elem_size)) {
-        return SCL_NULL_SIMPLE_ARRAY;
-    }
-
-    /* Check if there are elements to sort */
-    if (0 == number_of_elem) {
-        return SCL_NUMBER_OF_ELEMS_ZERO;
-    }
-
-    /* Check if the size of one element is valid */
-    if (0 == arr_elem_size) {
-        return SCL_SIMPLE_ELEM_ARRAY_SIZE_ZERO;
-    }
-
-    /* Check if comparision function is valid */
-    if (NULL == cmp) {
-        return SCL_SIMPLE_ARRAY_COMPAR_FUNC_NULL;
-    }
-
-    /* All good */
-    return SCL_OK;
-}
-
-/**
- * @brief Function to sort a continuous memory location
- * represented as an array statically or dynamically allocated
  * by insertion sorting algorithm.
  * 
  * @param arr an array of any type to sort its elements
@@ -665,6 +593,64 @@ scl_error_t insertion_sort(void *arr, size_t number_of_elem, size_t arr_elem_siz
     /* Check if comparision function is valid */
     if (NULL == cmp) {
         return SCL_SIMPLE_ARRAY_COMPAR_FUNC_NULL;
+    }
+
+    /* Cast void pointers to uint8_t and initialize main loop iterator */
+    uint8_t *arr_start = (uint8_t *)arr;
+    uint8_t *arr_end = (uint8_t *)arr + (number_of_elem - 1) * arr_elem_size;
+    uint8_t *iter_i = arr_start + arr_elem_size;
+    uint8_t iter_out_of_bound = 0;
+
+    /* Sort data */
+    for (;;) {
+
+        /* Set a key to compare entire array */
+        uint8_t *cmp_key = malloc(arr_elem_size);
+
+        /* Copy value of main iterator over the key */
+        memcpy(cmp_key, iter_i, arr_elem_size);
+
+        /* Set second iterator */
+        uint8_t *iter_j = iter_i - arr_elem_size;
+
+        /* Permute data to right */
+        while ((iter_j > arr_start) && (cmp(iter_j, cmp_key) >= 1)) {
+            memcpy(iter_j + arr_elem_size, iter_j, arr_elem_size);
+            
+            iter_j = iter_j - arr_elem_size;
+        }
+
+        /* 
+         * Permute data to right but do not decrease iter_j iterator
+         * because it may cause a segmentation fault accessing wrong
+         * memory adresses
+         */
+        if ((iter_j == arr_start) && (cmp(iter_j, cmp_key) >= 1)) {
+            memcpy(iter_j + arr_elem_size, iter_j, arr_elem_size);
+
+            /* Set a flag to see if iter_j is out of range */
+            iter_out_of_bound = 1;
+        }
+
+        /* Set key value to its right position in the array */
+        if (1 == iter_out_of_bound) {
+            memcpy(arr_start, cmp_key, arr_elem_size);
+        } else {
+            memcpy(iter_j + arr_elem_size, cmp_key, arr_elem_size);
+        }
+
+        /* Set flag to default value */
+        iter_out_of_bound = 0;
+
+        /* Free memory allocated for key */
+        free(cmp_key);
+
+        /* Begin a new iteration or break the loop and array is sorted */
+        if (iter_i == arr_end) {
+            break;
+        } else {
+            iter_i = iter_i + arr_elem_size;
+        }
     }
 
     /* All good */
@@ -701,6 +687,36 @@ scl_error_t selection_sort(void *arr, size_t number_of_elem, size_t arr_elem_siz
     /* Check if comparision function is valid */
     if (NULL == cmp) {
         return SCL_SIMPLE_ARRAY_COMPAR_FUNC_NULL;
+    }
+
+    /* Cast void pointers to uint8_t */
+    uint8_t *arr_start = (uint8_t *)arr;
+    uint8_t *arr_end = (uint8_t *)arr + (number_of_elem - 1) * arr_elem_size;
+
+    /* Sort data */
+    for (uint8_t *iter_i = arr_start; iter_i < arr_end; iter_i = iter_i + arr_elem_size) {
+        
+        /* Set a min pointer to point on minimum data value */
+        uint8_t *min_ptr = iter_i;
+
+        /* Set an iterator to find minimum value */
+        uint8_t *iter_j = iter_i + arr_elem_size;
+
+        for (;;) {
+            if (cmp(iter_j, min_ptr) <= -1) {
+                min_ptr = iter_j;
+            }
+
+            /* Begin a new iteration or break the loop */
+            if (iter_j == arr_end) {
+                break;
+            } else {
+                iter_j = iter_j + arr_elem_size;
+            }
+        }
+
+        /* Swap minimum array node with current working  array node*/
+        swap_array_nodes(min_ptr, iter_i, arr_elem_size);
     }
 
     /* All good */
