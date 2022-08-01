@@ -25,7 +25,7 @@ Example of free function:
 
     // Than your free function mush be like
 
-    void free_person(const void *data) {
+    void free_person(void *data) {
         if (NULL == data) return;
 
         preson *t_data = data;
@@ -51,8 +51,8 @@ If you want to delete a binary search tree object and to free evry byte of memor
 According to following functions:
 
 ```C
-    scl_error_t bst_insert(bst_tree_t *tree, const void *data, size_t data_size);
-    scl_error_t bst_delete(bst_tree_t *tree, void *data, size_t data_size);
+    scl_error_t bst_insert(bst_tree_t * const tree, const void * const data, size_t data_size);
+    scl_error_t bst_delete(bst_tree_t * const tree, const void * const data, size_t data_size);
 ```
 
 Let's assume that we work with integers in our program, so for now no need for a free function that's good:
@@ -93,24 +93,17 @@ Let's assume that we work with integers in our program, so for now no need for a
 For this section we have the following functions:
 
 ```C
-    uint8_t is_bst_empty(bst_tree_t *tree);
-    bst_tree_node_t* bst_find_data(bst_tree_t *tree, const void *data);
-    int32_t bst_node_level(bst_tree_t *tree, bst_tree_node_t *baseNode);
-    bst_tree_node_t* get_bst_root(bst_tree_t *tree);
-    size_t get_bst_size(bst_tree_t *tree);
-    bst_tree_node_t* bst_max_node(bst_tree_t *tree, bst_tree_node_t *root);
-    bst_tree_node_t* bst_min_node(bst_tree_t *tree, bst_tree_node_t *root);
-    void* bst_max_data(bst_tree_t *tree, bst_tree_node_t *root);
-    void* bst_min_data(bst_tree_t *tree, bst_tree_node_t *root);
-    bst_tree_node_t* bst_predecessor_node(bst_tree_t *tree, const void *data);
-    bst_tree_node_t* bst_successor_node(bst_tree_t *tree, const void *data);
-    void* bst_predecessor_data(bst_tree_t *tree, const void *data);
-    void* bst_succecessor_data(bst_tree_t *tree, const void *data);
-    bst_tree_node_t* bst_lowest_common_ancestor_node(
-        bst_tree_t *tree, const void *data1, const void *data2
-    );
+    uint8_t is_bst_empty(const bst_tree_t * const tree);
+    const void* bst_find_data(const bst_tree_t * const tree, const void * const data);
+    int32_t bst_data_level(const bst_tree_t * const tree, const void * const data);
+    const void* get_bst_root(const bst_tree_t * const tree);
+    size_t get_bst_size(const bst_tree_t * const tree);
+    void* bst_max_data(const bst_tree_t * const tree, const void * const subroot_data);
+    void* bst_min_data(const bst_tree_t * const tree, const void * const subroot_datat);
+    void* bst_predecessor_data(const bst_tree_t * const tree, const void * const data);
+    void* bst_succecessor_data(const bst_tree_t * const tree, const void * const data);
     void* bst_lowest_common_ancestor_data(
-        bst_tree_t *tree, const void *data1, const void *data2
+        const bst_tree_t * const tree, const void * const data1, const void * const data2
     );
 ```
 
@@ -123,11 +116,12 @@ The functions do exacty what their name says, now let's see some quick examples 
 
     // I will need a function to work with the nodes
 
-    void printData(bst_tree_t *tree, const bst_tree_node_t *node) {
-        if (node == tree->nil || node->data == NULL)
+    void printData(void * const data) {
+        if (NULL == data) {
             return;
+        }
 
-        printf("%d ", *(const int *)node->data);
+        printf("%d ", *(const int * const)data);
     }
 
     // Now let the carnage begin
@@ -141,18 +135,16 @@ The functions do exacty what their name says, now let's see some quick examples 
         }
 
         int data = 4;
-        printf("Level of node 4 is : %d\n", bst_node_level(my_tree, bst_find_data(my_tree, &data)));
+        printf("Level of node 4 is : %d\n", bst_data_level(my_tree, &data));
 
         printf("Successor and Predecessor of node 4 is:\n");
-        printData(my_tree, bst_successor_node(my_tree, &data));
-        printData(my_tree, bst_predecessor_node(my_tree, &data));
+        printData(bst_successor_node(my_tree, &data));
+        printData(bst_predecessor_node(my_tree, &data));
 
         int data = 7;
         // !!! I supposed here that there is a successor of a successor
         printf("Successor of node's 7 successor is : %d",
-                *(const int *)bst_successor_data(my_tree, &data));
-
-        
+                *(const int * const )bst_successor_data(my_tree, &data));
 
         free_bst(bst);
     }
@@ -177,7 +169,7 @@ I have prepared 4 functions that will help you traverse you binary search tree:
 The definition of an **action** function is:
 
 ```C
-    void action(bst_tree_t* t, const bst_tree_node_t *node);
+    void action(void * const data);
 ```
 
 >**It takes one node and does whatever it wants**
@@ -186,11 +178,12 @@ If we want to print the nodes we will have to define the **printData** functions
 
 ```C
     // this is an action function, takes a node and does something
-    void printData(bst_tree_t* tree, const bst_tree_node_t *node) {
-        if (node == tree->nil || node->data == NULL)
+    void print_data(void * const data) {
+        if (NULL == data) {
             return;
+        }
 
-        printf("%d ", *(const int *)node->data);
+        printf("%d ", *(const int * const)data);
     }
 
     int main() {
@@ -207,11 +200,12 @@ If we want to print the nodes we will have to define the **printData** functions
 If you want to do something more interesting you can define another action function as follows:
 
 ```C
-    void map_nodes(bst_tree_t* tree, const bst_tree_node_t *node) {
-        if (node == tree->nil || node->data == NULL)
+    void map_nodes(void * const data) {
+        if (NULL == data) {
             return;
+        }
 
-        int *fa = node->data;
+        int * const fa = data;
 
         *fa = *fa + 10;
     }
@@ -248,7 +242,7 @@ Example:
         printf("Hi there!\n"); // This will be printed in outputfile.txt
 
         // This also will be printed in outputfile.txt
-        bst_traverse_level(mytree, &print_data);
+        bst_traverse_level(my_tree, &print_data);
         printf("\n");
 
         free_bst(my_tree);

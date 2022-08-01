@@ -52,8 +52,8 @@ If you want to delete a Red-Black tree object and to free evry byte of memory oc
 According to following functions:
 
 ```C
-    slc_error_t rbk_insert(rbk_tree_t *tree, const void *data, size_t data_size);
-    scl_error_t rbk_delete(rbk_tree_t *tree, void *data, size_t data_size);
+    slc_error_t rbk_insert(rbk_tree_t * const tree, const void * const data, size_t data_size);
+    scl_error_t rbk_delete(rbk_tree_t * const tree, const void * const data, size_t data_size);
 ```
 
 Let's assume that we work with integers in our program, so for now no need for a free function that's good:
@@ -98,24 +98,17 @@ Let's assume that we work with integers in our program, so for now no need for a
 For this section we have the following functions:
 
 ```C
-    uint8_t is_rbk_empty(rbk_tree_t *tree);
-    rbk_tree_node_t* rbk_find_data(rbk_tree_t *tree, const void *data);
-    int32_t rbk_node_level(rbk_tree_node_t* tree, rbk_tree_node_t *baseNode);
-    rbk_tree_node_t* get_rbk_root(rbk_tree_t *tree);
-    size_t get_rbk_size(rbk_tree_t *tree);
-    rbk_tree_node_t* rbk_max_node(rbk_tree_node_t* tree, rbk_tree_node_t *root);
-    rbk_tree_node_t* rbk_min_node(rbk_tree_node_t* tree, rbk_tree_node_t *root);
-    void* rbk_max_data(rbk_tree_node_t* tree, rbk_tree_node_t *root);
-    void* rbk_min_data(rrbk_tree_node_t* tree, rbk_tree_node_t *root);
-    rbk_tree_node_t* rbk_predecessor_node(rbk_tree_t *tree, const void *data);
-    rbk_tree_node_t* rbk_successor_node(rbk_tree_t *tree, const void *data);
-    void* rbk_predecessor_data(rbk_tree_t *tree, const void *data);
-    void* rbk_succecessor_data(rbk_tree_t *tree, const void *data);
-    rbk_tree_node_t* rbk_lowest_common_ancestor_node(
-        rbk_tree_t *tree, const void *data1, const void *data2
-    );
+    uint8_t is_rbk_empty(const rbk_tree_t * const tree);
+    const void* rbk_find_data(const rbk_tree_t * const tree, const void * const data);
+    int32_t rbk_data_level(const rbk_tree_t * const tree, const void * const data);
+    const void* get_rbk_root(const rbk_tree_t * const tree);
+    size_t get_rbk_size(const rbk_tree_t * const tree);
+    void* rbk_max_data(const rbk_tree_t * const tree, const void * const subroot_data);
+    void* rbk_min_data(const rbk_tree_t * const tree, const void * const subroot_datat);
+    void* rbk_predecessor_data(const rbk_tree_t * const tree, const void * const data);
+    void* rbk_succecessor_data(const rbk_tree_t * const tree, const void * const data);
     void* rbk_lowest_common_ancestor_data(
-        rbk_tree_t *tree, const void *data1, const void *data2
+        const rbk_tree_t * const tree, const void * const data1, const void * const data2
     );
 ```
 
@@ -128,11 +121,12 @@ The functions do exacty what their name says, now let's see some quick examples 
 
     // I will need a function to work with the nodes
 
-    void printData(const rbk_tree_node_t *node) {
-        if (node == NULL || node->data == NULL)
+    void printData(void * const data) {
+        if (NULL == data) {
             return;
+        }
 
-        printf("%d ", *(const int *)node->data);
+        printf("%d ", *(const int * const )data);
     }
 
     // Now let the carnage begin
@@ -146,7 +140,7 @@ The functions do exacty what their name says, now let's see some quick examples 
         }
 
         int data = 4;
-        printf("Level of node 4 is : %d\n", rbk_node_level(my_tree, rbk_find_data(my_tree, &data)));
+        printf("Level of node 4 is : %d\n", rbk_data_level(my_tree, &data));
 
         printf("Successor and Predecessor of node 4 is:\n");
         printData(my_tree, rbk_successor_node(my_tree, &data));
@@ -155,7 +149,7 @@ The functions do exacty what their name says, now let's see some quick examples 
         int data = 7;
         // !!! I supposed here that there is a successor of a successor
         printf("Successor of node's 7 successor is : %d",
-                *(const int *)rbk_successor_data(my_tree, &data));
+                *(const int * const)rbk_successor_data(my_tree, &data));
 
         
 
@@ -182,7 +176,7 @@ I have prepared 4 functions that will help you traverse you Red-Black tree:
 The definition of an **action** function is:
 
 ```C
-    void action(rbk_tree_t* tree, const rbk_tree_node_t *node);
+    void action(void * const data);
 ```
 
 >**It takes one node and does whatever it wants**
@@ -191,12 +185,13 @@ If we want to print the nodes we will have to define the **printData** functions
 
 ```C
     // this is an action function, takes a node and does something
-    void print_data(rbk_tree_t* tree, const rbk_tree_node_t *node) {
-        if (node == tree->nil || node->data == NULL)
+    void print_data(void * const data) {
+        if (NULL == data) [
             return;
+        ]
 
-        printf("%d ", *(const int *)node->data);
-    }
+        printf("%d ", *(const int * const)data);
+    
 
     int main() {
         // Suppose you've allocated a rbk tree and inserted in it elements
@@ -212,14 +207,15 @@ If we want to print the nodes we will have to define the **printData** functions
 If you want to do something more interesting you can define another action function as follows:
 
 ```C
-    void map_nodes(rbk_tree_t* tree, const rbk_tree_node_t *node) {
-        if (node == tree->nil || node->data == NULL)
+    void map_nodes(void * const data) {
+        if (NULL == data) {
             return;
+        }
 
-        int *fa = node->data;
+        int * const fa = data;
 
         *fa = *fa + 10;
-    }
+    }}
 
     // This function will take every node and will increase it's value with 10
 ```

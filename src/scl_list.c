@@ -133,7 +133,7 @@ static list_node_t* create_list_node(const void * const data, size_t data_size) 
  * content of the data pointer but can access it
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t print_list(const list_t * const list, const_action_func print) {
+scl_error_t print_list(const list_t * const list, action_func print) {
     if (NULL == list) {
         return SCL_NULL_LIST;
     }
@@ -998,10 +998,9 @@ list_t* list_filter(const list_t * const list, filter_func filter, size_t data_s
  * 
  * @param list a linked list object
  * @param map a pointer to a mapping function
- * @param data_size size of a single element
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t list_map(const list_t * const list, map_func map, size_t data_size) {
+scl_error_t list_map(const list_t * const list, action_func map) {
     /*
      * Check if list is allocated and is not empty
      * Check if user provided a valid map function
@@ -1018,7 +1017,7 @@ scl_error_t list_map(const list_t * const list, map_func map, size_t data_size) 
         return SCL_NULL_ACTION_FUNC;
     }
 
-    list_node_t *iterator = list->head;
+    const list_node_t *iterator = list->head;
 
     /*
      * Iterate through every element in the list
@@ -1028,7 +1027,7 @@ scl_error_t list_map(const list_t * const list, map_func map, size_t data_size) 
 
         /* Copy mapped bytes in data bytes */
         if (NULL != iterator->data) {
-            memmove((uint8_t *)iterator->data, (const uint8_t * const)map(iterator->data), data_size);
+            map(iterator->data);
         }
 
         iterator = iterator->next;

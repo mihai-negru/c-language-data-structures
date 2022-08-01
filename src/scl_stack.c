@@ -166,7 +166,7 @@ scl_error_t free_stack(stack_t * const stack) {
  * @param print a pointer to a function to print content of data pointer
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t print_stack(const stack_t * const stack, const_action_func print) {
+scl_error_t print_stack(const stack_t * const stack, action_func print) {
     /* Check if input datat is valid */
     if (NULL == stack) {
         return SCL_NULL_STACK;

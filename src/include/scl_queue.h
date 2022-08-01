@@ -54,7 +54,7 @@ typedef struct {
 
 queue_t*        create_queue        (free_func frd);
 scl_error_t     free_queue          (queue_t * const queue);
-scl_error_t     print_queue         (const queue_t * const queue, const_action_func print);
+scl_error_t     print_queue         (const queue_t * const queue, action_func print);
 
 uint8_t         is_queue_empty      (const queue_t * const queue);
 size_t          get_queue_size      (const queue_t * const queue);

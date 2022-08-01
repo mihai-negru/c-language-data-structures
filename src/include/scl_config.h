@@ -90,11 +90,8 @@ typedef enum {
  */
 typedef         int             (*compare_func)         (const void * const, const void * const);
 typedef         void            (*free_func)            (void *);
-typedef         void            (*const_action_func)    (const void * const);
 typedef         void            (*action_func)          (void * const);
 typedef         int             (*filter_func)          (const void * const);
-typedef         const void*     (*map_func)             (void * const);
-
 
 void            scl_error_message           (scl_error_t error_message);
 

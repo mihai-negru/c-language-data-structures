@@ -5,8 +5,8 @@
 In the scl_stack.h you have two functions that will help you by creating a stack and destroying it.
 
 ```C
-    stack_t* create_stack(void (*free_data)(void*));
-    scl_error_t free_stack(stack_t *stack);
+    stack_t* create_stack(free_func frd);
+    scl_error_t free_stack(stack_t * const stack);
 ```
 
 First function will take a pointer to a function that will free the content of the actual data. However you can send NULL(0) instead of a pointer. For base types as **int**, **float**, **double**, **char**, **static arrays**, **static structures**, `free_data` function should be **NULL**, if a structure that contains a pointer (and it is allocated with malloc or calloc) then a free_data function (*not NULL*) should be provided.
@@ -57,10 +57,10 @@ Example of creating a stack:
 
     // One way to print it would be:
 
-    void print_data(void *a) {
+    void print_data(void * const a) {
         if (a == NULL) return;
 
-        int check = *(int *)a;
+        int check = *(int * const)a;
 
         if (check == 0) {
             Int *fb = a;
@@ -89,9 +89,9 @@ Example of creating a stack:
 You have 3 function that will maintain a stack:
 
 ```C
-    scl_error_t stack_push(stack_t *stack, const void *data, size_t data_size);
-    void* stack_top(stack_t *stack);
-    scl_error_t stack_pop(stack_t *stack);
+    scl_error_t stack_push(stack_t * const stack, const void * const data, size_t data_size);
+    void* stack_top(const stack_t * const stack);
+    scl_error_t stack_pop(stack_t * const stack);
 ```
 
 Function `stack_push` will insert one element into the stack. You should pass an allocated stack into push function, however if stack pointer is NULL than no operation will be executed. As we mentioned above you can insert different data types into the stack, but you will have to provide your functions to maintain the stack (for printing elements).
@@ -99,10 +99,10 @@ Function `stack_push` will insert one element into the stack. You should pass an
 Function `stack_top` will return a pointer to the data content of the first element from the stack (the top of the stack). You will have to manually convert the return pointer to your working pointer, or to print int using a printData function, as follows:
 
 ```C
-    void print_int(void *a) {
+    void print_int(void * const a) {
         if (a == NULL) return;
 
-        int *fa = (int *)a;
+        const int * const fa = (const int * const)a;
 
         printf("%d\n", *fa);
     }
@@ -160,8 +160,8 @@ Example of using stack_pop:
 Some functions that also are important for stack maintaining are:
 
 ```C
-    uint8_t is_stack_empty(stack_t* stack);
-    size_t get_stack_size(stack_t* stack);
+    uint8_t is_stack_empty(const stack_t * const stack);
+    size_t get_stack_size(const stack_t * const stack);
 ```
 
 First function will check if stack exists and if it is empty.

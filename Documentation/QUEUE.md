@@ -5,8 +5,8 @@
 In the scl_queue.h you have two functions that will help you by creating a queue and destroying it.
 
 ```C
-    queue_t* create_queue(void (*free_data)(void *));
-    scl_error_t free_queue(queue_t* queue);
+    queue_t* create_queue(free_func frd);
+    scl_error_t free_queue(queue_t * const queue);
 ```
 
 First function will take a pointer to a function that will free the content of the actual data. However you can send NULL(0) instead of a pointer. For base types as **int**, **float**, **double**, **char**, **static arrays**, **static structures**, `free_data` function should be **NULL**, if a structure that contains a pointer (and it is allocated with malloc or calloc) then a free_data function (*not NULL*) should be provided.
@@ -26,7 +26,7 @@ Example of creating a queue:
     }
 
     int main() {
-        queue_t* queue = create_queue(&free_person);
+        queue_t *queue = create_queue(&free_person);
         free_queue(queue);
 
         return 0;
@@ -57,10 +57,10 @@ Example of creating a queue:
 
     // One way to print it would be:
 
-    void print_data(void *a) {
+    void print_data(void * const a) {
         if (a == NULL) return;
 
-        int check = *(int *)a;
+        int check = *(int * const)a;
 
         if (check == 0) {
             Int *fb = a;
@@ -89,10 +89,10 @@ Example of creating a queue:
 You have 4 function that will maintain a queue:
 
 ```C
-    scl_error_t queue_push(queue_t* queue, const void* data, size_t data_size);
-    void* queue_front(queue_t* queue);
-    void* queue_back(queue_t* queue);
-    scl_error_t queue_pop(queue_t* queue);
+    scl_error_t queue_push(queue_t * const queue, const void * const data, size_t data_size);
+    void* queue_front(const queue_t * const queue);
+    void* queue_back(const queue_t * const queue);
+    scl_error_t queue_pop(queue_t * const queue);
 ```
 
 Function `queue_push` will insert one element into the queue. You should pass an allocated queue into push function, however if queue pointer is NULL than no operation will be executed. As we mentioned above you can insert different data types into the queue, but you will have to provide your functions to maintain the queue (for printing elements).
@@ -100,10 +100,10 @@ Function `queue_push` will insert one element into the queue. You should pass an
 Function `queue_front(back` will return a pointer to the data content of the first(back) element from the queue. You will have to manually convert the return pointer to your working pointer, or to print int using a printData function, as follows:
 
 ```C
-    void print_int(const void *a) {
+    void print_int(void * const a) {
         if (a == NULL) return;
 
-        const int *fa = a;
+        const int * const fa = a;
 
         printf("%d\n", *fa);
     }
@@ -161,8 +161,8 @@ Example of using queue_pop:
 
 Some functions that also are important for queue maintaining are:
 ```C
-    uint8_t is_queue_empty(queue_t* queue);
-    size_t get_queue_size(queue_t* queue);
+    uint8_t is_queue_empty(const queue_t * const queue);
+    size_t get_queue_size(const queue_t * const queue);
 ```
 
 First function will check if queue exists and if it is empty.

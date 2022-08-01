@@ -160,21 +160,21 @@ typedef struct {
 } long_double_t;
 long_double_t long_double_def(void);
 
-void print_all_data     (const void * const data);
-void print_short_int    (const void * const data);
-void print_ushort_int   (const void * const data);
-void print_uint         (const void * const data);
-void print_int          (const void * const data);
-void print_long_int     (const void * const data);
-void print_ulong_int    (const void * const data);
-void print_llong_int    (const void * const data);
-void print_ullong_int   (const void * const data);
-void print_char         (const void * const data);
-void print_uchar        (const void * const data);
-void print_float        (const void * const data);
-void print_double       (const void * const data);
-void print_long_double  (const void * const data);
-void print_string       (const void * const data);
+void print_all_data     (void * const data);
+void print_short_int    (void * const data);
+void print_ushort_int   (void * const data);
+void print_uint         (void * const data);
+void print_int          (void * const data);
+void print_long_int     (void * const data);
+void print_ulong_int    (void * const data);
+void print_llong_int    (void * const data);
+void print_ullong_int   (void * const data);
+void print_char         (void * const data);
+void print_uchar        (void * const data);
+void print_float        (void * const data);
+void print_double       (void * const data);
+void print_long_double  (void * const data);
+void print_string       (void * const data);
 
 int compare_short_int   (const void * const data1, const void * const data2);
 int compare_ushort_int  (const void * const data1, const void * const data2);

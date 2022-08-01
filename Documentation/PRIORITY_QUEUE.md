@@ -18,8 +18,8 @@ In the scl_priority_queue.h you have three functions that will help you by creat
     );
 
     priority_queue_t* heapify(
-        const void* data,
-        const void* priority,
+        const void * const data,
+        const void * const priority,
         size_t data_size,
         size_t pri_size,
         size_t number_of_data,
@@ -91,22 +91,22 @@ You have 4 function that will maintain a queue:
 
 ```C
     scl_error_t pri_queue_push(
-        priority_queue_t* pqueue,
-        const void* data,
-        const void* priority,
+        priority_queue_t * const pqueue,
+        const void * const data,
+        const void * const priority,
         size_t data_size,
         size_t pri_size);
 
     const void* pri_queue_top(
-        priority_queue_t* pqueue
+        const priority_queue_t * const pqueue
     );
 
     const void* pri_queue_top_pri(
-        priority_queue_t* pqueue
+        const priority_queue_t * const pqueue
     );
 
     scl_error_t pri_queue_pop(
-        priority_queue_t* pqueue
+        priority_queue_t * const pqueue
     );
 ```
 
@@ -121,11 +121,12 @@ Example of using above functions:
 ```C
     #include "./include/scl_datastruc.h"
 
-    void print_data(const pri_node_t *node) {
-        if (node == NULL)
+    void print_data(void * const data) {
+        if (NULL == data) {
             return;
+        }
 
-        printf("(%d) -> (%d)\n", *(int *)node->pri, *(int *)node->data);
+        printf("%d ", *(const int * const)data);
     }
 
     int main(void) {
@@ -163,7 +164,7 @@ Example of using above functions:
         int new_data = -100;
         pri_queue_push(pq, &new_data, &new_data, sizeof(new_data), sizeof(new_data));
 
-        int *top_data = pri_queue_top(pq);
+        const int *top_data = pri_queue_top(pq);
 
         if (NULL != top_data) {
             printf("Maximum element is: (%d)\n", *top_data);
@@ -188,27 +189,27 @@ In the header file are specified 4 functions to find and change data and priorit
 
 ```C
     scl_error_t change_node_priority(
-        priority_queue_t* pqueue,
+        const priority_queue_t * const pqueue,
         size_t node_index,
-        const void* new_pri,
+        const void * const new_pri,
         size_t pri_size
     );
     
     scl_error_t change_node_data(
-        priority_queue_t* pqueue,
+        const priority_queue_t * const pqueue,
         size_t node_index,
-        const void* new_data,
+        const void * const new_data,
         size_t data_size
     );
 
     size_t pri_find_data_index(
-        priority_queue_t* pqueue,
-        const void* data
+        const priority_queue_t * const pqueue,
+        const void * const data
     );
 
     size_t pri_find_pri_index(
-        priority_queue_t* pqueue,
-        const void* priority
+        const priority_queue_t * const pqueue,
+        const void * const priority
     );
 ```
 
@@ -247,11 +248,11 @@ Example of using above functions:
 
 ```C
     size_t pri_queue_size(
-        priority_queue_t* pqueue
+        const priority_queue_t * const pqueue
     );
 
     uint8_t is_priq_empty(
-        priority_queue_t* pqueue
+        const priority_queue_t * const pqueue
     );
 
     scl_error_t heap_sort(

@@ -9,7 +9,7 @@ For creating a avl tree object you just need to:
 ```C
     // Somewhere in your program
 
-    avl_tree_t* my_tree = create_avl(&compare_data, &free_data);
+    avl_tree_t *my_tree = create_avl(&compare_data, &free_data);
 ```
 
 >**NOTE:** As you observe you should provide a compare and a free data function, however if the compare function is a must, because data is inserted in the avl according to compare function the free function is optional. If you insert data that is not dynamically allocated by yourself and it is maintained on the stack that you must not provide a free function.
@@ -51,8 +51,8 @@ If you want to delete a AVL tree object and to free evry byte of memory ocupied 
 According to following functions:
 
 ```C
-    slc_error_t avl_insert(avl_tree_t *tree, const void *data, size_t data_size);
-    scl_error_t avl_delete(avl_tree_t *tree, void *data, size_t data_size);
+    slc_error_t avl_insert(avl_tree_t * const tree, const void * const data, size_t data_size);
+    scl_error_t avl_delete(avl_tree_t * const tree, const void * const data, size_t data_size);
 ```
 
 Let's assume that we work with integers in our program, so for now no need for a free function that's good:
@@ -97,24 +97,17 @@ Let's assume that we work with integers in our program, so for now no need for a
 For this section we have the following functions:
 
 ```C
-    uint8_t is_avl_empty(avl_tree_t *tree);
-    avl_tree_node_t* avl_find_data(avl_tree_t *tree, const void *data);
-    int32_t avl_node_level(avl_tree_t *treeavl_tree_node_t *baseNode);
-    avl_tree_node_t* get_avl_root(avl_tree_t *tree);
-    size_t get_avl_size(avl_tree_t *tree);
-    avl_tree_node_t* avl_max_node(avl_tree_t *treeavl_tree_node_t *root);
-    avl_tree_node_t* avl_min_node(avl_tree_t *treeavl_tree_node_t *root);
-    void* avl_max_data(avl_tree_t *treeavl_tree_node_t *root);
-    void* avl_min_data(avl_tree_t *treeavl_tree_node_t *root);
-    avl_tree_node_t* avl_predecessor_node(avl_tree_t *tree, const void *data);
-    avl_tree_node_t* avl_successor_node(avl_tree_t *tree, const void *data);
-    void* avl_predecessor_data(avl_tree_t *tree, const void *data);
-    void* avl_succecessor_data(avl_tree_t *tree, const void *data);
-    avl_tree_node_t* avl_lowest_common_ancestor_node(
-        avl_tree_t *tree, const void *data1, const void *data2
-    );
+    uint8_t is_avl_empty(const avl_tree_t * const tree);
+    const void* avl_find_data(const avl_tree_t * const tree, const void * const data);
+    int32_t avl_data_level(const avl_tree_t * const tree, const void * const data);
+    const void* get_avl_root(const avl_tree_t * const tree);
+    size_t get_avl_size(const avl_tree_t * const tree);
+    void* avl_max_data(const avl_tree_t * const tree, const void * const subroot_data);
+    void* avl_min_data(const avl_tree_t * const tree, const void * const subroot_datat);
+    void* avl_predecessor_data(const avl_tree_t * const tree, const void * const data);
+    void* avl_succecessor_data(const avl_tree_t * const tree, const void * const data);
     void* avl_lowest_common_ancestor_data(
-        avl_tree_t *tree, const void *data1, const void *data2
+        const avl_tree_t * const tree, const void * const data1, const void * const data2
     );
 ```
 
@@ -127,11 +120,12 @@ The functions do exacty what their name says, now let's see some quick examples 
 
     // I will need a function to work with the nodes
 
-    void printData(avl_tree_t *tree, const avl_tree_node_t *node) {
-        if (node == tree->nil || node->data == NULL)
+    void printData(void * const data) {
+        if (NULL == data) {
             return;
+        }
 
-        printf("%d ", *(const int *)node->data);
+        printf("%d ", *(const int * const )data);
     }
 
     // Now let the carnage begin
@@ -145,18 +139,16 @@ The functions do exacty what their name says, now let's see some quick examples 
         }
 
         int data = 4;
-        printf("Level of node 4 is : %d\n", avl_node_level(my_tree, avl_find_data(my_tree, &data)));
+        printf("Level of node 4 is : %d\n", avl_data_level(my_tree, &data));
 
         printf("Successor and Predecessor of node 4 is:\n");
-        printData(my_tree, avl_successor_node(my_tree, &data));
-        printData(my_tree, avl_predecessor_node(my_tree, &data));
+        printData(avl_successor_data(my_tree, &data));
+        printData(avl_predecessor_data(my_tree, &data));
 
         int data = 7;
         // !!! I supposed here that there is a successor of a successor
         printf("Successor of node's 7 successor is : %d",
-                *(const int *)avl_successor_data(my_tree, &data));
-
-        
+                *(const int *)avl_successor_data(&data));
 
         free_avl(avl);
     }
@@ -181,7 +173,7 @@ I have prepared 4 functions that will help you traverse you AVL tree:
 The definition of an **action** function is:
 
 ```C
-    void action(alv_tree_t* tree, const avl_tree_node_t *node);
+    void action(void * const data);
 ```
 
 >**It takes one node and does whatever it wants**
@@ -190,11 +182,12 @@ If we want to print the nodes we will have to define the **printData** functions
 
 ```C
     // this is an action function, takes a node and does something
-    void print_data(avl_tree_node_t *node) {
-        if (node == tree->nil || node->data == NULL)
+    void print_data(void * const data) {
+        if (NULL == data) [
             return;
+        ]
 
-        printf("%d ", *(const int *)node->data);
+        printf("%d ", *(const int * const)data);
     }
 
     int main() {
@@ -211,11 +204,12 @@ If we want to print the nodes we will have to define the **printData** functions
 If you want to do something more interesting you can define another action function as follows:
 
 ```C
-    void map_nodes(avl_tree_t* tree, const avl_tree_node_t *node) {
-        if (node == tree->nil || node->data == NULL)
+    void map_nodes(void * const data) {
+        if (NULL == data) {
             return;
+        }
 
-        int *fa = node->data;
+        int * const fa = data;
 
         *fa = *fa + 10;
     }

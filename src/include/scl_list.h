@@ -54,7 +54,7 @@ typedef struct {
 } list_t;
 
 list_t*         create_list         (compare_func cmp, free_func frd);
-scl_error_t     print_list          (const list_t * const list, const_action_func print);
+scl_error_t     print_list          (const list_t * const list, action_func print);
 scl_error_t     free_list           (list_t * const list);
 
 uint8_t         is_list_empty       (const list_t * const list);
@@ -77,6 +77,6 @@ scl_error_t     list_delete_index   (list_t * const list, size_t data_index);
 scl_error_t     list_erase          (list_t * const list, size_t left_index, size_t right_index);
 
 list_t*         list_filter         (const list_t * const list, filter_func filter, size_t data_size);
-scl_error_t     list_map            (const list_t * const list, map_func map, size_t data_size);
+scl_error_t     list_map            (const list_t * const list, action_func map);
 
 #endif /* LIST_UTILS_H_ */

@@ -53,14 +53,14 @@ long_double_t   LongDouble_def      (void) { return (long_double_t){.pass = 12, 
  * 
  * @param data pointer to data type location
  */
-void print_all_data(const void * const data) {
+void print_all_data(void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
     }
 
     /* Extract type from data */
-    const char pass = *(const char *)data;
+    const char pass = *(const char * const)data;
 
     /* Print data type based on pass variable */
     switch (pass) {
@@ -116,7 +116,7 @@ void print_all_data(const void * const data) {
  * 
  * @param data pointer to data type location
  */
-void print_short_int(const void * const data) {
+void print_short_int(void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
@@ -133,7 +133,7 @@ void print_short_int(const void * const data) {
  * 
  * @param data pointer to data type location
  */
-void print_ushort_int(const void * const data) {
+void print_ushort_int(void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
@@ -150,7 +150,7 @@ void print_ushort_int(const void * const data) {
  * 
  * @param data pointer to data type location
  */
-void print_uint(const void * const data) {
+void print_uint(void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
@@ -167,7 +167,7 @@ void print_uint(const void * const data) {
  * 
  * @param data pointer to data type location
  */
-void print_int(const void * const data) {
+void print_int(void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
@@ -184,7 +184,7 @@ void print_int(const void * const data) {
  * 
  * @param data pointer to data type location
  */
-void print_long_int(const void * const data) {
+void print_long_int(void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
@@ -201,7 +201,7 @@ void print_long_int(const void * const data) {
  * 
  * @param data pointer to data type location
  */
-void print_ulong_int(const void * const data) {
+void print_ulong_int(void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
@@ -218,7 +218,7 @@ void print_ulong_int(const void * const data) {
  * 
  * @param data pointer to data type location
  */
-void print_llong_int(const void * const data) {
+void print_llong_int(void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
@@ -235,7 +235,7 @@ void print_llong_int(const void * const data) {
  * 
  * @param data pointer to data type location
  */
-void print_ullong_int(const void * const data) {
+void print_ullong_int(void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
@@ -252,7 +252,7 @@ void print_ullong_int(const void * const data) {
  * 
  * @param data pointer to data type location
  */
-void print_char(const void * const data) {
+void print_char(void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
@@ -269,7 +269,7 @@ void print_char(const void * const data) {
  * 
  * @param data pointer to data type location
  */
-void print_uchar(const void * const data) {
+void print_uchar(void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
@@ -286,7 +286,7 @@ void print_uchar(const void * const data) {
  * 
  * @param data pointer to data type location
  */
-void print_float(const void * const data) {
+void print_float(void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
@@ -303,7 +303,7 @@ void print_float(const void * const data) {
  * 
  * @param data pointer to data type location
  */
-void print_double(const void * const data) {
+void print_double(void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
@@ -320,7 +320,7 @@ void print_double(const void * const data) {
  * 
  * @param data pointer to data type location
  */
-void print_long_double(const void * const data) {
+void print_long_double(void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;
@@ -337,7 +337,7 @@ void print_long_double(const void * const data) {
  * 
  * @param data pointer to data type location
  */
-void print_string(const void * const data) {
+void print_string(void * const data) {
     /* Check if data is valid */
     if (NULL == data) {
         return;

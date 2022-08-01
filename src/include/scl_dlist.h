@@ -55,8 +55,8 @@ typedef struct {
 } dlist_t;
 
 dlist_t*          create_dlist            (compare_func cmp, free_func frd);
-scl_error_t       print_front_dlist       (const dlist_t * const list, const_action_func print);
-scl_error_t       print_back_dlist        (const dlist_t * const list, const_action_func print);
+scl_error_t       print_front_dlist       (const dlist_t * const list, action_func print);
+scl_error_t       print_back_dlist        (const dlist_t * const list, action_func print);
 scl_error_t       free_dlist              (dlist_t * const list);
 
 uint8_t           is_dlist_empty          (const dlist_t * const list);
@@ -79,6 +79,6 @@ scl_error_t       dlist_delete_index      (dlist_t * const list, size_t data_ind
 scl_error_t       dlist_erase             (dlist_t * const list, size_t left_index, size_t right_index);
 
 dlist_t*          dlist_filter            (const dlist_t * const list, filter_func filter, size_t data_size);
-scl_error_t       dlist_map               (const dlist_t * const list, map_func map, size_t data_size);
+scl_error_t       dlist_map               (const dlist_t * const list, action_func map);
 
 #endif /* DOUBLE_LIST_UTILS_H_ */

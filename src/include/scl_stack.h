@@ -53,7 +53,7 @@ typedef struct {
 
 stack_t*        create_stack        (free_func frd);
 scl_error_t     free_stack          (stack_t * const stack);
-scl_error_t     print_stack         (const stack_t * const stack, const_action_func print);
+scl_error_t     print_stack         (const stack_t * const stack, action_func print);
 
 uint8_t         is_stack_empty      (const stack_t * const stack);
 size_t          get_stack_size      (const stack_t * const stack);

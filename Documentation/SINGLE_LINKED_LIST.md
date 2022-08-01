@@ -7,14 +7,14 @@ In the scl_list.h file you have two functions that helps you to create and delet
 ```C
     list_t* create_list(
         compare_func cmp,
-        simple_action print,
         free_func frd)
 ```
 
-create_list function will allocate a list on heap and will return a pointer to its location. However you should provide 3 function that are neccessary for maintaing the linked list.
+create_list function will allocate a list on heap and will return a pointer to its location. However you should provide 2 function that are neccessary for maintaing the linked list.
 
 ```C
-    typedef int (*compare_data)(const void *elem1, const void *elem2)
+    typedef int (*compare_func)(const void *elem1, const void *elem2);
+    typedef void (*free_func)(void * data);
 ```
 
 Function will take 2 generic pointers and according to user needs will return:
@@ -26,9 +26,9 @@ Function will take 2 generic pointers and according to user needs will return:
 Example of compare_data function for **int** data type:
 
 ```C
-    int compare_data(const void *elem1, const void *elem2) {
-        const int *fa = elem1;
-        const int *fb = elem2;
+    int compare_data(const void * const elem1, const void * const elem2) {
+        const int * const fa = elem1;
+        const int * const fb = elem2;
 
         return *fa - *fb;
     }
@@ -38,9 +38,9 @@ print_data function will display output on **stdout**, hovewer you cannot print 
 
 ```C
     FILE *fin = NULL; // Allocate in main function
-    void print_data(const void *elem) {
-        fprintf(fin, "%d ", *(const int *)elem);
-        // Instead of printf("%d", *(int *)elem);
+    void print_data(void * const elem) {
+        fprintf(fin, "%d ", *(const int * const)elem);
+        // Instead of printf("%d", *(int *)elem); or you can use freopen on stdout and use printf
         // For int data type
     }
 ```
@@ -85,8 +85,8 @@ The last function is for freeing memory from heap allocated for the list.
 
 Example of creating a linked list containing int data types:
 ```C
-    list_t *list = create_list(&compare_int, &print_int, NULL);
-    print_list(list);
+    list_t *list = create_list(&compare_int, NULL);
+    print_list(list, &print_int);
     free_list(list);
 ```
 
@@ -206,10 +206,13 @@ Example of using list finds:
     int data = 3;
 
     // By data
-    list_node_t* node1 = list_find_data(list, &data);
+    int *node1 = list_find_data(list, &data);
+
+    // When changing the value of one data from list you shall not find it
+    // the function will by itself find data pointer and will modify it's value
 
     // By index
-    list_node_t* node2 = list_find_index(list, 4);
+    int *node2 = list_find_index(list, 4);
 
     // Now you cand do stuff with nodes for example swap them 
 ```
@@ -229,18 +232,21 @@ Example of changing and swapping two data:
 
 ```C
     // list = 1 -> 2 -> 3 -> 4 -> 5
-    list_node_t* node1 = list_find_index(list, 0);
-    list_node_t* node2 = list_find_index(list, list->size - 1);
+    int * node1 = list_find_index(list, 0);
+    int * node2 = list_find_index(list, list->size - 1);
 
     list_swap_data(list, node1, node2); // Also returns a scl_error_t
     
     data = 20;
     list_change_data(list, node1, &data, sizeof(data)); // Also returns a scl_error_t
 
+    // In this case we didn't know the values in the list but if we now
+    // that list[0] = 4 and list[list->size - 1] = 7; we oculd do
+    // list_swap_data(list, &(int){4}, &(int){7});
+    // Same applies to change data function
+
     // list = 20 -> 2 -> 3 -> 4 -> 5
 ```
-
-> **NOTE:** A very important asspect is than list_swap_data will swap data pointers not the entire node pointer so node1 will point for the rest of his life to the beginnign of the list and node2 to the end of the list. list_change_data will not allocate a new node and delete the current one but will copy bytes from data pointer provided as input and will move them into the current data pointer location.
 
 ## Some special functions
 
@@ -254,31 +260,29 @@ Two important functions provided in **scl_list.h** are:
 Examples of list filter and mapping
 
 ```C
-    int filter(const void *elem) {
-        const int *fa = elem;
+    int filter(const void * const elem) {
+        const int * const fa = elem;
 
         if (1 == *fa) return 1;
 
         return 0;
     }
 
-    const void* map(void *elem) {
-        int *fa = elem;
+    void map(void * const elem) {
+        int * const fa = elem;
 
         *fa = (*fa) % 2;
-
-        return fa;
     }
 
     ...
 
     // list = 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
-    list_map(list, &map, sizeof(int)); // Check for SCL_OK
+    list_map(list, &map); // Check for SCL_OK
 
     // list = 1 -> 0 -> 1 -> 0 -> 1 -> 0 -> 1 -> 0 -> 1 -> 0
 
-    list_t* new_list = list_filter(list, &filter, sizeof(int));
+    list_t *new_list = list_filter(list, &filter, sizeof(int));
 
     // newList = 1 -> 1 -> 1 -> 1 -> 1 -> NULL
 

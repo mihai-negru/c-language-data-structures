@@ -133,7 +133,7 @@ static dlist_node_t* create_dlist_node(const void * const data, size_t data_size
  * content of the data pointer but can access it
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t print_front_dlist(const dlist_t * const list, const_action_func print) {
+scl_error_t print_front_dlist(const dlist_t * const list, action_func print) {
     /* Check if input datat is valid */
     if (NULL == list) {
         return SCL_NULL_DLIST;
@@ -172,7 +172,7 @@ scl_error_t print_front_dlist(const dlist_t * const list, const_action_func prin
  * content of the data pointer but can access it
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t print_back_dlist(const dlist_t * const list, const_action_func print) {
+scl_error_t print_back_dlist(const dlist_t * const list, action_func print) {
     if (NULL == list) {
         return SCL_NULL_DLIST;
     }
@@ -1046,7 +1046,7 @@ dlist_t* dlist_filter(const dlist_t * const list, filter_func filter, size_t dat
  * @param data_size size of a single element
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t dlist_map(const dlist_t * const list, map_func map, size_t data_size) {
+scl_error_t dlist_map(const dlist_t * const list, action_func map) {
     /*
      * Check if list is allocated and is not empty
      * Check if user provided a valid map function
@@ -1063,7 +1063,7 @@ scl_error_t dlist_map(const dlist_t * const list, map_func map, size_t data_size
         return SCL_NULL_ACTION_FUNC;
     }
 
-    dlist_node_t *iterator = list->head;
+    const dlist_node_t *iterator = list->head;
 
     /*
      * Iterate through every element in the list
@@ -1073,7 +1073,7 @@ scl_error_t dlist_map(const dlist_t * const list, map_func map, size_t data_size
 
         /* Copy mapped bytes in data bytes */
         if (NULL != iterator->data) {
-            memmove((uint8_t *)iterator->data, (const uint8_t * const)map(iterator->data), data_size);
+            map(iterator->data);
         }
 
         iterator = iterator->next;
