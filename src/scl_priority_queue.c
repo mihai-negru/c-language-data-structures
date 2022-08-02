@@ -101,7 +101,7 @@ priority_queue_t* create_priority_queue(size_t init_capacity, compare_func cmp_d
  * @param pqueue an allocated priority queue object
  * @param free_node pointer to pointer of a node to delete from heap
  */
-static void free_priority_queue_node(priority_queue_t * const pqueue, pri_node_t ** const free_node) {
+static void free_priority_queue_node(const priority_queue_t * const pqueue, pri_node_t ** const free_node) {
     /* Check if node needs to be freed */
     if ((NULL != pqueue) && (NULL != free_node) && (NULL != *free_node)) {
 

@@ -81,13 +81,24 @@ typedef enum {
     SCL_NULL_SIMPLE_ARRAY                       = -33,
     SCL_NUMBER_OF_ELEMS_ZERO                    = -34,
     SCL_SIMPLE_ELEM_ARRAY_SIZE_ZERO             = -35,
-    SCL_SIMPLE_ARRAY_COMPAR_FUNC_NULL           = -36
+    SCL_SIMPLE_ARRAY_COMPAR_FUNC_NULL           = -36,
+
+    SCL_NULL_HASH_TABLE                         = -37,
+    SCL_UNKNOWN_HASH_NODE_COLOR                 = -38,
+    SCL_INVALID_KEY                             = -39,
+    SCL_BAD_HASH_FUNCTION                       = -40,
+    SCL_NULL_HASH_ROOTS                         = -41,
+    SCL_NULL_HASH_FUNCTION                      = -42,
+    SCL_INVALID_NEW_CAPACITY                    = -43,
+    SCL_REALLOC_HASH_ROOTS_FAIL                 = -44,
+    SCL_REHASHING_FAILED                        = -45
 } scl_error_t;
 
 /**
  * @brief Definition of the most used functions
  * 
  */
+typedef         size_t          (*hash_func)            (const void * const);
 typedef         int             (*compare_func)         (const void * const, const void * const);
 typedef         void            (*free_func)            (void *);
 typedef         void            (*action_func)          (void * const);

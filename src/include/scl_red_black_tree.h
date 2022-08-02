@@ -39,7 +39,7 @@
 typedef enum {
     RED,                                                        /* Red color of the node */
     BLACK                                                       /* Black color of the node */
-} node_color;
+} rbk_tree_node_color;
 
 /**
  * @brief Red-Black Tree Node object definition
@@ -51,7 +51,7 @@ typedef struct rbk_tree_node {
     struct rbk_tree_node *left;                                 /* Pointer to left child node */
     struct rbk_tree_node *right;                                /* Pointer to right child node */
     uint32_t count;                                             /* Number of nodes with the same data value */
-    node_color color;                                           /* Color of a node */
+    rbk_tree_node_color color;                                  /* Color of a node */
 } rbk_tree_node_t;
 
 /**
