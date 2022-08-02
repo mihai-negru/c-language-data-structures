@@ -6,18 +6,18 @@ CFLAGS += -c -g -Wall -Wextra -Wpedantic \
 		  -Wjump-misses-init -Wlogical-op -O2
 
 FILES = ./scl_avl_tree.c ./scl_bst_tree.c \
-		./scl_weighted_graph.c ./scl_list.c \
+		./scl_graph.c ./scl_list.c \
 		./scl_dlist.c ./scl_priority_queue.c \
 		./scl_hash_table.c ./scl_sort_algo.c \
-		./scl_ordered_graph.c ./scl_red_black_tree.c \
+		./scl_red_black_tree.c \
 		./scl_queue.c ./scl_stack.c ./scl_config.c \
-		./scl_unordered_graph.c ./scl_func_types.c \
+		./scl_func_types.c \
 
-OUTFILES = scl_avl_tree.o scl_bst_tree.o scl_weighted_graph.o \
+OUTFILES = scl_avl_tree.o scl_bst_tree.o scl_graph.o \
 		 scl_dlist.o scl_hash_table.o scl_config.o\
-		 scl_priority_queue.o scl_list.o scl_ordered_graph.o \
+		 scl_priority_queue.o scl_list.o \
 		 scl_red_black_tree.o scl_queue.o scl_sort_algo.o \
-		 scl_stack.o scl_unordered_graph.o scl_func_types.o \
+		 scl_stack.o scl_func_types.o \
 		 
 
 LIB = libdatastruc.a

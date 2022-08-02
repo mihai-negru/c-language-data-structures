@@ -1,5 +1,5 @@
 /**
- * @file scl_unordered_graph.h
+ * @file scl_graph.h
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2022-06-21
@@ -22,8 +22,8 @@
  * 
  */
 
-#ifndef UNORDERED_GRAPH_UTILS_H_
-#define UNORDERED_GRAPH_UTILS_H_
+#ifndef GRAPH_UTILS_H_
+#define GRAPH_UTILS_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,4 +32,4 @@
 #include <errno.h>
 #include "scl_config.h"
 
-#endif /* UNORDERED_GRAPH_UTILS_H_ */
+#endif /* GRAPH_UTILS_H_ */

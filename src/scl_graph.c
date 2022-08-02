@@ -1,5 +1,5 @@
 /**
- * @file scl_unordered_graph.c
+ * @file scl_graph.c
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2022-06-21
@@ -22,4 +22,4 @@
  * 
  */
 
-#include "./include/scl_unordered_graph.h"
+#include "./include/scl_graph.h"

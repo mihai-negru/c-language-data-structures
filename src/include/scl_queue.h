@@ -36,16 +36,16 @@
  * @brief queue Node object definition
  * 
  */
-typedef struct queue_node {
+typedef struct queue_node_s {
     void *data;                     /* Pointer to data */
-    struct queue_node *next;        /* Pointer to next data node */
+    struct queue_node_s *next;      /* Pointer to next data node */
 } queue_node_t;
 
 /**
  * @brief queue object definition
  * 
  */
-typedef struct {
+typedef struct queue_s {
     queue_node_t *front;            /* Pointer to beginning of queue */
     queue_node_t *back;             /* Pointer to end of queue */
     free_func frd;                  /* Function to free one data */

@@ -1,5 +1,2 @@
 # Taskuri
-* unordGraph
-* ordGraph
-* costGraphs
-* hashTable
+* graphs

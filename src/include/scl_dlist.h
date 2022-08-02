@@ -36,17 +36,17 @@
  * @brief Double Linked List Node object definition
  * 
  */
-typedef struct dlist_node {
+typedef struct dlist_node_s {
     void *data;                                         /* Pointer to data */
-    struct dlist_node *prev;                            /* Pointer to previous node */
-    struct dlist_node *next;                            /* Pointer to next node */
+    struct dlist_node_s *prev;                          /* Pointer to previous node */
+    struct dlist_node_s *next;                          /* Pointer to next node */
 } dlist_node_t;
 
 /**
  * @brief Double Linked List object definition
  * 
  */
-typedef struct {
+typedef struct dlist_s {
     dlist_node_t *head;                                 /* head of linked list */
     dlist_node_t *tail;                                 /* tail of linked list */
     compare_func cmp;                                   /* function to compare items */

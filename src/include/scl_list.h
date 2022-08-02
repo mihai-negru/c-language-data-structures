@@ -36,16 +36,16 @@
  * @brief Linked List Node object definition
  * 
  */
-typedef struct list_node {
+typedef struct list_node_s {
     void *data;                                         /* Pointer to data */
-    struct list_node *next;                             /* Pointer to next node */
+    struct list_node_s *next;                           /* Pointer to next node */
 } list_node_t;
 
 /**
  * @brief Linked List object definition
  * 
  */
-typedef struct {
+typedef struct list_s {
     list_node_t *head;                                  /* head of linked list */
     list_node_t *tail;                                  /* tail of linked list */
     compare_func cmp;                                   /* function to compare items */

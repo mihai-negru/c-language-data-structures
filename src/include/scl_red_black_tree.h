@@ -36,29 +36,29 @@
  * @brief Color of one red-black tree node
  * 
  */
-typedef enum {
+typedef enum rbk_tree_node_color_s {
     RED,                                                        /* Red color of the node */
     BLACK                                                       /* Black color of the node */
-} rbk_tree_node_color;
+} rbk_tree_node_color_t;
 
 /**
  * @brief Red-Black Tree Node object definition
  * 
  */
-typedef struct rbk_tree_node {
+typedef struct rbk_tree_node_s {
     void *data;                                                 /* Pointer to data */
-    struct rbk_tree_node *parent;                               /* Pointer to parent node */
-    struct rbk_tree_node *left;                                 /* Pointer to left child node */
-    struct rbk_tree_node *right;                                /* Pointer to right child node */
+    struct rbk_tree_node_s *parent;                             /* Pointer to parent node */
+    struct rbk_tree_node_s *left;                               /* Pointer to left child node */
+    struct rbk_tree_node_s *right;                              /* Pointer to right child node */
     uint32_t count;                                             /* Number of nodes with the same data value */
-    rbk_tree_node_color color;                                  /* Color of a node */
+    rbk_tree_node_color_t color;                                /* Color of a node */
 } rbk_tree_node_t;
 
 /**
  * @brief Red-Black Tree object definition
  * 
  */
-typedef struct {
+typedef struct rbk_tree_s {
     rbk_tree_node_t *root;                                      /* Pointer to tree root */
     rbk_tree_node_t *nil;                                       /* Black hole pointer */
     compare_func cmp;                                           /* Function to compare two elements */

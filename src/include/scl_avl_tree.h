@@ -36,11 +36,11 @@
  * @brief Adelson-Velsky-Landis Tree Node object definition
  * 
  */
-typedef struct avl_tree_node {
+typedef struct avl_tree_node_s {
     void *data;                                                 /* Pointer to data */
-    struct avl_tree_node *parent;                               /* Pointer to parent node */
-    struct avl_tree_node *left;                                 /* Pointer to left child node */
-    struct avl_tree_node *right;                                /* Pointer to right child node */
+    struct avl_tree_node_s *parent;                             /* Pointer to parent node */
+    struct avl_tree_node_s *left;                               /* Pointer to left child node */
+    struct avl_tree_node_s *right;                              /* Pointer to right child node */
     uint32_t count;                                             /* Number of nodes with the same data value */
     uint32_t height;                                            /* Height of a node */
 } avl_tree_node_t;
@@ -49,7 +49,7 @@ typedef struct avl_tree_node {
  * @brief Adelson-Velsky-Landis Tree object definition
  * 
  */
-typedef struct {
+typedef struct avl_tree_s {
     avl_tree_node_t *root;                                      /* Pointer to tree root */
     avl_tree_node_t *nil;                                       /* Black hole pointer */
     compare_func cmp;                                           /* Function to compare two elements */

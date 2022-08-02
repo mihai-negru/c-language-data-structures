@@ -36,16 +36,16 @@
  * @brief stack Node object definition
  * 
  */
-typedef struct stack_node {
+typedef struct stack_node_s {
     void *data;                     /* Pointer to data */
-    struct stack_node *next;        /* Pointer to next data node */
+    struct stack_node_s *next;      /* Pointer to next data node */
 } stack_node_t;
 
 /**
  * @brief stack object definition
  * 
  */
-typedef struct {
+typedef struct stack_s {
     stack_node_t *top;              /* Pointer to top data node */
     free_func frd;                  /* Function to free one data */
     size_t size;                    /* Size of the stack */

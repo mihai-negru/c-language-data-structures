@@ -36,7 +36,7 @@
  * @brief Priority Queue Node Object definition
  * 
  */
-typedef struct pri_node{
+typedef struct pri_node_s {
     void* pri;                                              /* Priority element definition */
     void* data;                                             /* Data type element definition */
 } pri_node_t;
@@ -45,7 +45,7 @@ typedef struct pri_node{
  * @brief Priority Queue Object definition
  * 
  */
-typedef struct priority_queue{
+typedef struct priority_queue_s {
     pri_node_t** nodes;                                     /* Array of binary-heap nodes */
     compare_func cmp_dt;                                    /* Function to compare two sets of data */
     compare_func cmp_pr;                                    /* Function to compare two sets of priority */

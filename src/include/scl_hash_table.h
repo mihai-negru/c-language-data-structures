@@ -36,10 +36,10 @@
  * @brief Color of one hash table node
  * 
  */
-typedef enum {
+typedef enum hash_table_node_color_s {
     HASH_RED,                                                   /* Red color of the node */
     HASH_BLACK                                                  /* Black color of the node */
-} hash_table_node_color;
+} hash_table_node_color_t;
 
 /**
  * @brief Hash Table Node object definition
@@ -52,14 +52,14 @@ typedef struct hash_table_node_s {
     struct hash_table_node_s *left;                             /* Pointer to the left child of the current node */
     struct hash_table_node_s *right;                            /* Pointer to the right child of the current node */
     uint32_t count;                                             /* Number of nodes with the same data and key value */
-    hash_table_node_color color;                                /* Color of the current node */
+    hash_table_node_color_t color;                              /* Color of the current node */
 } hash_table_node_t;
 
 /**
  * @brief Hash Table object definition
  * 
  */
-typedef struct {
+typedef struct hash_table_s {
     hash_table_node_t **roots;                                  /* Array of pointers of red black trees */
     hash_table_node_t *nil;                                     /* Black hole pointer once in never out */
     hash_func hash;                                             /* Pointer to a hash function */

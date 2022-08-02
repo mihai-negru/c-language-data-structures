@@ -36,11 +36,11 @@
  * @brief Binary Search Tree Node object definition
  * 
  */
-typedef struct bst_tree_node {
+typedef struct bst_tree_node_s {
     void *data;                                             /* Pointer to data */
-    struct bst_tree_node *parent;                           /* Pointer to parent node */
-    struct bst_tree_node *left;                             /* Pointer to left child node */
-    struct bst_tree_node *right;                            /* Pointer to right child node */
+    struct bst_tree_node_s *parent;                         /* Pointer to parent node */
+    struct bst_tree_node_s *left;                           /* Pointer to left child node */
+    struct bst_tree_node_s *right;                          /* Pointer to right child node */
     uint32_t count;                                         /* Number of nodes with the same data value */
 } bst_tree_node_t;
 
@@ -48,7 +48,7 @@ typedef struct bst_tree_node {
  * @brief Binary Search Tree object definition
  * 
  */
-typedef struct {
+typedef struct bst_tree_s {
     bst_tree_node_t *root;                                  /* Pointer to tree root */
     bst_tree_node_t *nil;                                   /* Black hole pointer */
     compare_func cmp;                                       /* Function to compare two elements */

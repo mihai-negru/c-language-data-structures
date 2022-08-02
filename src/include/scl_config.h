@@ -31,7 +31,7 @@
  * @brief Definition of error table handler
  * 
  */
-typedef enum {
+typedef enum scl_error_s {
     SCL_OK                                      = 0,
 
     SCL_INVALID_INPUT                           = -1,
