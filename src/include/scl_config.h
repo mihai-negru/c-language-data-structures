@@ -91,7 +91,8 @@ typedef enum {
     SCL_NULL_HASH_FUNCTION                      = -42,
     SCL_INVALID_NEW_CAPACITY                    = -43,
     SCL_REALLOC_HASH_ROOTS_FAIL                 = -44,
-    SCL_REHASHING_FAILED                        = -45
+    SCL_REHASHING_FAILED                        = -45,
+    SCL_KEY_SIZE_ZERO                           = -46
 } scl_error_t;
 
 /**
