@@ -75,7 +75,7 @@ rbk_tree_t* create_rbk(compare_func cmp, free_func frd) {
         perror("Not enough memory for red-black allocation");
     }
     
-    /* Return a new allocated red-black tree object or nil */
+    /* Return a new allocated red-black tree object or NULL */
     return new_tree;
 }
 
@@ -132,7 +132,7 @@ static rbk_tree_node_t* create_rbk_node(const rbk_tree_t * const tree, const voi
         perror("Not enough memory for node red-black allocation");
     }
 
-    /* return a new red-black tree node object or nil */
+    /* Return a new red-black tree node object or nil */
     return new_node;
 }
 
@@ -211,7 +211,7 @@ scl_error_t free_rbk(rbk_tree_t * const tree) {
  * @brief Function to rotate to left a subtree starting 
  * from fix_node red-black tree node object. Function may fail
  * if red-black tree object is not allocated or red-black tree node
- * object is NULL.
+ * object is nil.
  * 
  * @param tree an allocated red-black tree object
  * @param fix_node pointer to red-black tree node object to rotate
@@ -314,7 +314,7 @@ static void rbk_rotate_right(rbk_tree_t * const tree, rbk_tree_node_t * const fi
 /**
  * @brief Helper function to fix up the balance of a rbk_tree_t
  * after insertion of one node. Function may fail if current
- * working tree and node are NULL.
+ * working tree and node is nil.
  * 
  * @param tree an allocated red-black tree object
  * @param fix_node a pointer to a red-black tree node object to start
@@ -578,8 +578,8 @@ const void* rbk_find_data(const rbk_tree_t * const tree, const void * const data
  * to delete nodes from red-black tree and must be used just
  * in delete function provided by the program.
  * 
- * @param dest_node avl node object to rewrite data bytes from src_node
- * @param src_node avl node object to copy data bytes
+ * @param dest_node red black node object to rewrite data bytes from src_node
+ * @param src_node red black node object to copy data bytes
  * @param data_size size of a generic data type element
  * @return scl_error_t enum object for handling errors
  */
@@ -1321,7 +1321,7 @@ const void* rbk_lowest_common_ancestor_data(const rbk_tree_t * const tree, const
  * @param action a pointer function to perform an action on one red-black node object
  */
 static void rbk_traverse_inorder_helper(const rbk_tree_t * const tree, const rbk_tree_node_t * const root, action_func action) {
-    /* Check if current working red-black node is not NULL */
+    /* Check if current working red-black node is not nil */
     if (tree->nil == root) {
         return;
     }
