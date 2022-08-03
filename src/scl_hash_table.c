@@ -25,7 +25,7 @@
 #include "./include/scl_hash_table.h"
 #include "./include/scl_queue.h"
 
-#define DEFAULT_HASH_CAPACITY 100
+#define DEFAULT_HASH_CAPACITY 50
 #define DEFAULT_HASH_LOAD_FACTOR 0.75
 #define DEFAULT_HASH_CAPACITY_RATIO 2
 
@@ -35,16 +35,26 @@
  * 
  * @param init_capacity initial capacity for the hash table (should be >= |All data| * 0.75)
  * @param hash pointer to a function to hash the key into a size_t type (should not apply modulo)
- * @param cmp pointer to a function to compare two sets of data to arrange into the red black trees
+ * @param cmp_key pointer to a function to compare two sets of key
+ * @param cmp_dt pointer to a function to compare two sets of data
  * @param frd_key pointer to a function to free memory allocated for the CONTENT of the key pointer
  * @param frd_dt pointer to a function to free memory allocated for the CONTENT of the data pointer
+ * @param key_size length in bytes of the key data type
+ * @param data_size length in bytes of the data data type
  * @return hash_table_t* a new allocated hash table object or NULL (if function fails)
  */
-hash_table_t* create_hash_table(size_t init_capacity, hash_func hash, compare_func cmp, free_func frd_key, free_func frd_dt) {
+hash_table_t* create_hash_table(size_t init_capacity, hash_func hash, compare_func cmp_key, compare_func cmp_dt, free_func frd_key, free_func frd_dt, size_t key_size, size_t data_size) {
     /* Check if hash function and compare function are valid */
-    if ((NULL == hash) || (NULL == cmp)) {
+    if ((NULL == hash) || (NULL == cmp_key) || (NULL == cmp_dt)) {
         errno = EINVAL;
-        perror("Compare or hash function undefined in hash_table");
+        perror("Compare or hash functions undefined in hash_table");
+        return NULL;
+    }
+
+    /* Check if data and key sizes are valid */
+    if ((0 == key_size) || (0 == data_size)) {
+        errno = EINVAL;
+        perror("Key or data size are zero");
         return NULL;
     }
 
@@ -61,11 +71,14 @@ hash_table_t* create_hash_table(size_t init_capacity, hash_func hash, compare_fu
 
         /* Set function pointers of the hash table */
         new_hash_table->hash = hash;
-        new_hash_table->cmp = cmp;
+        new_hash_table->cmp_key = cmp_key;
+        new_hash_table->cmp_dt = cmp_dt;
         new_hash_table->frd_key = frd_key;
         new_hash_table->frd_dt = frd_dt;
 
         /* Set capacity and default size of the hash table */
+        new_hash_table->key_size = key_size;
+        new_hash_table->data_size = data_size;
         new_hash_table->capacity = init_capacity;
         new_hash_table->size = 0;
 
@@ -76,6 +89,7 @@ hash_table_t* create_hash_table(size_t init_capacity, hash_func hash, compare_fu
         if (NULL != new_hash_table->nil) {
 
             /* Set functionality for black hole node */
+            new_hash_table->nil->key = NULL;
             new_hash_table->nil->data = NULL;
             new_hash_table->nil->color = HASH_BLACK;
             new_hash_table->nil->count = 1;
@@ -83,14 +97,14 @@ hash_table_t* create_hash_table(size_t init_capacity, hash_func hash, compare_fu
             new_hash_table->nil->parent = new_hash_table->nil;
 
             /* Allocate all red black trees from hash table */
-            new_hash_table->roots = malloc(sizeof(*new_hash_table->roots) * init_capacity);
+            new_hash_table->buckets = malloc(sizeof(*new_hash_table->buckets) * init_capacity);
 
             /* Check if trees were allocated successfully */
-            if (NULL != new_hash_table->roots) {
+            if (NULL != new_hash_table->buckets) {
 
                 /* Set every red black tree to point to black hole node */
                 for (size_t iter = 0; iter < init_capacity; ++iter) {
-                    new_hash_table->roots[iter] = new_hash_table->nil;
+                    new_hash_table->buckets[iter] = new_hash_table->nil;
                 }
             } else {
 
@@ -129,7 +143,7 @@ hash_table_t* create_hash_table(size_t init_capacity, hash_func hash, compare_fu
  * @param ht pointer to an allocated hash table memory location
  * @param free_node address of a pointer to a memory location of a hash table node to delete
  */
-static void free_hash_table_node(const hash_table_t * const ht, hash_table_node_t ** const free_node) {
+static void free_hash_table_node(const hash_table_t * const __restrict__ ht, hash_table_node_t ** const __restrict__ free_node) {
     /* Check if input data is valid */
     if ((NULL != ht) && (NULL != free_node) && (ht->nil != *free_node)) {
 
@@ -174,22 +188,22 @@ static void free_hash_table_node(const hash_table_t * const ht, hash_table_node_
  * hash table row (hash code row)
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param root address of a pointer to a memory location of a hash table node to delete
+ * @param bucket address of a pointer to a memory location of a hash table node to delete
  */
-static void free_hash_table_helper(const hash_table_t * const ht, hash_table_node_t ** const root) {
+static void free_hash_table_helper(const hash_table_t * const __restrict__ ht, hash_table_node_t ** const __restrict__ bucket) {
     /* Check if node can be freed */
-    if ((NULL == root) || (ht->nil == *root)) {
+    if ((NULL == bucket) || (ht->nil == *bucket)) {
         return;
     }
 
     /* Free left node child */
-    free_hash_table_helper(ht, &(*root)->left);
+    free_hash_table_helper(ht, &(*bucket)->left);
 
     /* Free right node child */
-    free_hash_table_helper(ht, &(*root)->right);
+    free_hash_table_helper(ht, &(*bucket)->right);
 
     /* Free current working node */
-    free_hash_table_node(ht, root);
+    free_hash_table_node(ht, bucket);
 }
 
 /**
@@ -199,16 +213,16 @@ static void free_hash_table_helper(const hash_table_t * const ht, hash_table_nod
  * @param ht pointer to an allocated hash table memory location
  * @return scl_error_t enum object for handling errors 
  */
-scl_error_t free_hash_table(hash_table_t * const ht) {
+scl_error_t free_hash_table(hash_table_t * const __restrict__ ht) {
     /* Check if hash table can be freed */
     if (NULL != ht) {
 
         /* Check if hash table roots are allocated */
-        if (NULL != ht->roots) {
+        if (NULL != ht->buckets) {
 
             /* Free every tree from the hash tab;e */
             for (size_t iter = 0; iter < ht->capacity; ++iter) {
-                free_hash_table_helper(ht, &ht->roots[iter]);
+                free_hash_table_helper(ht, &ht->buckets[iter]);
             }
 
             /* Free memory for the black hole node */
@@ -216,8 +230,8 @@ scl_error_t free_hash_table(hash_table_t * const ht) {
             ht->nil = NULL;
 
             /* Free memory for roots array */
-            free(ht->roots);
-            ht->roots = NULL;
+            free(ht->buckets);
+            ht->buckets = NULL;
         }
 
         /* Free memory of the hash tab;e */
@@ -238,11 +252,9 @@ scl_error_t free_hash_table(hash_table_t * const ht) {
  * @param ht pointer to an allocated hash table memory location
  * @param key pointer to a location of a value representing key of the hash
  * @param data pointer to a location of a value representing data of a node
- * @param key_size length in bytes of the key data type
- * @param data_size length in bytes of the data data type
  * @return hash_table_node_t* a new allocated hash table node object or nil
  */
-static hash_table_node_t* create_hash_table_node(const hash_table_t * const ht, const void * const key, const void * const data, size_t key_size, size_t data_size) {
+static hash_table_node_t* create_hash_table_node(const hash_table_t * const __restrict__ ht, const void * __restrict__ key, const void * __restrict__ data) {
     /* Check if data and key pointer are not NULL */
     if ((NULL == data) || (NULL == key)) {
         return ht->nil;
@@ -261,7 +273,7 @@ static hash_table_node_t* create_hash_table_node(const hash_table_t * const ht, 
         new_node->color = HASH_RED;
 
         /* Allocate memory for data value */
-        new_node->data = malloc(data_size);
+        new_node->data = malloc(ht->data_size);
 
         /* Check if data memory was allocated */
         if (NULL != new_node->data) {
@@ -270,7 +282,7 @@ static hash_table_node_t* create_hash_table_node(const hash_table_t * const ht, 
              * Copy all bytes from data pointer
              * to memory allocated on heap
              */
-            memcpy((uint8_t *)new_node->data, (const uint8_t * const)data, data_size);
+            memcpy(new_node->data, data, ht->data_size);
         } else {
 
             /* Data memory was not allocated wipe node's memory */
@@ -282,7 +294,7 @@ static hash_table_node_t* create_hash_table_node(const hash_table_t * const ht, 
         }
 
         /* Allocate memory for key value */
-        new_node->key = malloc(key_size);
+        new_node->key = malloc(ht->key_size);
 
         /* Check if key memory was allocated */
         if (NULL != new_node->key) {
@@ -291,7 +303,7 @@ static hash_table_node_t* create_hash_table_node(const hash_table_t * const ht, 
              * Copy all bytes from key pointer
              * to memory allocated on heap
              */
-            memcpy((uint8_t *)new_node->key, (const uint8_t * const)key, key_size);
+            memcpy(new_node->key, key, ht->key_size);
         } else {
 
             /* Key memory was not allocated wipe node's memory */
@@ -323,7 +335,7 @@ static hash_table_node_t* create_hash_table_node(const hash_table_t * const ht, 
  * @return uint8_t 0 if hash tables does not need to be rehashed or
  * 1 otherwise
  */
-static uint8_t hash_table_need_to_rehash(const hash_table_t * const ht) {
+static uint8_t hash_table_need_to_rehash(const hash_table_t * const __restrict__ ht) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return 0;
@@ -340,12 +352,12 @@ static uint8_t hash_table_need_to_rehash(const hash_table_t * const ht) {
  * object is nil.
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param root_index index of the working red black tree from hash table
+ * @param bucket_index index of the working red black tree from hash table
  * @param fix_node pointer to a hash table node (red black node) to rotate
  */
-static void hash_table_rotate_left(const hash_table_t * const ht, size_t root_index, hash_table_node_t * const fix_node) {
+static void hash_table_rotate_left(const hash_table_t * const __restrict__ ht, size_t bucket_index, hash_table_node_t * const fix_node) {
     /* Check if input data is valid */
-    if ((NULL == ht) || (NULL == ht->roots) || (ht->nil == fix_node)) {
+    if ((NULL == ht) || (NULL == ht->buckets) || (ht->nil == fix_node)) {
         return;
     }
 
@@ -376,13 +388,13 @@ static void hash_table_rotate_left(const hash_table_t * const ht, size_t root_in
 
     /* Update new sub-root links to the rest of the tree */
     if (ht->nil != rotate_node->parent) {
-        if (ht->cmp(rotate_node->data, rotate_node->parent->data) >= 1) {
+        if (ht->cmp_key(rotate_node->key, rotate_node->parent->key) >= 1) {
             rotate_node->parent->right = rotate_node;
         } else {
             rotate_node->parent->left = rotate_node;
         }
     } else {
-        ht->roots[root_index] = rotate_node;
+        ht->buckets[bucket_index] = rotate_node;
     }
 }
 
@@ -393,12 +405,12 @@ static void hash_table_rotate_left(const hash_table_t * const ht, size_t root_in
  * object is nil.
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param root_index index of the working red black tree from hash table
+ * @param bucket_index index of the working red black tree from hash table
  * @param fix_node pointer to a hash table node (red black node) to rotate
  */
-static void hash_table_rotate_right(const hash_table_t * const ht, size_t root_index, hash_table_node_t * const fix_node) {
+static void hash_table_rotate_right(const hash_table_t * const __restrict__ ht, size_t bucket_index, hash_table_node_t * const fix_node) {
     /* Check if input data is valid */
-    if ((NULL == ht) || (NULL == ht->roots) || (ht->nil == fix_node)) {
+    if ((NULL == ht) || (NULL == ht->buckets) || (ht->nil == fix_node)) {
         return;
     }
 
@@ -429,13 +441,13 @@ static void hash_table_rotate_right(const hash_table_t * const ht, size_t root_i
 
     /* Update new sub-root links to the rest of tree */
     if (ht->nil != rotate_node->parent) {
-        if (ht->cmp(rotate_node->data, rotate_node->parent->data) >= 1) {
+        if (ht->cmp_key(rotate_node->key, rotate_node->parent->key) >= 1) {
             rotate_node->parent->right = rotate_node;
         } else {
             rotate_node->parent->left = rotate_node;
         }
     } else {
-        ht->roots[root_index] = rotate_node;
+        ht->buckets[bucket_index] = rotate_node;
     }
 }
 
@@ -445,18 +457,18 @@ static void hash_table_rotate_right(const hash_table_t * const ht, size_t root_i
  * working red black tree and node is nil.
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param root_index index of the working red black tree from hash table
+ * @param bucket_index index of the working red black tree from hash table
  * @param fix_node pointer to a hash table node (red black node) to start fixing the balance
  * @return scl_error_t enum object for handling errors
  */
-static scl_error_t hash_table_insert_fix_node_up(const hash_table_t * const ht, size_t root_index, hash_table_node_t *fix_node) {
+static scl_error_t hash_table_insert_fix_node_up(const hash_table_t * const __restrict__ ht, size_t bucket_index, hash_table_node_t *fix_node) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
     }
 
     /* Check if hash table roots are allocated */
-    if (NULL == ht->roots) {
+    if (NULL == ht->buckets) {
         return SCL_NULL_HASH_ROOTS;
     }
 
@@ -469,7 +481,7 @@ static scl_error_t hash_table_insert_fix_node_up(const hash_table_t * const ht, 
     hash_table_node_t *parent_fix_node = ht->nil;
 
     /* Fix up the red black tree from hash table */
-    while ((ht->roots[root_index] != fix_node) && (HASH_BLACK != fix_node->color) && (HASH_BLACK != fix_node->parent->color)) {
+    while ((ht->buckets[bucket_index] != fix_node) && (HASH_BLACK != fix_node->color) && (HASH_BLACK != fix_node->parent->color)) {
 
         /* Selected node is not root so check brother color */
         
@@ -499,7 +511,7 @@ static scl_error_t hash_table_insert_fix_node_up(const hash_table_t * const ht, 
                     parent_fix_node->parent->color = HASH_RED;
                     
                     /* Rotation */
-                    hash_table_rotate_right(ht, root_index, parent_fix_node->parent);
+                    hash_table_rotate_right(ht, bucket_index, parent_fix_node->parent);
 
                     /* Repoint selected node*/
                     fix_node = parent_fix_node;
@@ -512,8 +524,8 @@ static scl_error_t hash_table_insert_fix_node_up(const hash_table_t * const ht, 
                     parent_fix_node->parent->color = HASH_RED;
 
                     /* Rotation */
-                    hash_table_rotate_right(ht, root_index, parent_fix_node);
-                    hash_table_rotate_left(ht, root_index, fix_node->parent);
+                    hash_table_rotate_right(ht, bucket_index, parent_fix_node);
+                    hash_table_rotate_left(ht, bucket_index, fix_node->parent);
                 }
             } else {
                 if (parent_fix_node->parent->left == parent_fix_node) {
@@ -525,8 +537,8 @@ static scl_error_t hash_table_insert_fix_node_up(const hash_table_t * const ht, 
                     parent_fix_node->parent->color = HASH_RED;
                     
                     /* Rotation */
-                    hash_table_rotate_left(ht, root_index, parent_fix_node);
-                    hash_table_rotate_right(ht, root_index, fix_node->parent);
+                    hash_table_rotate_left(ht, bucket_index, parent_fix_node);
+                    hash_table_rotate_right(ht, bucket_index, fix_node->parent);
                 } else {
 
                     /* Right-Right Rotation */
@@ -536,7 +548,7 @@ static scl_error_t hash_table_insert_fix_node_up(const hash_table_t * const ht, 
                     parent_fix_node->parent->color = HASH_RED;
                     
                     /* Rotation */
-                    hash_table_rotate_left(ht, root_index, parent_fix_node->parent);
+                    hash_table_rotate_left(ht, bucket_index, parent_fix_node->parent);
 
                     /* Repoint selected node */
                     fix_node = parent_fix_node;
@@ -559,7 +571,7 @@ static scl_error_t hash_table_insert_fix_node_up(const hash_table_t * const ht, 
     }
 
     /* Make sure root is black */
-    ht->roots[root_index]->color = HASH_BLACK;
+    ht->buckets[bucket_index]->color = HASH_BLACK;
 
     /* All good */
     return SCL_OK;
@@ -572,11 +584,9 @@ static scl_error_t hash_table_insert_fix_node_up(const hash_table_t * const ht, 
  * memory is left on heap to allocate new red black trees.
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param key_size length in bytes of the key data type
- * @param data_size length in bytes of the data data type
  * @return scl_error_t enum object for handling errors
  */
-static scl_error_t hash_table_rehash(hash_table_t * const ht, size_t key_size, size_t data_size);
+static scl_error_t hash_table_rehash(hash_table_t * const __restrict__ ht);
 
 /**
  * @brief 
@@ -584,18 +594,16 @@ static scl_error_t hash_table_rehash(hash_table_t * const ht, size_t key_size, s
  * @param ht pointer to an allocated hash table memory location
  * @param key pointer to a location of a value representing key of the hash
  * @param data pointer to a location of a value representing data of a node
- * @param key_size length in bytes of the key data type
- * @param data_size length in bytes of the data data type
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t hash_table_insert(hash_table_t * const ht, const void * const key, const void * const data, size_t key_size, size_t data_size) {
+scl_error_t hash_table_insert(hash_table_t * const __restrict__ ht, const void * __restrict__ key, const void * __restrict__ data) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
     }
 
     /* Check if hash table roots are allocated */
-    if (NULL == ht->roots) {
+    if (NULL == ht->buckets) {
         return SCL_NULL_HASH_ROOTS;
     }
 
@@ -609,30 +617,20 @@ scl_error_t hash_table_insert(hash_table_t * const ht, const void * const key, c
         return SCL_INVALID_DATA;
     }
 
-    /* Check if data size is valid */
-    if (0 == data_size) {
-        return SCL_DATA_SIZE_ZERO;
-    }
-
-    /* Check if key size is valid */
-    if (0 == key_size) {
-        return SCL_KEY_SIZE_ZERO;
-    }
-
     /* Compute index of the current working tree */
-    size_t root_index = ht->hash(key) % ht->capacity;
+    size_t bucket_index = ht->hash(key) % ht->capacity;
 
     /* Set iterator pointers */
-    hash_table_node_t *iterator = ht->roots[root_index];
+    hash_table_node_t *iterator = ht->buckets[bucket_index];
     hash_table_node_t *parent_iterator = ht->nil;
 
     /* Find a valid position for insertion */
     while (ht->nil != iterator) {
         parent_iterator = iterator;
 
-        if (ht->cmp(iterator->data, data) >= 1) {
+        if (ht->cmp_key(iterator->key, key) >= 1) {
             iterator = iterator->left;
-        } else if (ht->cmp(iterator->data, data) <= -1) {
+        } else if (ht->cmp_key(iterator->key, key) <= -1) {
             iterator = iterator->right;
         } else {
 
@@ -646,7 +644,7 @@ scl_error_t hash_table_insert(hash_table_t * const ht, const void * const key, c
     }
 
     /* Create a new red-black(hash table) node object */
-    hash_table_node_t *new_node = create_hash_table_node(ht, key, data, key_size, data_size);
+    hash_table_node_t *new_node = create_hash_table_node(ht, key, data);
 
     /* Check if new red-black(hash table) node was created */
     if (ht->nil == new_node) {
@@ -661,18 +659,18 @@ scl_error_t hash_table_insert(hash_table_t * const ht, const void * const key, c
         new_node->parent = parent_iterator;
 
         /* Update children links */
-        if (ht->cmp(parent_iterator->data, new_node->data) >= 1) {
+        if (ht->cmp_key(parent_iterator->key, new_node->key) >= 1) {
             parent_iterator->left = new_node;
         } else {
             parent_iterator->right = new_node;
         }
 
         /* Fix the red black tree*/
-        err = hash_table_insert_fix_node_up(ht, root_index, new_node);
+        err = hash_table_insert_fix_node_up(ht, bucket_index, new_node);
     } else {
 
         /* Created node is root node */
-        ht->roots[root_index] = new_node;
+        ht->buckets[bucket_index] = new_node;
         new_node->color = HASH_BLACK;
     }
 
@@ -681,7 +679,7 @@ scl_error_t hash_table_insert(hash_table_t * const ht, const void * const key, c
 
     /* Check if has table needs to be rehashed */
     if (1 == hash_table_need_to_rehash(ht)) {
-        return hash_table_rehash(ht, key_size, data_size);
+        return hash_table_rehash(ht);
     }
 
     /* Insertion in hash table went successfully, or not */
@@ -692,24 +690,22 @@ scl_error_t hash_table_insert(hash_table_t * const ht, const void * const key, c
  * @brief 
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param root pointer to current working hash table(red black tree) node to re-insert
- * @param key_size length in bytes of the key data type
- * @param data_size length in bytes of the data data type
+ * @param bucket pointer to current working hash table(red black tree) node to re-insert
  */
-static void hash_table_rehash_helper(hash_table_t * const ht, const hash_table_node_t * const root, size_t key_size, size_t data_size) {
+static void hash_table_rehash_helper(hash_table_t * const __restrict__ ht, const hash_table_node_t * const __restrict__ bucket) {
     /* Check if current root can be inserted */
-    if (ht->nil == root) {
+    if (ht->nil == bucket) {
         return;
     }
 
     /* Reinsert current node into the hash table */
-    hash_table_insert(ht, root->key, root->data, key_size, data_size);
+    hash_table_insert(ht, bucket->key, bucket->data);
 
     /* Reinsert left node child */
-    hash_table_rehash_helper(ht, root->left, key_size, data_size);
+    hash_table_rehash_helper(ht, bucket->left);
     
     /* Reinsert right node child */
-    hash_table_rehash_helper(ht, root->right, key_size, data_size);
+    hash_table_rehash_helper(ht, bucket->right);
 }
 
 /**
@@ -719,18 +715,16 @@ static void hash_table_rehash_helper(hash_table_t * const ht, const hash_table_n
  * memory is left on heap to allocate new red black trees.
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param key_size length in bytes of the key data type
- * @param data_size length in bytes of the data data type
  * @return scl_error_t enum object for handling errors
  */
-static scl_error_t hash_table_rehash(hash_table_t * const ht, size_t key_size, size_t data_size) {
+static scl_error_t hash_table_rehash(hash_table_t * const __restrict__ ht) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
     }
 
     /* Check if hash table roots are allocated */
-    if (NULL == ht->roots) {
+    if (NULL == ht->buckets) {
         return SCL_NULL_HASH_ROOTS;
     }
 
@@ -744,10 +738,10 @@ static scl_error_t hash_table_rehash(hash_table_t * const ht, size_t key_size, s
     ht->capacity *= DEFAULT_HASH_CAPACITY_RATIO;
 
     /* Allocate new array of tree roots */
-    hash_table_node_t **new_roots = malloc(sizeof(*new_roots) * ht->capacity);
+    hash_table_node_t **new_buckets = malloc(sizeof(*new_buckets) * ht->capacity);
 
     /* Check if roots were allocated */
-    if (NULL == new_roots) {
+    if (NULL == new_buckets) {
         errno = ENOMEM;
         perror("Not enough memory for buckets of hash table");
 
@@ -755,12 +749,12 @@ static scl_error_t hash_table_rehash(hash_table_t * const ht, size_t key_size, s
     }
 
     /* Change old roots pointer to new roots pointer */
-    hash_table_node_t **old_roots = ht->roots;
-    ht->roots = new_roots;
+    hash_table_node_t **old_buckets = ht->buckets;
+    ht->buckets = new_buckets;
 
     /* Set all roots to black hole node */
     for (size_t iter = 0; iter < ht->capacity; ++iter) {
-        new_roots[iter] = ht->nil;
+        new_buckets[iter] = ht->nil;
     }
 
     /* Set size of the hash table as default */
@@ -771,15 +765,15 @@ static scl_error_t hash_table_rehash(hash_table_t * const ht, size_t key_size, s
      * and delete one row at a time from old roots pointer
      */
     for (size_t iter = 0; iter < old_capacity; ++iter) {
-        if (ht->nil != old_roots[iter]) {
-            hash_table_rehash_helper(ht, old_roots[iter], key_size, data_size);
-            free_hash_table_helper(ht, &old_roots[iter]);
+        if (ht->nil != old_buckets[iter]) {
+            hash_table_rehash_helper(ht, old_buckets[iter]);
+            free_hash_table_helper(ht, &old_buckets[iter]);
         }
     }
 
     /* Free pointer of the old roots pointer */
-    free(old_roots);
-    old_roots = NULL;
+    free(old_buckets);
+    old_buckets = NULL;
 
     /* All good */
     return SCL_OK;
@@ -789,28 +783,28 @@ static scl_error_t hash_table_rehash(hash_table_t * const ht, size_t key_size, s
  * @brief 
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param root_index index of the working red black tree from hash table
+ * @param bucket_index index of the working red black tree from hash table
  * @param data pointer to a location of a value representing data of a node
  * @return hash_table_node_t* an allocated hash table node object containing
  * desired data or nil id such data does not exists in the current tree
  */
-static hash_table_node_t* hash_table_find_node(const hash_table_t * const ht, size_t root_index, const void * const data) {
+static hash_table_node_t* hash_table_find_node(const hash_table_t * const __restrict__ ht, const void * const __restrict__ key) {
     /* Check if input data is valid */
-    if ((NULL == ht) || (NULL == ht->roots) || (NULL == data)) {
+    if ((NULL == ht) || (NULL == ht->buckets) || (NULL == key)) {
         return ht->nil;
     }
 
     /* Make sure that current working tree exists */
-    root_index = root_index % ht->capacity;
+    size_t bucket_index = ht->hash(key) % ht->capacity;
 
     /* Set iterator pointer */
-    hash_table_node_t *iterator = ht->roots[root_index];
+    hash_table_node_t *iterator = ht->buckets[bucket_index];
 
     /* Search for input data (void *data) in all tree */
     while (ht->nil != iterator) {
-        if (ht->cmp(iterator->data, data) <= -1) {
+        if (ht->cmp_key(iterator->key, key) <= -1) {
             iterator = iterator->right;
-        } else if (ht->cmp(iterator->data, data) >= 1) {
+        } else if (ht->cmp_key(iterator->key, key) >= 1) {
             iterator = iterator->left;
         } else {
             return iterator;
@@ -832,17 +826,20 @@ static hash_table_node_t* hash_table_find_node(const hash_table_t * const ht, si
  * @return const void* pointer to memory location of the data pointer from the input
  * or NULL is no such data exists in the hash tree
  */
-const void* hash_table_find_key_data(const hash_table_t * const ht, const void * const key, const void * const data) {
+const void* hash_table_find_key_data(const hash_table_t * const __restrict__ ht, const void * const __restrict__ key, const void * const __restrict__ data) {
     /* Check if input data is valid */
-    if ((NULL == ht) || (NULL == ht->roots) || (NULL == key) || (NULL == data)) {
+    if ((NULL == ht) || (NULL == ht->buckets) || (NULL == key) || (NULL == data)) {
         return NULL;
     }
 
-    /* Compute index of the current tree */
-    size_t root_index = ht->hash(key) % ht->capacity;
-
     /* Get the node data or NULL if node is nil */
-    return hash_table_find_node(ht, root_index, data)->data;
+    const void * const search_data = hash_table_find_node(ht, key)->data;
+
+    if (ht->cmp_dt(search_data, data) == 0) {
+        return search_data;
+    }
+
+    return NULL;
 }
 
 /**
@@ -852,61 +849,18 @@ const void* hash_table_find_key_data(const hash_table_t * const ht, const void *
  * known in the input area.
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param data pointer to a location of a value representing data of a node
+ * @param key pointer to a location of a value representing key of a node
  * @return const void* pointer to memory location of the key pointer
  * or NULL is no such data exists in the hash tree
  */
-const void* hash_table_find_key(const hash_table_t * const ht, const void * const data) {
+const void* hash_table_find_data(const hash_table_t * const __restrict__ ht, const void * const __restrict__ key) {
     /* Check if input data is valid */
-    if ((NULL == ht) || (NULL == ht->roots) || (NULL == data)) {
+    if ((NULL == ht) || (NULL == ht->buckets) || (NULL == key)) {
         return NULL;
-    }
-
-    /* Find first occurence of the data in hash table */
-    for (size_t iter = 0; iter < ht->capacity; ++iter) {
-        const hash_table_node_t * const search_node = hash_table_find_node(ht, iter, data);
-        
-        if (NULL != search_node->data) {
-
-            /* Return key pointer of the first found data */
-            return search_node->key;
-        }
     }
 
     /* Data was not found it means no key */
-    return NULL;
-}
-
-/**
- * @brief Function to find first occurence of the pair {key, data} 
- * from hash table. However function will return a pointer to memory
- * location just for data type not for data type, data should not be
- * known in the input area.
- * 
- * @param ht pointer to an allocated hash table memory location
- * @param data pointer to a location of a value representing data of a node
- * @return const void* pointer to memory location of the data pointer
- * or NULL is no such data exists in the hash tree
- */
-const void* hash_table_find_data(const hash_table_t * const ht, const void * const data) {
-    /* Check if input data is valid */
-    if ((NULL == ht) || (NULL == ht->roots) || (NULL == data)) {
-        return NULL;
-    }
-
-    /* Find first occurence of the data in hash table */
-    for (size_t iter = 0; iter < ht->capacity; ++iter) {
-        const void *search_data = hash_table_find_node(ht, iter, data)->data;
-
-        if (NULL != search_data) {
-
-            /* Return data pointer of the first found data */
-            return search_data;
-        }
-    }
-
-    /* No data was not found */
-    return NULL;
+    return hash_table_find_node(ht, key)->data;
 }
 
 /**
@@ -917,26 +871,9 @@ const void* hash_table_find_data(const hash_table_t * const ht, const void * con
  * @param data pointer to a location of a value representing data of a node
  * @return uint8_t 0 if pair {key, data} is not found in hash table or 1 otherwise
  */
-uint8_t hash_table_contains_key_data(const hash_table_t * const ht, const void * const key, const void * const data) {
+uint8_t hash_table_contains_key_data(const hash_table_t * const __restrict__ ht, const void * const __restrict__ key, const void * const __restrict__ data) {
     /* Pair is not in the current hash table */
     if (NULL == hash_table_find_key_data(ht, key, data)) {
-        return 0;
-    }
-
-    /* Pair is in the current hash table */
-    return 1;
-}
-
-/**
- * @brief Function to check if hash table contains the data type value. 
- * 
- * @param ht pointer to an allocated hash table memory location
- * @param data pointer to a location of a value representing data of a node
- * @return uint8_t 0 if data is not found in hash table or 1 otherwise
- */
-uint8_t hash_table_contains_data(const hash_table_t * const ht, const void * const data) {
-    /* data is not in the current hash table */
-    if (NULL == hash_table_find_data(ht, data)) {
         return 0;
     }
 
@@ -950,9 +887,9 @@ uint8_t hash_table_contains_data(const hash_table_t * const ht, const void * con
  * @param ht pointer to an allocated hash table memory location
  * @return uint8_t 0 if hash table is not empty or 1 otherwise
  */
-uint8_t is_hash_table_empty(const hash_table_t * const ht) {
+uint8_t is_hash_table_empty(const hash_table_t * const __restrict__ ht) {
     /* Hash table is empty */
-    if ((NULL == ht) || (NULL == ht->roots) || (0 == ht->capacity) || (0 == ht->size)) {
+    if ((NULL == ht) || (NULL == ht->buckets) || (0 == ht->capacity) || (0 == ht->size)) {
         return 1;
     }
 
@@ -965,16 +902,16 @@ uint8_t is_hash_table_empty(const hash_table_t * const ht) {
  * type value is empty or not.
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param key ointer to a location of a value representing key of the hash
+ * @param key pointer to a location of a value representing key of the hash
  * @return uint8_t 0 if hash table bucket is not empty or 1 otherwise
  */
-uint8_t is_hash_table_bucket_key_empty(const hash_table_t * const ht, const void * const key) {
+uint8_t is_hash_table_bucket_key_empty(const hash_table_t * const __restrict__ ht, const void * const __restrict__ key) {
     /* Compute the curent bucket index */
-    size_t root_index = ht->hash(key) % ht->capacity;
+    size_t bucket_index = ht->hash(key) % ht->capacity;
 
     /* Hast table bucket is empty */
-    if ((NULL == ht) || (NULL == ht->roots) || (0 == ht->capacity) || 
-        (0 == ht->size) || (ht->nil == ht->roots[root_index])) {
+    if ((NULL == ht) || (NULL == ht->buckets) || (0 == ht->capacity) || 
+        (0 == ht->size) || (ht->nil == ht->buckets[bucket_index])) {
         return 1;
     }
 
@@ -989,7 +926,7 @@ uint8_t is_hash_table_bucket_key_empty(const hash_table_t * const ht, const void
  * @return size_t SIZE_MAX if hash table is not allocated or
  * hash table's size.
  */
-size_t get_hash_table_size(const hash_table_t * const ht) {
+size_t get_hash_table_size(const hash_table_t * const __restrict__ ht) {
     if (NULL == ht) {
         return SIZE_MAX;
     }
@@ -1004,7 +941,7 @@ size_t get_hash_table_size(const hash_table_t * const ht) {
  * @return size_t SIZE_MAX if hash table is not allocated or
  * hash table's capacity.
  */
-size_t get_hash_table_capacity(const hash_table_t * const ht) {
+size_t get_hash_table_capacity(const hash_table_t * const __restrict__ ht) {
     if (NULL == ht) {
         return SIZE_MAX;
     }
@@ -1017,12 +954,12 @@ size_t get_hash_table_capacity(const hash_table_t * const ht) {
  * according to key type value.
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param root pointer to current hash table node to start counting size
+ * @param bucket pointer to current hash table node to start counting size
  * @return size_t size of one bucket(red black tree) from hash table
  */
-static size_t hash_table_count_bucket_elements_helper(const hash_table_t * const ht, const hash_table_node_t * const root) {
+static size_t hash_table_count_bucket_elements_helper(const hash_table_t * const __restrict__ ht, const hash_table_node_t * const __restrict__ bucket) {
     /* Check if node can be counted */
-    if (ht->nil == root) {
+    if (ht->nil == bucket) {
         return 0;
     }
 
@@ -1030,10 +967,10 @@ static size_t hash_table_count_bucket_elements_helper(const hash_table_t * const
     size_t total_nodes = 1;
 
     /* Count nodes from left subtree */
-    total_nodes += hash_table_count_bucket_elements_helper(ht, root->left);
+    total_nodes += hash_table_count_bucket_elements_helper(ht, bucket->left);
     
     /* Count nodes from right subtree */
-    total_nodes += hash_table_count_bucket_elements_helper(ht, root->right);
+    total_nodes += hash_table_count_bucket_elements_helper(ht, bucket->right);
 
     /* Return total count of the all tree(bucket) */
     return total_nodes;
@@ -1048,17 +985,17 @@ static size_t hash_table_count_bucket_elements_helper(const hash_table_t * const
  * @param key pointer to a location of a value representing key of the hash
  * @return size_t SIZE_MAX if hash table is not valid or size of desired bucket
  */
-size_t hash_table_count_bucket_elements(const hash_table_t * const ht, const void * const key) {
+size_t hash_table_count_bucket_elements(const hash_table_t * const __restrict__ ht, const void * const __restrict__ key) {
     /* Check if input data is valid */
-    if ((NULL == ht) || (NULL == ht->roots)) {
+    if ((NULL == ht) || (NULL == ht->buckets)) {
         return SIZE_MAX;
     }
 
     /* Compute the bucket index */
-    size_t root_index = ht->hash(key) % ht->capacity;
+    size_t bucket_index = ht->hash(key) % ht->capacity;
 
     /* Compute the size of the bucket */
-    return hash_table_count_bucket_elements_helper(ht, ht->roots[root_index]);
+    return hash_table_count_bucket_elements_helper(ht, ht->buckets[bucket_index]);
 }
 
 /**
@@ -1067,51 +1004,98 @@ size_t hash_table_count_bucket_elements(const hash_table_t * const ht, const voi
  * table bucket.
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param root pointer to current hash table node to start finding minimum node
+ * @param bucket pointer to current hash table node to start finding minimum node
  * @return hash_table_node_t* pointer to minimum node starting from root subtree
  */
-static hash_table_node_t* hash_table_root_min_node(const hash_table_t * const ht, hash_table_node_t *root) {
+static hash_table_node_t* hash_table_root_min_node(const hash_table_t * const __restrict__ ht, hash_table_node_t * __restrict__ bucket) {
     /* Check if root node has minimum */
-    if (ht->nil != root) {
+    if (ht->nil != bucket) {
 
         /* Find minimum node starting from root */
-        while (ht->nil != root->left) {
-            root = root->left;
+        while (ht->nil != bucket->left) {
+            bucket = bucket->left;
         }
     }
 
     /* Return minimum node */
-    return root;
+    return bucket;
 }
 
 /**
- * @brief Function to change data bytes of destination pointer.
+ * @brief Function to swap thwo nodes from a hash table bucket.
  * This function MUST NOT be used by users, because it will
  * break the proprety of red-black tree, it is a subroutine
  * program of delete function to change data of the current node
  * with its inorder successor.
  * 
+ * @param ht pointer to an allocated hash table memory location
+ * @param bucket_index index of the working red black tree from hash table
  * @param dest_node hash table node object to rewrite data bytes from src_node
  * @param src_node hash table node object to copy data bytes
- * @param data_size length in bytes of the data data type
  * @return scl_error_t enum object for handling errors
  */
-static scl_error_t hash_table_change_data(hash_table_node_t * const dest_node, const hash_table_node_t * const src_node, size_t data_size) {
-    /* Check if data pointers are allocated */
-    if ((NULL == dest_node->data) || (NULL == src_node->data)) {
-        return SCL_CANNOT_CHANGE_DATA;
+static scl_error_t hash_table_swap_nodes(const hash_table_t * const __restrict__ ht, size_t bucket_index, hash_table_node_t * __restrict__ const dest_node, hash_table_node_t * __restrict__ const src_node) {
+    if ((ht->nil == dest_node) || (ht->nil == src_node)) {
+        return SCL_CANNOT_SWAP_DATA;
     }
 
-    /* Check if data size if valid */
-    if (0 == data_size) {
-        return SCL_DATA_SIZE_ZERO;
+    hash_table_node_color_t temp_color = dest_node->color;
+    dest_node->color = src_node->color;
+    src_node->color = temp_color;
+
+    hash_table_node_t *temp = dest_node->right;
+
+    dest_node->right = src_node->right;
+
+    if (ht->nil != dest_node->right) {
+        dest_node->right->parent = dest_node;
     }
 
-    /* Rewrite bytes into dest_node from src_node */
-    memcpy((uint8_t *)dest_node->data, (const uint8_t * const)src_node->data, data_size);
+    src_node->right = temp;
 
-    /* Update count parameter */
-    dest_node->count = src_node->count;
+    if (ht->nil != src_node->right) {
+        src_node->right->parent = src_node;
+    }
+
+    temp = dest_node->left;
+
+    dest_node->left = src_node->left;
+
+    if (ht->nil != dest_node->left) {
+        dest_node->left->parent = dest_node;
+    }
+
+    src_node->left = temp;
+
+    if (ht->nil != src_node->left) {
+        src_node->left->parent = src_node;
+    }
+
+    temp = dest_node->parent;
+
+    dest_node->parent = src_node->parent;
+
+    if (ht->nil != dest_node->parent) {
+        if (dest_node->parent->left == src_node) {
+            dest_node->parent->left = dest_node;
+        } else {
+            dest_node->parent->right = dest_node;
+        }
+    } else {
+        ht->buckets[bucket_index] = dest_node;
+    }
+
+    src_node->parent = temp;
+
+    if (ht->nil != src_node->parent) {
+        if (src_node->parent->left == dest_node) {
+            src_node->parent->left = src_node;
+        } else {
+            src_node->parent->right = src_node;
+        }
+    } else {
+        ht->buckets[bucket_index] = src_node;
+    }
 
     /* All good */
     return SCL_OK;
@@ -1121,20 +1105,20 @@ static scl_error_t hash_table_change_data(hash_table_node_t * const dest_node, c
  * @brief 
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param root_index index of the working red black tree(bucket) from hash table
+ * @param bucket_index index of the working red black tree(bucket) from hash table
  * to fix after deletion of one hash table node
  * @param fix_node pointer to a hash table node (red black node) to start fixing
  * @param parent_fix_node parent pointer to a hash table node (red black node) to start fixing
  * @return scl_error_t enum object for handling errors
  */
-static scl_error_t hash_table_delete_fix_node_up(const hash_table_t * const ht, size_t root_index, hash_table_node_t *fix_node, hash_table_node_t *parent_fix_node) {
+static scl_error_t hash_table_delete_fix_node_up(const hash_table_t * const __restrict__ ht, size_t bucket_index, hash_table_node_t *fix_node, hash_table_node_t *parent_fix_node) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
     }
 
     /* Check if hash table roots are allocated */
-    if (NULL == ht->roots) {
+    if (NULL == ht->buckets) {
         return SCL_NULL_HASH_ROOTS;
     }
 
@@ -1147,7 +1131,7 @@ static scl_error_t hash_table_delete_fix_node_up(const hash_table_t * const ht, 
     hash_table_node_t *brother_node = ht->nil;
 
     /* Fix the red-black tree(bucket) */
-    while ((ht->roots[root_index] != fix_node) && (HASH_BLACK == fix_node->color)) {
+    while ((ht->buckets[bucket_index] != fix_node) && (HASH_BLACK == fix_node->color)) {
         if (parent_fix_node->left == fix_node) {
 
             /* Double black node is a left child */
@@ -1164,7 +1148,7 @@ static scl_error_t hash_table_delete_fix_node_up(const hash_table_t * const ht, 
                 parent_fix_node->color = HASH_RED;
 
                 /* Rotate the parent to the left */
-                hash_table_rotate_left(ht, root_index, parent_fix_node);
+                hash_table_rotate_left(ht, bucket_index, parent_fix_node);
 
                 /* Update the brother node */
                 brother_node = parent_fix_node->right;
@@ -1189,7 +1173,7 @@ static scl_error_t hash_table_delete_fix_node_up(const hash_table_t * const ht, 
                     brother_node->color = HASH_RED;
 
                     /* Rotate brother to the right */
-                    hash_table_rotate_right(ht, root_index, brother_node);
+                    hash_table_rotate_right(ht, bucket_index, brother_node);
                     
                     /* Update the new brother */
                     brother_node = parent_fix_node->right;
@@ -1203,10 +1187,10 @@ static scl_error_t hash_table_delete_fix_node_up(const hash_table_t * const ht, 
                 brother_node->right->color = HASH_BLACK;
 
                 /* Rotate parent node to left */
-                hash_table_rotate_left(ht, root_index, parent_fix_node);
+                hash_table_rotate_left(ht, bucket_index, parent_fix_node);
 
                 /* Tree(bucket) is fixed */
-                fix_node = ht->roots[root_index];
+                fix_node = ht->buckets[bucket_index];
             }
         } else {
 
@@ -1224,7 +1208,7 @@ static scl_error_t hash_table_delete_fix_node_up(const hash_table_t * const ht, 
                 parent_fix_node->color = HASH_RED;
 
                 /* Rotate the parent to the right */
-                hash_table_rotate_right(ht, root_index, parent_fix_node);
+                hash_table_rotate_right(ht, bucket_index, parent_fix_node);
 
                 /* Update the brother node */
                 brother_node = parent_fix_node->left;
@@ -1249,7 +1233,7 @@ static scl_error_t hash_table_delete_fix_node_up(const hash_table_t * const ht, 
                     brother_node->color = HASH_RED;
 
                     /* Rotate brother to the left */
-                    hash_table_rotate_left(ht, root_index, brother_node);
+                    hash_table_rotate_left(ht, bucket_index, brother_node);
 
                     /* Update the new brother */
                     brother_node = parent_fix_node->left;
@@ -1263,10 +1247,10 @@ static scl_error_t hash_table_delete_fix_node_up(const hash_table_t * const ht, 
                 brother_node->left->color = HASH_BLACK;
 
                 /* Rotate parent node to right */
-                hash_table_rotate_right(ht, root_index, parent_fix_node);
+                hash_table_rotate_right(ht, bucket_index, parent_fix_node);
 
                 /* Tree(Bucket) is fixed */
-                fix_node = ht->roots[root_index];
+                fix_node = ht->buckets[bucket_index];
             }
         }
     }
@@ -1286,17 +1270,16 @@ static scl_error_t hash_table_delete_fix_node_up(const hash_table_t * const ht, 
  * @param ht pointer to an allocated hash table memory location
  * @param key pointer to a location of a value representing key of the hash
  * @param data pointer to a location of a value representing data of a node
- * @param data_size length in bytes of the data data type
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t hash_table_delete_key_data(hash_table_t * const ht, const void * const key, const void * const data, size_t data_size) {
+scl_error_t hash_table_delete_key_data(hash_table_t * __restrict__ const ht, const void * const __restrict__ key, const void * const __restrict__ data) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
     }
 
     /* Check if hash table roots are allocated */
-    if (NULL == ht->roots) {
+    if (NULL == ht->buckets) {
         return SCL_NULL_HASH_ROOTS;
     }
 
@@ -1310,24 +1293,19 @@ scl_error_t hash_table_delete_key_data(hash_table_t * const ht, const void * con
         return SCL_INVALID_DATA;
     }
 
-    /* Check if data size is valid */
-    if (0 == data_size) {
-        return SCL_DATA_SIZE_ZERO;
-    }
-
     /* Compute the bucket index to insert pair */
-    size_t root_index = ht->hash(key) % ht->capacity;
+    size_t bucket_index = ht->hash(key) % ht->capacity;
 
     /* Check if there exists at least data to search */
-    if (ht->nil == ht->roots[root_index]) {
+    if (ht->nil == ht->buckets[bucket_index]) {
         return SCL_DELETE_FROM_EMPTY_OBJECT;
     }
 
     /* Find node to delete */
-    hash_table_node_t *delete_node = hash_table_find_node(ht, root_index, data);
+    hash_table_node_t *delete_node = hash_table_find_node(ht, key);
 
     /* Delete node is not in the current working bucket */
-    if (ht->nil == delete_node) {
+    if ((ht->nil == delete_node) || (0 != ht->cmp_dt(delete_node->data, data))) {
         return SCL_DATA_NOT_FOUND_FOR_DELETE;
     }
 
@@ -1338,14 +1316,11 @@ scl_error_t hash_table_delete_key_data(hash_table_t * const ht, const void * con
         hash_table_node_t *delete_succecessor = hash_table_root_min_node(ht, delete_node->right);
                 
         /* Replace the selected red-black(hash table) node and remove the dublicate */
-        scl_error_t err = hash_table_change_data(delete_node, delete_succecessor, data_size);
+        scl_error_t err = hash_table_swap_nodes(ht, bucket_index, delete_node, delete_succecessor);
 
         if (SCL_OK != err) {
             return err;
         }
-
-        /* Delete node now is inorder successor */
-        delete_node = delete_succecessor;
     }
 
     /* Variable to check if fixing is needed */
@@ -1382,7 +1357,7 @@ scl_error_t hash_table_delete_key_data(hash_table_t * const ht, const void * con
              * Selected node was root
              * Update a new root
              */            
-            ht->roots[root_index] = delete_node_child;
+            ht->buckets[bucket_index] = delete_node_child;
         }
     } else if (ht->nil != delete_node->right) {
         delete_node_child = delete_node->right;
@@ -1411,7 +1386,7 @@ scl_error_t hash_table_delete_key_data(hash_table_t * const ht, const void * con
              * Selected node was root
              * Update a new root
              */
-            ht->roots[root_index] = delete_node_child;
+            ht->buckets[bucket_index] = delete_node_child;
         }
     } else {
 
@@ -1433,7 +1408,7 @@ scl_error_t hash_table_delete_key_data(hash_table_t * const ht, const void * con
              * Selected node was root
              * Update a new root
              */
-            ht->roots[root_index] = ht->nil;
+            ht->buckets[bucket_index] = ht->nil;
         }
     }
 
@@ -1447,7 +1422,7 @@ scl_error_t hash_table_delete_key_data(hash_table_t * const ht, const void * con
 
     /* Check if fixing is needed */
     if (0 != need_fixing_tree) {
-        return hash_table_delete_fix_node_up(ht, root_index, delete_node_child, parent_delete_node);
+        return hash_table_delete_fix_node_up(ht, bucket_index, delete_node_child, parent_delete_node);
     }
 
     /* Deletion went successfully */
@@ -1462,14 +1437,14 @@ scl_error_t hash_table_delete_key_data(hash_table_t * const ht, const void * con
  * @param key pointer to a location of a value representing key of the hash
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t hash_table_delete_hash(hash_table_t * const ht, const void * const key) {
+scl_error_t hash_table_delete_hash(hash_table_t * __restrict__ const ht, const void * const __restrict__ key) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
     }
 
     /* Check if hash table roots are allocated */
-    if (NULL == ht->roots) {
+    if (NULL == ht->buckets) {
         return SCL_NULL_HASH_ROOTS;
     }
 
@@ -1479,10 +1454,10 @@ scl_error_t hash_table_delete_hash(hash_table_t * const ht, const void * const k
     }
 
     /* Compute bucket index of the key data value */
-    size_t root_index = ht->hash(key) % ht->capacity;
+    size_t bucket_index = ht->hash(key) % ht->capacity;
 
     /* Check if we can delete at least one data from bucket */
-    if (ht->nil == ht->roots[root_index]) {
+    if (ht->nil == ht->buckets[bucket_index]) {
         return SCL_DELETE_FROM_EMPTY_OBJECT;
     }
 
@@ -1498,7 +1473,7 @@ scl_error_t hash_table_delete_hash(hash_table_t * const ht, const void * const k
     ht->size -= delete_size;
 
     /* Free entire bucket from memory */
-    free_hash_table_helper(ht, &ht->roots[root_index]);
+    free_hash_table_helper(ht, &ht->buckets[bucket_index]);
 
     /* All good */
     return SCL_OK;
@@ -1510,43 +1485,28 @@ scl_error_t hash_table_delete_hash(hash_table_t * const ht, const void * const k
  * be thrown.
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param data pointer to a location of a value representing data of a node
- * @param data_size length in bytes of the data data type
+ * @param key pointer to a location of a value representing key of a node
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t hash_table_delete_data(hash_table_t * const ht, const void * const data, size_t data_size) {
+scl_error_t hash_table_delete_key(hash_table_t * __restrict__ const ht, const void * const __restrict__ key) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
     }
 
     /* Check if has table roots are allocated */
-    if (NULL == ht->roots) {
+    if (NULL == ht->buckets) {
         return SCL_NULL_HASH_ROOTS;
     }
 
     /* Check if data type value pointer is valid */
-    if (NULL == data) {
-        return SCL_INVALID_DATA;
-    }
-
-    /* Check if data size is valid */
-    if (0 == data_size) {
-        return SCL_DATA_SIZE_ZERO;
+    if (NULL == key) {
+        return SCL_INVALID_KEY;
     }
 
     /* Set delete node and bucket index ad default values */
-    size_t root_index = 0;
-    hash_table_node_t *delete_node = ht->nil;
-
-    /* Find delete node and bucket containing it */
-    for (; root_index < ht->capacity; ++root_index) {
-        delete_node = hash_table_find_node(ht, root_index, data);
-
-        if (ht->nil != delete_node) {
-            break;
-        }
-    }
+    size_t bucket_index = ht->hash(key) % ht->capacity;
+    hash_table_node_t *delete_node = hash_table_find_node(ht, key);
 
     /* Delete node is not in the current working bucket */
     if (ht->nil == delete_node) {
@@ -1560,14 +1520,11 @@ scl_error_t hash_table_delete_data(hash_table_t * const ht, const void * const d
         hash_table_node_t *delete_succecessor = hash_table_root_min_node(ht, delete_node->right);
                 
         /* Replace the selected red-black node and remove the dublicate */
-        scl_error_t err = hash_table_change_data(delete_node, delete_succecessor, data_size);
+        scl_error_t err = hash_table_swap_nodes(ht, bucket_index, delete_node, delete_succecessor);
 
         if (SCL_OK != err) {
             return err;
         }
-
-        /* Delete node now is inorder successor */
-        delete_node = delete_succecessor;
     }
 
     /* Variable to check if fixing is needed */
@@ -1604,7 +1561,7 @@ scl_error_t hash_table_delete_data(hash_table_t * const ht, const void * const d
              * Selected node was root
              * Update a new root
              */            
-            ht->roots[root_index] = delete_node_child;
+            ht->buckets[bucket_index] = delete_node_child;
         }
     } else if (ht->nil != delete_node->right) {
         delete_node_child = delete_node->right;
@@ -1633,7 +1590,7 @@ scl_error_t hash_table_delete_data(hash_table_t * const ht, const void * const d
              * Selected node was root
              * Update a new root
              */
-            ht->roots[root_index] = delete_node_child;
+            ht->buckets[bucket_index] = delete_node_child;
         }
     } else {
 
@@ -1655,7 +1612,7 @@ scl_error_t hash_table_delete_data(hash_table_t * const ht, const void * const d
              * Selected node was root
              * Update a new root
              */
-            ht->roots[root_index] = ht->nil;
+            ht->buckets[bucket_index] = ht->nil;
         }
     }
 
@@ -1669,7 +1626,7 @@ scl_error_t hash_table_delete_data(hash_table_t * const ht, const void * const d
 
     /* Check if fixing is needed */
     if (0 != need_fixing_tree) {
-        return hash_table_delete_fix_node_up(ht, root_index, delete_node_child, parent_delete_node);
+        return hash_table_delete_fix_node_up(ht, bucket_index, delete_node_child, parent_delete_node);
     }
 
     /* All good */
@@ -1682,23 +1639,23 @@ scl_error_t hash_table_delete_data(hash_table_t * const ht, const void * const d
  * Left-Root-Right principle.
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param root starting point of the red-black tree(bucket) traversal
+ * @param bucket starting point of the red-black tree(bucket) traversal
  * @param action a pointer function to perform an action on one hash table node object
  */
-static void hash_table_bucket_traverse_inorder_helper(const hash_table_t * const ht, const hash_table_node_t * const root, action_func action) {
+static void hash_table_bucket_traverse_inorder_helper(const hash_table_t * const __restrict__ ht, const hash_table_node_t * const __restrict__ bucket, action_func action) {
     /* Check if current working hash table node is not nil */
-    if (ht->nil == root) {
+    if (ht->nil == bucket) {
         return;
     }
 
     /* Traverse in the left sub-tree */
-    hash_table_bucket_traverse_inorder_helper(ht, root->left, action);
+    hash_table_bucket_traverse_inorder_helper(ht, bucket->left, action);
     
     /* Call action function */
-    action(root->data);
+    action(bucket->data);
 
     /* Traverse in the right sub-tree */
-    hash_table_bucket_traverse_inorder_helper(ht, root->right, action);
+    hash_table_bucket_traverse_inorder_helper(ht, bucket->right, action);
 }
 
 /**
@@ -1713,7 +1670,7 @@ static void hash_table_bucket_traverse_inorder_helper(const hash_table_t * const
  * @param action a pointer function to perform an action on one hash table node object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t hash_table_bucket_traverse_inorder(const hash_table_t * const ht, size_t bucket_index, action_func action) {
+scl_error_t hash_table_bucket_traverse_inorder(const hash_table_t * const __restrict__ ht, size_t bucket_index, action_func action) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
@@ -1725,7 +1682,7 @@ scl_error_t hash_table_bucket_traverse_inorder(const hash_table_t * const ht, si
     }
 
     /* Check if hash table roots are allocated */
-    if (NULL == ht->roots) {
+    if (NULL == ht->buckets) {
         return SCL_NULL_HASH_ROOTS;
     }
 
@@ -1734,7 +1691,7 @@ scl_error_t hash_table_bucket_traverse_inorder(const hash_table_t * const ht, si
 
     printf("(%ld): ", bucket_index);
 
-    if (ht->nil == ht->roots[bucket_index]) {
+    if (ht->nil == ht->buckets[bucket_index]) {
 
         /* Tree(Bucket) is empty no node to traverse */
         printf("(Null)");
@@ -1742,7 +1699,7 @@ scl_error_t hash_table_bucket_traverse_inorder(const hash_table_t * const ht, si
     else {
 
         /* Call helper function and traverse all nodes */
-        hash_table_bucket_traverse_inorder_helper(ht, ht->roots[bucket_index], action);
+        hash_table_bucket_traverse_inorder_helper(ht, ht->buckets[bucket_index], action);
     }
 
     /* All good */
@@ -1760,7 +1717,7 @@ scl_error_t hash_table_bucket_traverse_inorder(const hash_table_t * const ht, si
  * @param action a pointer function to perform an action on one hash table node object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t hash_table_traverse_inorder(const hash_table_t * const ht, action_func action) {
+scl_error_t hash_table_traverse_inorder(const hash_table_t * const __restrict__ ht, action_func action) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
@@ -1772,7 +1729,7 @@ scl_error_t hash_table_traverse_inorder(const hash_table_t * const ht, action_fu
     }
 
     /* Check if hash table roots are allocated */
-    if (NULL == ht->roots) {
+    if (NULL == ht->buckets) {
         return SCL_NULL_HASH_ROOTS;
     }
 
@@ -1800,23 +1757,23 @@ scl_error_t hash_table_traverse_inorder(const hash_table_t * const ht, action_fu
  * Root-Left-Right principle.
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param root starting point of the red-black tree(bucket) traversal
+ * @param bucket starting point of the red-black tree(bucket) traversal
  * @param action a pointer function to perform an action on one hash table node object
  */
-static void hash_table_bucket_traverse_preorder_helper(const hash_table_t * const ht, const hash_table_node_t * const root, action_func action) {
+static void hash_table_bucket_traverse_preorder_helper(const hash_table_t * const __restrict__ ht, const hash_table_node_t * const __restrict__ bucket, action_func action) {
     /* Check if current working hash table node is not nil */
-    if (ht->nil == root) {
+    if (ht->nil == bucket) {
         return;
     }
 
     /* Call action function */
-    action(root->data);
+    action(bucket->data);
 
     /* Traverse in the left sub-tree */
-    hash_table_bucket_traverse_preorder_helper(ht, root->left, action);
+    hash_table_bucket_traverse_preorder_helper(ht, bucket->left, action);
 
     /* Traverse in the right sub-tree */
-    hash_table_bucket_traverse_preorder_helper(ht, root->right, action);
+    hash_table_bucket_traverse_preorder_helper(ht, bucket->right, action);
 }
 
 /**
@@ -1831,7 +1788,7 @@ static void hash_table_bucket_traverse_preorder_helper(const hash_table_t * cons
  * @param action a pointer function to perform an action on one hash table node object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t hash_table_bucket_traverse_preorder(const hash_table_t * const ht, size_t bucket_index, action_func action) {
+scl_error_t hash_table_bucket_traverse_preorder(const hash_table_t * const __restrict__ ht, size_t bucket_index, action_func action) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
@@ -1843,7 +1800,7 @@ scl_error_t hash_table_bucket_traverse_preorder(const hash_table_t * const ht, s
     }
 
     /* Check if hash table roots are allocated */
-    if (NULL == ht->roots) {
+    if (NULL == ht->buckets) {
         return SCL_NULL_HASH_ROOTS;
     }
 
@@ -1852,7 +1809,7 @@ scl_error_t hash_table_bucket_traverse_preorder(const hash_table_t * const ht, s
 
     printf("(%ld): ", bucket_index);
 
-    if (ht->nil == ht->roots[bucket_index]) {
+    if (ht->nil == ht->buckets[bucket_index]) {
 
         /* Tree(Bucket) is empty no node to traverse */
         printf("(Null)");
@@ -1860,7 +1817,7 @@ scl_error_t hash_table_bucket_traverse_preorder(const hash_table_t * const ht, s
     else {
 
         /* Call helper function and traverse all nodes */
-        hash_table_bucket_traverse_preorder_helper(ht, ht->roots[bucket_index], action);
+        hash_table_bucket_traverse_preorder_helper(ht, ht->buckets[bucket_index], action);
     }
 
     /* All good */
@@ -1878,7 +1835,7 @@ scl_error_t hash_table_bucket_traverse_preorder(const hash_table_t * const ht, s
  * @param action a pointer function to perform an action on one hash table node object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t hash_table_traverse_preorder(const hash_table_t * const ht, action_func action) {
+scl_error_t hash_table_traverse_preorder(const hash_table_t * const __restrict__ ht, action_func action) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
@@ -1890,7 +1847,7 @@ scl_error_t hash_table_traverse_preorder(const hash_table_t * const ht, action_f
     }
 
     /* Check if hash table roots are allocated */
-    if (NULL == ht->roots) {
+    if (NULL == ht->buckets) {
         return SCL_NULL_HASH_ROOTS;
     }
 
@@ -1918,23 +1875,23 @@ scl_error_t hash_table_traverse_preorder(const hash_table_t * const ht, action_f
  * Left-Right-Root principle.
  * 
  * @param ht pointer to an allocated hash table memory location
- * @param root starting point of the red-black tree(bucket) traversal
+ * @param bucket starting point of the red-black tree(bucket) traversal
  * @param action a pointer function to perform an action on one hash table node object
  */
-static void hash_table_bucket_traverse_postorder_helper(const hash_table_t * const ht, const hash_table_node_t * const root, action_func action) {
+static void hash_table_bucket_traverse_postorder_helper(const hash_table_t * const __restrict__ ht, const hash_table_node_t * const __restrict__ bucket, action_func action) {
     /* Check if current working hash table node is not nil */
-    if (ht->nil == root) {
+    if (ht->nil == bucket) {
         return;
     }
 
     /* Traverse in the left sub-tree */
-    hash_table_bucket_traverse_postorder_helper(ht, root->left, action);
+    hash_table_bucket_traverse_postorder_helper(ht, bucket->left, action);
 
     /* Traverse in the right sub-tree */
-    hash_table_bucket_traverse_postorder_helper(ht, root->right, action);
+    hash_table_bucket_traverse_postorder_helper(ht, bucket->right, action);
 
     /* Call action function */
-    action(root->data);
+    action(bucket->data);
 }
 
 /**
@@ -1949,7 +1906,7 @@ static void hash_table_bucket_traverse_postorder_helper(const hash_table_t * con
  * @param action a pointer function to perform an action on one hash table node object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t hash_table_bucket_traverse_postorder(const hash_table_t * const ht, size_t bucket_index, action_func action) {
+scl_error_t hash_table_bucket_traverse_postorder(const hash_table_t * const __restrict__ ht, size_t bucket_index, action_func action) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
@@ -1961,7 +1918,7 @@ scl_error_t hash_table_bucket_traverse_postorder(const hash_table_t * const ht, 
     }
 
     /* Check if hash table roots are allocated */
-    if (NULL == ht->roots) {
+    if (NULL == ht->buckets) {
         return SCL_NULL_HASH_ROOTS;
     }
 
@@ -1970,7 +1927,7 @@ scl_error_t hash_table_bucket_traverse_postorder(const hash_table_t * const ht, 
 
     printf("(%ld): ", bucket_index);
 
-    if (ht->nil == ht->roots[bucket_index]) {
+    if (ht->nil == ht->buckets[bucket_index]) {
 
         /* Tree(Bucket) is empty no node to traverse */
         printf("(Null)");
@@ -1978,7 +1935,7 @@ scl_error_t hash_table_bucket_traverse_postorder(const hash_table_t * const ht, 
     else {
 
         /* Call helper function and traverse all nodes */
-        hash_table_bucket_traverse_postorder_helper(ht, ht->roots[bucket_index], action);
+        hash_table_bucket_traverse_postorder_helper(ht, ht->buckets[bucket_index], action);
     }
 
     /* All good */
@@ -1996,7 +1953,7 @@ scl_error_t hash_table_bucket_traverse_postorder(const hash_table_t * const ht, 
  * @param action a pointer function to perform an action on one hash table node object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t hash_table_traverse_postorder(const hash_table_t * const ht, action_func action) {
+scl_error_t hash_table_traverse_postorder(const hash_table_t * const __restrict__ ht, action_func action) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
@@ -2008,7 +1965,7 @@ scl_error_t hash_table_traverse_postorder(const hash_table_t * const ht, action_
     }
 
     /* Check if hash table roots are allocated */
-    if (NULL == ht->roots) {
+    if (NULL == ht->buckets) {
         return SCL_NULL_HASH_ROOTS;
     }
 
@@ -2043,7 +2000,7 @@ scl_error_t hash_table_traverse_postorder(const hash_table_t * const ht, action_
  * @param action a pointer function to perform an action on one hash table node object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t hash_table_bucket_traverse_level(const hash_table_t * const ht, size_t bucket_index, action_func action) {
+scl_error_t hash_table_bucket_traverse_level(const hash_table_t * const __restrict__ ht, size_t bucket_index, action_func action) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
@@ -2055,7 +2012,7 @@ scl_error_t hash_table_bucket_traverse_level(const hash_table_t * const ht, size
     }
 
     /* Check if hash table roots are allocated */
-    if (NULL == ht->roots) {
+    if (NULL == ht->buckets) {
         return SCL_NULL_HASH_ROOTS;
     }
 
@@ -2064,7 +2021,7 @@ scl_error_t hash_table_bucket_traverse_level(const hash_table_t * const ht, size
 
     printf("(%ld): ", bucket_index);
 
-    if (ht->nil == ht->roots[bucket_index]) {
+    if (ht->nil == ht->buckets[bucket_index]) {
 
         /* Tree(Bucket) is empty no node to traverse */
         printf("(Null)");
@@ -2080,7 +2037,7 @@ scl_error_t hash_table_bucket_traverse_level(const hash_table_t * const ht, size
             scl_error_t err = SCL_OK;
 
             /* Push pointer to root node into qeuue */
-            err = queue_push(level_queue, &ht->roots[bucket_index], sizeof(ht->roots[bucket_index]));
+            err = queue_push(level_queue, &ht->buckets[bucket_index], sizeof(ht->buckets[bucket_index]));
 
             if (SCL_OK != err) {
                 return err;
@@ -2143,7 +2100,7 @@ scl_error_t hash_table_bucket_traverse_level(const hash_table_t * const ht, size
  * @param action a pointer function to perform an action on one hash table node object
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t hash_table_traverse_level(const hash_table_t * const ht, action_func action) {
+scl_error_t hash_table_traverse_level(const hash_table_t * const __restrict__ ht, action_func action) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
@@ -2155,7 +2112,7 @@ scl_error_t hash_table_traverse_level(const hash_table_t * const ht, action_func
     }
 
     /* Check if hash table roots are allocated */
-    if (NULL == ht->roots) {
+    if (NULL == ht->buckets) {
         return SCL_NULL_HASH_ROOTS;
     }
 
