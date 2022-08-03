@@ -61,6 +61,7 @@ typedef enum scl_error_s {
     SCL_UNDEFINED_PRIORITY                      = -19,
     SCL_INVALID_PRIORITY                        = -20,
     SCL_NULL_COMPARE_PRIORITY_FUNC              = -21,
+    SCL_NOT_EMPTY_PRIOTIRY_QUEUE                = -99,
 
     SCL_NULL_BST                                = -22,
     SCL_NULL_RBK                                = -23,
@@ -105,6 +106,6 @@ typedef         void            (*free_func)            (void *);
 typedef         void            (*action_func)          (void * const);
 typedef         int             (*filter_func)          (const void * const);
 
-void            scl_error_message           (scl_error_t error_message);
+void                            scl_error_message       (scl_error_t error_message);
 
 #endif /* _CONFIG_UTILS_H_ */

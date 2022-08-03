@@ -162,6 +162,6 @@ void scl_error_message(scl_error_t error_message) {
         break;
     
     default:
-        printf("Unknown error check again what are you sending\n");
+        printf("Unknown error check again what are you sending n");
     }
 }

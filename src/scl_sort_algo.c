@@ -33,7 +33,7 @@
  * @param second_node pointer to second memory location
  * @param node_size number of bytes to be swapped
  */
-static void swap_array_nodes(void *first_node, void *second_node, size_t node_size) {
+static void swap_array_nodes(void * __restrict__ first_node, void * __restrict__ second_node, size_t node_size) {
     /* Cast pointers to uint8_t type */
     uint8_t *typed_first_node = first_node;
     uint8_t *typed_second_node = second_node;
@@ -193,7 +193,7 @@ static void merge(void *arr_left, void *arr_middle, void *arr_right, size_t arr_
             uint8_t *temp_right_subarray = right_subarray;
 
             /* Set the elements of the subarrays */
-            memcpy(left_subarray, (uint8_t *)arr_left, left_subarray_size);
+            memcpy(left_subarray, arr_left, left_subarray_size);
             memcpy(right_subarray, (uint8_t *)arr_middle + arr_elem_size, right_subarray_size);
 
             /* Compute the numbers of the elements from each subarray */
@@ -210,7 +210,7 @@ static void merge(void *arr_left, void *arr_middle, void *arr_right, size_t arr_
                 if (cmp(left_subarray, right_subarray) <= 0) {
 
                     /* Copy data to big array */
-                    memcpy((uint8_t *)arr_left, left_subarray, arr_elem_size);
+                    memcpy(arr_left, left_subarray, arr_elem_size);
                     
                     /* Increment to the next position */
                     arr_left = (uint8_t *)arr_left + arr_elem_size;
@@ -220,7 +220,7 @@ static void merge(void *arr_left, void *arr_middle, void *arr_right, size_t arr_
                 } else {
 
                     /* Copy data to big array */
-                    memcpy((uint8_t *)arr_left, right_subarray, arr_elem_size);
+                    memcpy(arr_left, right_subarray, arr_elem_size);
                     
                     /* Increment to the next position */
                     arr_left = (uint8_t *)arr_left + arr_elem_size;
@@ -234,7 +234,7 @@ static void merge(void *arr_left, void *arr_middle, void *arr_right, size_t arr_
             while (iter_i < left_subarray_size) {
 
                 /* Copy data to big array */
-                memcpy((uint8_t *)arr_left, left_subarray, arr_elem_size);
+                memcpy(arr_left, left_subarray, arr_elem_size);
                 
                 /* Increment to the next position */
                 arr_left = (uint8_t *)arr_left + arr_elem_size;
@@ -247,7 +247,7 @@ static void merge(void *arr_left, void *arr_middle, void *arr_right, size_t arr_
             while (iter_j < right_subarray_size) {
 
                 /* Copy data to big array */
-                memcpy((uint8_t *)arr_left, right_subarray, arr_elem_size);
+                memcpy(arr_left, right_subarray, arr_elem_size);
                 
                 /* Increment to the next position */
                 arr_left = (uint8_t *)arr_left + arr_elem_size;
@@ -496,7 +496,7 @@ scl_error_t radix_sort(uint64_t *arr, size_t number_of_elem) {
         for (size_t iter_i = 0; iter_i < 10; ++iter_i) {
             
             /* Create one queue from scl_queue.h */
-            queues[iter_i] = create_queue(NULL);
+            queues[iter_i] = create_queue(NULL, sizeof(*arr));
 
             /* Check if current queue was created successully */
             if (NULL == queues[iter_i]) {
@@ -521,7 +521,7 @@ scl_error_t radix_sort(uint64_t *arr, size_t number_of_elem) {
             uint64_t number_digit = get_whole_number_digit(arr[iter_j], iter_i);
 
             /* Push array element to queue */
-            queue_push(queues[number_digit], &arr[iter_j], sizeof(arr[iter_j]));
+            queue_push(queues[number_digit], &arr[iter_j]);
         }
 
         size_t iter_k = 0;

@@ -254,7 +254,7 @@ scl_error_t free_hash_table(hash_table_t * const __restrict__ ht) {
  * @param data pointer to a location of a value representing data of a node
  * @return hash_table_node_t* a new allocated hash table node object or nil
  */
-static hash_table_node_t* create_hash_table_node(const hash_table_t * const __restrict__ ht, const void * __restrict__ key, const void * __restrict__ data) {
+static hash_table_node_t* create_hash_table_node(const hash_table_t * const __restrict__ ht, const void *key, const void *data) {
     /* Check if data and key pointer are not NULL */
     if ((NULL == data) || (NULL == key)) {
         return ht->nil;
@@ -596,7 +596,7 @@ static scl_error_t hash_table_rehash(hash_table_t * const __restrict__ ht);
  * @param data pointer to a location of a value representing data of a node
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t hash_table_insert(hash_table_t * const __restrict__ ht, const void * __restrict__ key, const void * __restrict__ data) {
+scl_error_t hash_table_insert(hash_table_t * const __restrict__ ht, const void *key, const void *data) {
     /* Check if hash table is allocated */
     if (NULL == ht) {
         return SCL_NULL_HASH_TABLE;
@@ -1022,7 +1022,7 @@ static hash_table_node_t* hash_table_root_min_node(const hash_table_t * const __
 }
 
 /**
- * @brief Function to swap thwo nodes from a hash table bucket.
+ * @brief Function to swap two nodes from a hash table bucket.
  * This function MUST NOT be used by users, because it will
  * break the proprety of red-black tree, it is a subroutine
  * program of delete function to change data of the current node
@@ -1035,13 +1035,17 @@ static hash_table_node_t* hash_table_root_min_node(const hash_table_t * const __
  * @return scl_error_t enum object for handling errors
  */
 static scl_error_t hash_table_swap_nodes(const hash_table_t * const __restrict__ ht, size_t bucket_index, hash_table_node_t * __restrict__ const dest_node, hash_table_node_t * __restrict__ const src_node) {
+    /* Check if swap is posible */
     if ((ht->nil == dest_node) || (ht->nil == src_node)) {
         return SCL_CANNOT_SWAP_DATA;
     }
 
+    /* Change color of nodes */
     hash_table_node_color_t temp_color = dest_node->color;
     dest_node->color = src_node->color;
     src_node->color = temp_color;
+
+    /* Interchange the right child */
 
     hash_table_node_t *temp = dest_node->right;
 
@@ -1057,6 +1061,8 @@ static scl_error_t hash_table_swap_nodes(const hash_table_t * const __restrict__
         src_node->right->parent = src_node;
     }
 
+    /* Interchange the left child */
+
     temp = dest_node->left;
 
     dest_node->left = src_node->left;
@@ -1070,6 +1076,8 @@ static scl_error_t hash_table_swap_nodes(const hash_table_t * const __restrict__
     if (ht->nil != src_node->left) {
         src_node->left->parent = src_node;
     }
+
+    /* Interchange parents of the two nodes */
 
     temp = dest_node->parent;
 
@@ -2029,7 +2037,7 @@ scl_error_t hash_table_bucket_traverse_level(const hash_table_t * const __restri
     else {
 
         /* Create a queue for bfs tree(bucket) traversal */
-        queue_t * const level_queue = create_queue(NULL);
+        queue_t * const level_queue = create_queue(NULL, sizeof(ht->buckets[bucket_index]));
 
         /* Check if queue was created successfully */
         if (NULL != level_queue) {
@@ -2037,7 +2045,7 @@ scl_error_t hash_table_bucket_traverse_level(const hash_table_t * const __restri
             scl_error_t err = SCL_OK;
 
             /* Push pointer to root node into qeuue */
-            err = queue_push(level_queue, &ht->buckets[bucket_index], sizeof(ht->buckets[bucket_index]));
+            err = queue_push(level_queue, &ht->buckets[bucket_index]);
 
             if (SCL_OK != err) {
                 return err;
@@ -2061,7 +2069,7 @@ scl_error_t hash_table_bucket_traverse_level(const hash_table_t * const __restri
 
                 /* Push on queue front left child if it exists */
                 if (ht->nil != front_node->left) {
-                    err = queue_push(level_queue, &front_node->left, sizeof(front_node->left));
+                    err = queue_push(level_queue, &front_node->left);
 
                     if (SCL_OK != err) {
                         return err;
@@ -2070,7 +2078,7 @@ scl_error_t hash_table_bucket_traverse_level(const hash_table_t * const __restri
                 
                 /* Push on queue front right child if it exists */
                 if (ht->nil != front_node->right) {
-                    err = queue_push(level_queue, &front_node->right, sizeof(front_node->right));
+                    err = queue_push(level_queue, &front_node->right);
 
                     if (SCL_OK != err) {
                         return err;

@@ -51,34 +51,33 @@ typedef struct dlist_s {
     dlist_node_t *tail;                                 /* tail of linked list */
     compare_func cmp;                                   /* function to compare items */
     free_func frd;                                      /* function to free item */
+    size_t data_size;                                   /* Length in bytes of the data data type */
     size_t size;                                        /* size of linked list */
 } dlist_t;
 
-dlist_t*          create_dlist            (compare_func cmp, free_func frd);
-scl_error_t       print_front_dlist       (const dlist_t * const list, action_func print);
-scl_error_t       print_back_dlist        (const dlist_t * const list, action_func print);
-scl_error_t       free_dlist              (dlist_t * const list);
+dlist_t*          create_dlist            (compare_func cmp, free_func frd, size_t data_size);
+scl_error_t       free_dlist              (dlist_t * const __restrict__ list);
 
-uint8_t           is_dlist_empty          (const dlist_t * const list);
-size_t            get_dlist_size          (const dlist_t * const list);
-void*             get_dlist_head          (const dlist_t * const list);
-void*             get_dlist_tail          (const dlist_t * const list);
+uint8_t           is_dlist_empty          (const dlist_t * const __restrict__ list);
+size_t            get_dlist_size          (const dlist_t * const __restrict__ list);
+const void*       get_dlist_head          (const dlist_t * const __restrict__ list);
+const void*       get_dlist_tail          (const dlist_t * const __restrict__ list);
 
-scl_error_t       dlist_swap_data         (const dlist_t * const list, void * const first_data, void * const second_data, size_t data_size);
-scl_error_t       dlist_change_data       (const dlist_t * const list, void * const base_data, const void * const new_data, size_t data_sizee);
-scl_error_t       dlist_insert            (dlist_t * const list, const void * const data, size_t data_size);
-scl_error_t       dlist_insert_order      (dlist_t * const list, const void * const data, size_t data_size);
-scl_error_t       dlist_insert_front      (dlist_t * const list, const void * const data, size_t data_size);
-scl_error_t       dlist_insert_index      (dlist_t * const list, const void * const data, size_t data_size, size_t data_index);
+scl_error_t       dlist_swap_data         (const dlist_t * const __restrict__ list, const void * const __restrict__ first_data, const void * const __restrict__ second_data);
+scl_error_t       dlist_change_data       (const dlist_t * const __restrict__ list, const void * const __restrict__ base_data, const void * __restrict__ new_data);
+scl_error_t       dlist_insert            (dlist_t * const __restrict__ list, const void * __restrict__ data);
+scl_error_t       dlist_insert_order      (dlist_t * const __restrict__ list, const void * __restrict__ data);
+scl_error_t       dlist_insert_front      (dlist_t * const __restrict__ list, const void * __restrict__ data);
+scl_error_t       dlist_insert_index      (dlist_t * const __restrict__ list, const void * __restrict__ data, size_t data_index);
 
-void*             dlist_find_index        (const dlist_t * const list, size_t data_index);
-void*             dlist_find_data         (const dlist_t * const list, const void * const data);
+const void*       dlist_find_index        (const dlist_t * const __restrict__ list, size_t data_index);
+const void*       dlist_find_data         (const dlist_t * const __restrict__ list, const void * const data);
 
-scl_error_t       dlist_delete_data       (dlist_t * const list, const void * const data);
-scl_error_t       dlist_delete_index      (dlist_t * const list, size_t data_index);
-scl_error_t       dlist_erase             (dlist_t * const list, size_t left_index, size_t right_index);
+scl_error_t       dlist_delete_data       (dlist_t * const __restrict__ list, const void * const __restrict__ data);
+scl_error_t       dlist_delete_index      (dlist_t * const __restrict__ list, size_t data_index);
+scl_error_t       dlist_erase             (dlist_t * const __restrict__ list, size_t left_index, size_t right_index);
 
-dlist_t*          dlist_filter            (const dlist_t * const list, filter_func filter, size_t data_size);
-scl_error_t       dlist_map               (const dlist_t * const list, action_func map);
+dlist_t*          dlist_filter            (const dlist_t * const __restrict__ list, filter_func filter);
+scl_error_t       dlist_traverse          (const dlist_t * const __restrict__ list, action_func action);
 
 #endif /* DOUBLE_LIST_UTILS_H_ */

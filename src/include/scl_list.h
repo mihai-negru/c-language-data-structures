@@ -50,33 +50,33 @@ typedef struct list_s {
     list_node_t *tail;                                  /* tail of linked list */
     compare_func cmp;                                   /* function to compare items */
     free_func frd;                                      /* function to free item */
+    size_t data_size;                                   /* Length in bytes of the data data type */
     size_t size;                                        /* size of linked list */
 } list_t;
 
-list_t*         create_list         (compare_func cmp, free_func frd);
-scl_error_t     print_list          (const list_t * const list, action_func print);
-scl_error_t     free_list           (list_t * const list);
+list_t*         create_list         (compare_func cmp, free_func frd, size_t data_size);
+scl_error_t     free_list           (list_t * const __restrict__ list);
 
-uint8_t         is_list_empty       (const list_t * const list);
-size_t          get_list_size       (const list_t * const list);
-void*           get_list_head       (const list_t * const list);
-void*           get_list_tail       (const list_t * const list);
+uint8_t         is_list_empty       (const list_t * const __restrict__ list);
+size_t          get_list_size       (const list_t * const __restrict__ list);
+const void*     get_list_head       (const list_t * const __restrict__ list);
+const void*     get_list_tail       (const list_t * const __restrict__ list);
 
-scl_error_t     list_swap_data      (const list_t * const list, void * const first_data, void * const second_data, size_t data_size);
-scl_error_t     list_change_data    (const list_t * const list, void * const base_data, const void * const new_data, size_t data_size);
-scl_error_t     list_insert         (list_t * const list, const void * const data, size_t data_size);
-scl_error_t     list_insert_order   (list_t * const list, const void * const data, size_t data_size);
-scl_error_t     list_insert_front   (list_t * const list, const void * const data, size_t data_size);
-scl_error_t     list_insert_index   (list_t * const list, const void * const data, size_t data_size, size_t data_index);
+scl_error_t     list_swap_data      (const list_t * const __restrict__ list, const void * const __restrict__ first_data, const void * const __restrict__ second_data);
+scl_error_t     list_change_data    (const list_t * const __restrict__ list, const void * const __restrict__ base_data, const void * __restrict__ new_data);
+scl_error_t     list_insert         (list_t * const __restrict__ list, const void * __restrict__ data);
+scl_error_t     list_insert_order   (list_t * const __restrict__ list, const void * __restrict__ data);
+scl_error_t     list_insert_front   (list_t * const __restrict__ list, const void * __restrict__ data);
+scl_error_t     list_insert_index   (list_t * const __restrict__ list, const void * __restrict__ data, size_t data_index);
 
-void*           list_find_index     (const list_t * const list, size_t data_index);
-void*           list_find_data      (const list_t * const list, const void * const data);
+const void*     list_find_index     (const list_t * const __restrict__ list, size_t data_index);
+const void*     list_find_data      (const list_t * const __restrict__ list, const void * const __restrict__ data);
 
-scl_error_t     list_delete_data    (list_t * const list, const void * const data);
-scl_error_t     list_delete_index   (list_t * const list, size_t data_index);
-scl_error_t     list_erase          (list_t * const list, size_t left_index, size_t right_index);
+scl_error_t     list_delete_data    (list_t * const __restrict__ list, const void * const __restrict__ data);
+scl_error_t     list_delete_index   (list_t * const __restrict__ list, size_t data_index);
+scl_error_t     list_erase          (list_t * const __restrict__ list, size_t left_index, size_t right_index);
 
-list_t*         list_filter         (const list_t * const list, filter_func filter, size_t data_size);
-scl_error_t     list_map            (const list_t * const list, action_func map);
+list_t*         list_filter         (const list_t * const __restrict__ list, filter_func filter);
+scl_error_t     list_traverse       (const list_t * const __restrict__ list, action_func map);
 
 #endif /* LIST_UTILS_H_ */

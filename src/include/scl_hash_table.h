@@ -19,7 +19,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with C-language-Data-Structures.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *  
  */
 
 #ifndef HASH_TABLE_UTILS_H_
@@ -76,7 +76,7 @@ typedef struct hash_table_s {
 hash_table_t*           create_hash_table                       (size_t init_capacity, hash_func hash, compare_func cmp_key, compare_func cmp_dt, free_func frd_key, free_func frd_dt, size_t key_size, size_t data_size);
 scl_error_t             free_hash_table                         (hash_table_t * const __restrict__ ht);
 
-scl_error_t             hash_table_insert                       (hash_table_t * const __restrict__ ht, const void * __restrict__ key, const void * __restrict__ data);
+scl_error_t             hash_table_insert                       (hash_table_t * const __restrict__ ht, const void *key, const void *data);
 const void*             hash_table_find_key_data                (const hash_table_t * const __restrict__ ht, const void * const __restrict__ key, const void * const __restrict__ data);
 const void*             hash_table_find_data                    (const hash_table_t * const __restrict__ ht, const void * const __restrict__ key);
 uint8_t                 hash_table_contains_key_data            (const hash_table_t * const __restrict__ ht, const void * const __restrict__ key, const void * const __restrict__ data);

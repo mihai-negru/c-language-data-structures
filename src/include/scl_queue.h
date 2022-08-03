@@ -49,20 +49,20 @@ typedef struct queue_s {
     queue_node_t *front;            /* Pointer to beginning of queue */
     queue_node_t *back;             /* Pointer to end of queue */
     free_func frd;                  /* Function to free one data */
+    size_t data_size;               /* Length in bytes of the data data type */
     size_t size;                    /* Size of the queue */
 } queue_t;
 
-queue_t*        create_queue        (free_func frd);
-scl_error_t     free_queue          (queue_t * const queue);
-scl_error_t     print_queue         (const queue_t * const queue, action_func print);
+queue_t*        create_queue        (free_func frd, size_t data_size);
+scl_error_t     free_queue          (queue_t * const __restrict__ queue);
+scl_error_t     print_queue         (const queue_t * const __restrict__ queue, action_func print);
 
-uint8_t         is_queue_empty      (const queue_t * const queue);
-size_t          get_queue_size      (const queue_t * const queue);
+uint8_t         is_queue_empty      (const queue_t * const __restrict__ queue);
+size_t          get_queue_size      (const queue_t * const __restrict__ queue);
 
-scl_error_t     change_queue_data   (void * const old_data, const void * const new_data, size_t data_size);
-void*           queue_front         (const queue_t * const queue);
-void*           queue_back          (const queue_t * const queue);
-scl_error_t     queue_push          (queue_t * const queue, const void * const data, size_t data_size);
-scl_error_t     queue_pop           (queue_t * const queue);
+const void*     queue_front         (const queue_t * const __restrict__ queue);
+const void*     queue_back          (const queue_t * const __restrict__ queue);
+scl_error_t     queue_push          (queue_t * const __restrict__ queue, const void * __restrict__ data);
+scl_error_t     queue_pop           (queue_t * const __restrict__ queue);
 
 #endif /* QUEUE_UTILS_H_ */

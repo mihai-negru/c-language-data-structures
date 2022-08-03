@@ -48,19 +48,19 @@ typedef struct stack_node_s {
 typedef struct stack_s {
     stack_node_t *top;              /* Pointer to top data node */
     free_func frd;                  /* Function to free one data */
+    size_t data_size;               /* Length in bytes of the data data type */
     size_t size;                    /* Size of the stack */
 } stack_t;
 
-stack_t*        create_stack        (free_func frd);
-scl_error_t     free_stack          (stack_t * const stack);
-scl_error_t     print_stack         (const stack_t * const stack, action_func print);
+stack_t*        create_stack        (free_func frd, size_t data_size);
+scl_error_t     free_stack          (stack_t * const __restrict__ stack);
+scl_error_t     print_stack         (const stack_t * const __restrict__ stack, action_func print);
 
-uint8_t         is_stack_empty      (const stack_t * const stack);
-size_t          get_stack_size      (const stack_t * const stack);
+uint8_t         is_stack_empty      (const stack_t * const __restrict__ stack);
+size_t          get_stack_size      (const stack_t * const __restrict__ stack);
 
-scl_error_t     change_stack_data   (void * const old_data, const void * const new_data, size_t data_size);
-void*           stack_top           (const stack_t * const stack);
-scl_error_t     stack_push          (stack_t * const stack, const void * const data, size_t data_size);
-scl_error_t     stack_pop           (stack_t * const stack);
+const void*     stack_top           (const stack_t * const __restrict__ stack);
+scl_error_t     stack_push          (stack_t * const __restrict__ stack, const void * __restrict__ data);
+scl_error_t     stack_pop           (stack_t * const __restrict__ stack);
 
 #endif /* STACK_UTILS_H_ */
