@@ -26,6 +26,7 @@
 #define _CONFIG_UTILS_H_
 
 #include <stdio.h>
+#include <stdint.h>
 
 /**
  * @brief Definition of error table handler
@@ -93,7 +94,16 @@ typedef enum scl_error_s {
     SCL_INVALID_NEW_CAPACITY                    = -43,
     SCL_REALLOC_HASH_ROOTS_FAIL                 = -44,
     SCL_REHASHING_FAILED                        = -45,
-    SCL_KEY_SIZE_ZERO                           = -46
+    SCL_KEY_SIZE_ZERO                           = -46,
+
+    SCL_NULL_GRAPH                              = -47,
+    SCL_INVALID_VERTEX_NUMBER                   = -48,
+    SCL_INVALID_EDGE_LENGTH                     = -49,
+    SCL_NULL_GRAPH_LINKS                        = -50,
+    SCL_NULL_GRAPH_PRINT_FUNC                   = -51,
+    SCL_NULL_GRAPH_VERTICES                     = -52,
+    SCL_NULL_GRAPH_VERTEX                       = -53,
+    SCL_REALLOC_GRAPH_VERTICES_FAIL             = -54
 } scl_error_t;
 
 /**
@@ -105,6 +115,7 @@ typedef         int             (*compare_func)         (const void * const, con
 typedef         void            (*free_func)            (void *);
 typedef         void            (*action_func)          (void * const);
 typedef         int             (*filter_func)          (const void * const);
+typedef         void            (*graph_print_func)     (const void * const, uint64_t);
 
 void                            scl_error_message       (scl_error_t error_message);
 
