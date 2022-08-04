@@ -50,14 +50,25 @@ typedef struct graph_s {
     size_t size;
 } graph_t;
 
-graph_t*            create_graph            (size_t number_of_vertexes);
-scl_error_t         free_graph              (graph_t * const __restrict__ gr);
+graph_t*            create_graph                            (size_t number_of_vertexes);
+scl_error_t         free_graph                              (graph_t * const __restrict__ gr);
 
-scl_error_t         graph_insert_edge       (const graph_t * const __restrict__ gr, uint64_t first_vertex, uint64_t second_vertex, long double edge_len);
-scl_error_t         graph_insert_vertices   (graph_t * const __restrict__ gr, size_t new_vertices);
-graph_t*            create_transpose_graph  (const graph_t * const __restrict__ gr);
+scl_error_t         graph_insert_edge                       (const graph_t * const __restrict__ gr, uint64_t first_vertex, uint64_t second_vertex, long double edge_len);
+scl_error_t         graph_insert_vertices                   (graph_t * const __restrict__ gr, size_t new_vertices);
+graph_t*            create_transpose_graph                  (const graph_t * const __restrict__ gr);
+scl_error_t         graph_print                             (const graph_t * const __restrict__ gr, const uint8_t ** const data_arr);
 
-scl_error_t         graph_delete_edge       (const graph_t * const __restrict__ gr, uint64_t first_vertex, uint64_t second_vertex);
-scl_error_t         graph_delete_vertex     (graph_t * const __restrict__ gr, uint64_t vertex);
+scl_error_t         graph_delete_edge                       (const graph_t * const __restrict__ gr, uint64_t first_vertex, uint64_t second_vertex);
+scl_error_t         graph_delete_all_edges                  (const graph_t * const __restrict__ gr, uint64_t first_vertex, uint64_t second_vertex);
+scl_error_t         graph_delete_vertex                     (graph_t * const __restrict__ gr, uint64_t vertex);
+
+size_t              graph_bfs_traverse                      (const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path);
+size_t              graph_dfs_traverse                      (const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path);
+
+uint8_t             graph_has_cycle                         (const graph_t * const __restrict__ gr);
+size_t              graph_vertex_past_vertices              (const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path);
+size_t              graph_vertex_future_vertices            (const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path);
+size_t              graph_vertex_anticone_vertices          (const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path);
+size_t              graph_tips_vertices                     (const graph_t * const __restrict__ gr, uint64_t * __restrict__ vertex_path);
 
 #endif /* GRAPH_UTILS_H_ */

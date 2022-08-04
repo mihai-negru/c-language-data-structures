@@ -103,7 +103,9 @@ typedef enum scl_error_s {
     SCL_NULL_GRAPH_PRINT_FUNC                   = -51,
     SCL_NULL_GRAPH_VERTICES                     = -52,
     SCL_NULL_GRAPH_VERTEX                       = -53,
-    SCL_REALLOC_GRAPH_VERTICES_FAIL             = -54
+    SCL_REALLOC_GRAPH_VERTICES_FAIL             = -54,
+    SCL_VERTEX_OUT_OF_BOUND                     = -55,
+    SCL_EDGE_NOT_FOUND                          = -56
 } scl_error_t;
 
 /**
@@ -115,7 +117,6 @@ typedef         int             (*compare_func)         (const void * const, con
 typedef         void            (*free_func)            (void *);
 typedef         void            (*action_func)          (void * const);
 typedef         int             (*filter_func)          (const void * const);
-typedef         void            (*graph_print_func)     (const void * const, uint64_t);
 
 void                            scl_error_message       (scl_error_t error_message);
 
