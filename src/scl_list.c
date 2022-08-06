@@ -27,20 +27,19 @@
 /**
  * @brief Create a Linked List object. Allocation may fail if user
  * does not provide a compare and a print function, also in case if
- * heap memory is full function will return a NULL pointer
+ * heap memory is full function will return a `NULL` pointer
  * 
- * @param cp pointer to a function to compare two sets of data
- * @param print pointer to a function to print specific data
+ * @param cmp pointer to a function to compare two sets of data
  * @param frd pointer to a function to free the content of data
  * basic types like int, float, double, etc... do not need a free function
  * so you can pass a NULL pointer
  * @param data_size length in bytes of the data data type
- * @return list_t* return a new dynamically allocated list or NULL if
+ * @return list_t* return a new dynamically allocated list or `NULL` if
  * allocation went wrong
  */
 list_t* create_list(compare_func cmp, free_func frd, size_t data_size) {
     /*
-     * It is required for every linked list to have a compare and a print function
+     * It is required for every linked list to have a compare function
      * The free function is optional
      */
     if (NULL == cmp) {
@@ -74,14 +73,14 @@ list_t* create_list(compare_func cmp, free_func frd, size_t data_size) {
         perror("Not enough memory for list allocation");
     }
 
-    /* Return new allocated list or NULL */
+    /* Return new allocated list or `NULL` */
     return new_list;
 }
 
 /**
  * @brief Create a Linked Node object. Creation of a
- * node will fail if the pointer to data is NULL or
- * heap memory is also full, in this case function will return a NULL
+ * node will fail if the pointer to data is `NULL` or
+ * heap memory is also full, in this case function will return a `NULL`
  * pointer
  * 
  * @param list an allocated linked list object
@@ -117,21 +116,21 @@ static list_node_t* create_list_node(const list_t * const __restrict__ list, con
             new_node = NULL;
 
             errno = ENOMEM;
-            perror("Not enough memory for node list allocation");
+            perror("Not enough memory for data node list allocation");
         }
     } else {
         errno = ENOMEM;
         perror("Not enough memory for node list allocation");
     }
 
-    /* Return a new created node or NULL */
+    /* Return a new created node or `NULL` */
     return new_node;
 }
 
 /**
  * @brief Function to free every byte of memory allocated for a specific
  * linked list object. The function will iterate through all nodes and will
- * free the data content according to freeData function provided by user at
+ * free the data content according to frd function provided by user at
  * creation of linked list, however if no free function was provided it means
  * that data pointer does not contain any dinamically allocated elements.
  * 
@@ -159,7 +158,7 @@ scl_error_t free_list(list_t * const __restrict__ list) {
                 free(iterator->data);
             }
 
-            /* Set data pointer to NULL */
+            /* Set data pointer to `NULL` */
             iterator->data = NULL;
             
             /* Free node pointer */
@@ -167,7 +166,7 @@ scl_error_t free_list(list_t * const __restrict__ list) {
                 free(iterator);
             }
 
-            /* Set node pointer to NULL */
+            /* Set node pointer to `NULL` */
             iterator = NULL;
         }
 
@@ -183,8 +182,8 @@ scl_error_t free_list(list_t * const __restrict__ list) {
 /**
  * @brief Function to check if a linked list object
  * is empty or not. The function tests if head of list
- * is NULL in that case function will return true, otherwise
- * it will return false. A NULL list is also considered as an
+ * is `NULL` in that case function will return true, otherwise
+ * it will return false. A `NULL` list is also considered as an
  * empty list
  * 
  * @param list a linked list object 
@@ -201,7 +200,7 @@ uint8_t is_list_empty(const list_t * const __restrict__ list) {
 
 /**
  * @brief Get the list size object. If list is not
- * allocated then function will return -1 value.
+ * allocated then function will return SIZE_MAX value.
  * 
  * @param list a linked list object
  * @return size_t SIZE_MAX if list is not allocated or
@@ -219,7 +218,7 @@ size_t get_list_size(const list_t * const __restrict__ list) {
  * @brief Get the list head object
  * 
  * @param list a linked list object
- * @return const void* NULL if list is not allocated
+ * @return const void* `NULL` if list is not allocated
  * or actual head data of the list
  */
 const void* get_list_head(const list_t * const __restrict__ list) {
@@ -234,7 +233,7 @@ const void* get_list_head(const list_t * const __restrict__ list) {
  * @brief Get the list tail object
  * 
  * @param list a linked list object
- * @return const void* NULL if list is not allocated
+ * @return const void* `NULL` if list is not allocated
  * or actual tail data of the list
  */
 const void* get_list_tail(const list_t * const __restrict__ list) {
@@ -247,12 +246,12 @@ const void* get_list_tail(const list_t * const __restrict__ list) {
 
 /**
  * @brief Function to find node that contains
- * specific data provided by user. It uses compareData
+ * specific data provided by user. It uses cmp function
  * provided by user at the creation of the linked list.
  * 
  * @param list a linked list object
  * @param data pointer to a typed data
- * @return dlist_node_t* NULL if data is not found or a pointer
+ * @return list_node_t* `NULL` if data is not found or a pointer
  * to a double linked list node data containing given data
  */
 static list_node_t* list_find_node(const list_t * const __restrict__ list, const void * const __restrict__ data) {
@@ -277,7 +276,7 @@ static list_node_t* list_find_node(const list_t * const __restrict__ list, const
 
 /**
  * @brief Function two swap data between two list nodes. If nodes
- * are NULL or the same then no operation will be executed. Function
+ * are `NUL`L or the same then no operation will be executed. Function
  * will swap data pointers not node pointers. Function may fail if
  * list is not allocated
  * 
@@ -349,7 +348,7 @@ scl_error_t list_change_data(const list_t * const __restrict__ list, const void 
 }
 
 /**
- * @brief Function to insert an element to the end of the list
+ * @brief Function to insert an element to the end of the list.
  * 
  * @param list a linked list object
  * @param data a pointer for data to insert in list
@@ -399,7 +398,7 @@ scl_error_t list_insert(list_t * const __restrict__ list, const void * __restric
 /**
  * @brief Function to insert an element in order in the list.
  * Function will find the position of the new elements according
- * to compareData function provided at the creation of the list
+ * to cmp function provided at the creation of the list
  * 
  * @param list a linked list object
  * @param data a pointer for data to insert in list
@@ -614,17 +613,18 @@ const void* list_find_index(const list_t * const __restrict__ list, size_t data_
         return iterator->data;
     }
     
+    /* Data was not found */
     return NULL;
 }
 
 /**
  * @brief Function to find node that contains
- * specific data provided by user. It uses compareData
+ * specific data provided by user. It uses cmp function
  * provided by user at the creation of the linked list.
  * 
  * @param list a linked list object
  * @param data pointer to a typed data
- * @return const void* NULL if data is not found or a pointer
+ * @return const void* `NULL` if data is not found or a pointer
  * to a linked list node data containing given data
  */
 const void* list_find_data(const list_t * const __restrict__ list, const void * const __restrict__ data) {
@@ -643,7 +643,7 @@ const void* list_find_data(const list_t * const __restrict__ list, const void * 
         iterator = iterator->next;
     }
 
-    /* Return a pointer to node or NULL */
+    /* Return a pointer to node or `NULL` */
     if (NULL != iterator) {
         return iterator->data;
     }
@@ -656,7 +656,7 @@ const void* list_find_data(const list_t * const __restrict__ list, const void * 
  * recieve a list and a pointer to data that user wants to be deleted.
  * However data pointer has to be valid and to exist in the current list
  * (If you are not sure that data exists you should not call list_find_data because
- * delete function will find it by itself and in case it does not exist it will return 1)
+ * delete function will find it by itself and in case it does not exist it will return an error)
  * 
  * @param list a linked list object
  * @param data a pointer to a typed data to be removed 
@@ -713,14 +713,14 @@ scl_error_t list_delete_data(list_t * const __restrict__ list, const void * cons
         list->frd(iterator->data);
     }
 
-    /* Free data pointer and set to NULL */
+    /* Free data pointer and set to `NULL` */
     if (NULL != iterator->data) {
         free(iterator->data);
     }
 
     iterator->data = NULL;
 
-    /* Free node pointer and set to NULL */
+    /* Free node pointer and set to `NULL` */
     if (NULL != iterator) {
         free(iterator);
     }
@@ -737,9 +737,9 @@ scl_error_t list_delete_data(list_t * const __restrict__ list, const void * cons
 /**
  * @brief Function to delete a node based on an index. Program will
  * recieve a list and a index from which element will be erased. If
- * dataIndex is bigger than actual size of the list then function will
- * fail its execution and will return 1. It is necessary for list to be
- * allocated and not be be empty (in this case 1 will be returned).
+ * data_index is bigger than actual size of the list then function will
+ * fail its execution and will return an error. It is necessary for list to be
+ * allocated and not be be empty.
  * 
  * @param list a linked list object
  * @param data_index node index in the list to be removed starts from 0
@@ -791,14 +791,14 @@ scl_error_t list_delete_index(list_t * const __restrict__ list, size_t data_inde
         list->frd(iterator->data);
     }
 
-    /* Free data pointer and set to NULL */
+    /* Free data pointer and set to `NULL` */
     if (NULL != iterator->data) {
         free(iterator->data);
     }
 
     iterator->data = NULL;
 
-    /* Free node pointer and set to NULL */
+    /* Free node pointer and set to `NULL` */
     if (NULL != iterator) {
         free(iterator);
     }
@@ -813,9 +813,9 @@ scl_error_t list_delete_index(list_t * const __restrict__ list, size_t data_inde
 }
 
 /**
- * @brief Function to erase a set of nodes from range [leftIndex; rightIndex]
- * If leftIndex is greater than rightIndex that they will be swapped. If rightIndex
- * is bigger than actual size of the list rightIndex will be updated to the end of
+ * @brief Function to erase a set of nodes from range [left_index; right_index]
+ * If left_index is greater than right_index that they will be swapped. If right_index
+ * is bigger than actual size of the list right_index will be updated to the end of
  * the list. If both left and right index are bigger than actual list size than
  * the last element from linked object will be removed.
  * 
@@ -894,14 +894,14 @@ scl_error_t list_erase(list_t * const __restrict__ list, size_t left_index, size
             list->frd(iterator->data);
         }
 
-        /* Free data pointer and set to NULL */
+        /* Free data pointer and set to `NULL` */
         if (NULL != iterator->data) {
             free(iterator->data);
         }
 
         iterator->data = NULL;
 
-        /* Free node pointer and set to NULL */
+        /* Free node pointer and set to `NULL` */
         if (NULL != iterator) {
             free(iterator);
         }
@@ -970,7 +970,7 @@ list_t* list_filter(const list_t * const __restrict__ list, filter_func filter) 
         }
     }
 
-    /* Return filtered list or NULL */
+    /* Return filtered list or `NULL` */
     return filter_list;
 }
 

@@ -30,8 +30,9 @@
 #include <string.h>
 #include <errno.h>
 
-#define         ptr_data(T, X)                  (&(T){(X)})
-#define         key_data_pair(X, Y)             (X), (Y)
+#define         vtoptr(VAR)                     (&(VAR))
+#define         lvtoptr(TYPE, LVAL)             (&(TYPE){(LVAL)})
+#define         make_pair(M1, M2)               (M1), (M2)
 
 void            print_all_data                  (void * const data);
 void            print_short_int                 (void * const data);

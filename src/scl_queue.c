@@ -31,7 +31,7 @@
  * 
  * @param frd pointer to a function to free content of one data
  * @param data_size length in bytes of the data data type
- * @return queue_t* a new allocated queue object or NULL (if function failed)
+ * @return queue_t* a new allocated queue object or `NULL` (if function failed)
  */
 queue_t* create_queue(free_func frd, size_t data_size) {
     if (0 == data_size) {
@@ -56,19 +56,19 @@ queue_t* create_queue(free_func frd, size_t data_size) {
         perror("Not enough memory for queue allocation");
     }
 
-    /* Return a new allocated queue or NULL */
+    /* Return a new allocated queue or `NULL` */
     return new_queue;
 }
 
 /**
  * @brief Create a queue node object. Allocation of a new node
  * may fail if address of data is not valid or if not enough
- * memory is left on heap, in this case function will return NULL
+ * memory is left on heap, in this case function will return `NULL`
  * and an exception will be thrown
  * 
  * @param queue an allocated queue object
  * @param data pointer to an address of a generic data
- * @return queue_node_t* new allocated queue node object or NULL
+ * @return queue_node_t* new allocated queue node object or `NULL`
  */
 static queue_node_t* create_queue_node(const queue_t * const __restrict__ queue, const void * __restrict__ data) {
     /* Check if data address is valid */
@@ -105,14 +105,14 @@ static queue_node_t* create_queue_node(const queue_t * const __restrict__ queue,
         perror("Not enough memory for node queue allocation");
     }
 
-    /* Return a new queue node object or NULL */
+    /* Return a new queue node object or `NULL` */
     return new_node;
 }
 
 /**
  * @brief Function to free every byte of memory allocated for a specific
  * queue object. The function will iterate through all nodes and will
- * free the data content according to freeData function provided by user at
+ * free the data content according to frd function provided by user at
  * creation of queue, however if no free function was provided it means
  * that data pointer does not contain any dinamically allocated elements.
  * 
@@ -140,7 +140,7 @@ scl_error_t free_queue(queue_t * const __restrict__ queue) {
                 free(iterator->data);
             }
 
-            /* Set node pointer to data as NULL */
+            /* Set node pointer to data as `NULL` */
             iterator->data = NULL;
 
             /* Free node pointer */
@@ -148,7 +148,7 @@ scl_error_t free_queue(queue_t * const __restrict__ queue) {
                 free(iterator);
             }
 
-            /* Set node pointer as NULL */
+            /* Set node pointer as `NULL` */
             iterator = NULL;
         }
 
@@ -163,7 +163,7 @@ scl_error_t free_queue(queue_t * const __restrict__ queue) {
 
 /**
  * @brief Function prints all elements within the
- * given queue according to printData function. Function
+ * given queue according to print function. Function
  * may fail if list is not allocated in this case function
  * will not print anywith on output. In case if list is empty
  * then a set of paired square brakets will be printed on output.
@@ -204,8 +204,8 @@ scl_error_t print_queue(const queue_t * const __restrict__ queue, action_func pr
 /**
  * @brief Function to check if a queue object
  * is empty or not. The function tests if front of queue
- * is NULL in that case function will return true, otherwise
- * it will return false. A NULL queue is also considered as an
+ * is `NULL` in that case function will return true, otherwise
+ * it will return false. A `NULL` queue is also considered as an
  * empty queue
  * 
  * @param queue queue object
@@ -221,7 +221,7 @@ uint8_t is_queue_empty(const queue_t * const __restrict__ queue) {
 
 /**
  * @brief Get the queue size object. If queue is not
- * allocated then function will return -1 value.
+ * allocated then function will return SIZE_MAX value.
  * 
  * @param queue a queue object
  * @return size_t SIZE_MAX if queue is not allocated or
@@ -238,7 +238,7 @@ size_t get_queue_size(const queue_t * const __restrict__ queue) {
 /**
  * @brief Function to return the real data of the
  * front node. If queue is not allocated or queue is empty
- * then NULL will be returned, otherwise a pointer to the actual
+ * then `NULL` will be returned, otherwise a pointer to the actual
  * data memory location will be returned
  * 
  * @param queue a queue object
@@ -255,7 +255,7 @@ const void* queue_front(const queue_t * const __restrict__ queue) {
 /**
  * @brief Function to return the real data of the
  * back node. If queue is not allocated or queue is empty
- * then NULL will be returned, otherwise a pointer to the actual
+ * then `NULL` will be returned, otherwise a pointer to the actual
  * data memory location will be returned
  * 
  * @param queue a queue object
@@ -272,7 +272,7 @@ const void* queue_back(const queue_t * const __restrict__ queue) {
 /**
  * @brief Function to push one generic data to a queue.
  * Function may fail if queue or data is not valid (have
- * address NULL) or not enough heap memory is left. You can
+ * address `NULL`) or not enough heap memory is left. You can
  * push different data types into queue, but you will have to define
  * diferent functions to print queue and to maintain it
  * 
@@ -321,9 +321,9 @@ scl_error_t queue_push(queue_t * const __restrict__ queue, const void * __restri
 /**
  * @brief Function to pop one genric data from a queue.
  * Function may fail if queue or data is not valid (have
- * address NULL). Function will remove the front element from the queue
- * and will clear the content of the data accroding to freeData
- * function provided by the user at creation of the stack.
+ * address `NULL`). Function will remove the front element from the queue
+ * and will clear the content of the data accroding to frd
+ * function provided by the user at creation of the queue.
  * 
  * @param queue a queue object
  * @return scl_error_t enum object for handling errors

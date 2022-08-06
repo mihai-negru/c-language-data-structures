@@ -77,9 +77,9 @@ hash_table_t*           create_hash_table                       (size_t init_cap
 scl_error_t             free_hash_table                         (hash_table_t * const __restrict__ ht);
 
 scl_error_t             hash_table_insert                       (hash_table_t * const __restrict__ ht, const void *key, const void *data);
-const void*             hash_table_find_key_data                (const hash_table_t * const __restrict__ ht, const void * const __restrict__ key, const void * const __restrict__ data);
+const void*             hash_table_find_key_data                (const hash_table_t * const __restrict__ ht, const void * const key, const void * const data);
 const void*             hash_table_find_data                    (const hash_table_t * const __restrict__ ht, const void * const __restrict__ key);
-uint8_t                 hash_table_contains_key_data            (const hash_table_t * const __restrict__ ht, const void * const __restrict__ key, const void * const __restrict__ data);
+uint8_t                 hash_table_contains_key_data            (const hash_table_t * const __restrict__ ht, const void * const key, const void * const data);
 
 uint8_t                 is_hash_table_empty                     (const hash_table_t * const __restrict__ ht);
 uint8_t                 is_hash_table_bucket_key_empty          (const hash_table_t * const __restrict__ ht, const void * const __restrict__ key);
@@ -87,7 +87,7 @@ size_t                  get_hash_table_size                     (const hash_tabl
 size_t                  get_hash_table_capacity                 (const hash_table_t * const __restrict__ ht);
 size_t                  hash_table_count_bucket_elements        (const hash_table_t * const __restrict__ ht, const void * const __restrict__ key);
 
-scl_error_t             hash_table_delete_key_data              (hash_table_t * const __restrict__ ht, const void * const __restrict__ key, const void * const __restrict__ data);
+scl_error_t             hash_table_delete_key_data              (hash_table_t * const __restrict__ ht, const void * const key, const void * const data);
 scl_error_t             hash_table_delete_hash                  (hash_table_t * const __restrict__ ht, const void * const __restrict__ key);
 scl_error_t             hash_table_delete_key                   (hash_table_t * const __restrict__ ht, const void * const __restrict__ key);
 

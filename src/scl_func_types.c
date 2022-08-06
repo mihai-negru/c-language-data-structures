@@ -277,7 +277,7 @@ int compare_short_int(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Cast data types to working type */
@@ -303,7 +303,7 @@ int compare_ushort_int(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Cast data types to working type */
@@ -335,7 +335,7 @@ int compare_uint(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Cast data types to working type */
@@ -367,7 +367,7 @@ int compare_int(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Cast data types to working type */
@@ -393,7 +393,7 @@ int compare_long_int(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Cast data types to working type */
@@ -419,7 +419,7 @@ int compare_ulong_int(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Cast data types to working type */
@@ -451,7 +451,7 @@ int compare_llong_int(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Cast data types to working type */
@@ -477,7 +477,7 @@ int compare_ullong_int(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Cast data types to working type */
@@ -509,7 +509,7 @@ int compare_char(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Cast data types to working type */
@@ -541,7 +541,7 @@ int compare_uchar(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Cast data types to working type */
@@ -573,7 +573,7 @@ int compare_float(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Cast data types to working type */
@@ -605,7 +605,7 @@ int compare_double(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Cast data types to working type */
@@ -637,7 +637,7 @@ int compare_long_double(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Cast data types to working type */
@@ -670,7 +670,7 @@ int compare_string_size(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Cast data types to working type */
@@ -703,7 +703,7 @@ int compare_string_lexi(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Compare data type */
@@ -729,7 +729,7 @@ int compare_string(const void * const data1, const void * const data2) {
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
         perror("Data is not allocated");
-        exit(2);
+        exit(EXIT_FAILURE);
     }
 
     /* Cast data types to working type */

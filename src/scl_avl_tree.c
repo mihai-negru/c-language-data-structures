@@ -34,7 +34,7 @@
 
 /**
  * @brief Create an avl object. Allocation may fail if there
- * is not enough memory on heap or compareData function is not valid
+ * is not enough memory on heap or cmp function is not valid
  * (data arranges in avl tree by comparation) in this case an exception will be thrown.
  * 
  * @param cmp pointer to a function to compare two sets of data
@@ -50,6 +50,7 @@ avl_tree_t* create_avl(compare_func cmp, free_func frd, size_t data_size) {
         return NULL;
     }
 
+    /* Check if size fo the data is valid */
     if (0 == data_size) {
         errno = EINVAL;
         perror("Data size at creation is zero");
@@ -66,10 +67,10 @@ avl_tree_t* create_avl(compare_func cmp, free_func frd, size_t data_size) {
         new_tree->cmp = cmp;
         new_tree->frd = frd;
 
-        /* Create nil node */
+        /* Create `nil` node */
         new_tree->nil = malloc(sizeof(*new_tree->nil));
 
-        /* Set default values for a nil cell*/
+        /* Set default values for a `nil` cell*/
         if (NULL != new_tree->nil) {
             new_tree->nil->data = NULL;
             new_tree->nil->count = 1;
@@ -90,19 +91,19 @@ avl_tree_t* create_avl(compare_func cmp, free_func frd, size_t data_size) {
         perror("Not enough memory for avl allocation");
     }
     
-    /* Return a new allocated avl tree object or NULL */
+    /* Return a new allocated avl tree object or `NULL` */
     return new_tree;
 }
 
 /**
  * @brief Create an avl node object. Allocation of a new node
  * may fail if address of data is not valid or if not enough memory
- * is left on heap, in this case function will return NULL and an exception
+ * is left on heap, in this case function will return `nil` and an exception
  * will be thrown.
  * 
  * @param tree an allocated avl tree object
  * @param data pointer to an address of a generic data
- * @return avl_tree_node_t* a new allocated avl tree node object or NULL
+ * @return avl_tree_node_t* a new allocated avl tree node object or `nil`
  */
 static avl_tree_node_t* create_avl_node(const avl_tree_t * const __restrict__ tree, const void * __restrict__ data) {
     /* Check if data address is valid */
@@ -146,7 +147,7 @@ static avl_tree_node_t* create_avl_node(const avl_tree_t * const __restrict__ tr
         perror("Not enough memory for node avl allocation");
     }
 
-    /* return a new avl tree node object or NULL */
+    /* return a new avl tree node object or `NULL` */
     return new_node;
 }
 
@@ -192,7 +193,7 @@ static void free_avl_helper(const avl_tree_t * const __restrict__ tree, avl_tree
 /**
  * @brief Function to free every byte of memory allocated for a specific
  * avl tree object. The function will iterate through all nodes
- * and will free the data content according to freeData function provided
+ * and will free the data content according to frd function provided
  * by user at creation of avl tree, however if no free function
  * was provided it means that data pointer does not contain any dynamically
  * allocated elements.
@@ -207,7 +208,7 @@ scl_error_t free_avl(avl_tree_t * const __restrict__ tree) {
         /* Free every node from avl -> tree */
         free_avl_helper(tree, &tree->root);
         
-        /* Free nil cell*/
+        /* Free `nil` cell*/
         free(tree->nil);
 
         tree->nil = NULL;        
@@ -223,7 +224,7 @@ scl_error_t free_avl(avl_tree_t * const __restrict__ tree) {
 
 /**
  * @brief Function to update the height of a node that is broken.
- * Function may fail if the selected node is NULL
+ * Function may fail if the selected node is `nil`.
  * 
  * @param tree an allocated avl tree object
  * @param fix_node an avl tree node object to update its height
@@ -241,7 +242,7 @@ static void avl_update_node_height(const avl_tree_t * const __restrict__ tree, a
  * @brief Function to rotate to left a subtree starting 
  * from fix_node avl tree node object. Function may fail
  * if avl tree object is not allocated or avl tree node
- * object is NULL.
+ * object is `nil`.
  * 
  * @param tree an allocated avl tree object
  * @param fix_node pointer to avl tree node object to rotate
@@ -297,7 +298,7 @@ static void avl_rotate_left(avl_tree_t * const __restrict__ tree, avl_tree_node_
  * @brief Function to rotate to right a subtree starting 
  * from fix_node avl tree node object. Function may fail
  * if avl tree object is not allocated or avl tree node
- * object is NULL.
+ * object is `nil`.
  * 
  * @param tree an allocated avl tree object
  * @param fix_node pointer to avl tree node object to rotate
@@ -354,7 +355,7 @@ static void avl_rotate_right(avl_tree_t * const __restrict__ tree, avl_tree_node
  * avl tree node object from current working tree
  * 
  * @param fix_node pointer to avl tree node object
- * @return int32_t balance factor of the fix_node avl_tree_node_t
+ * @return int32_t balance factor of the fix_node
  */
 static int32_t avl_get_node_balance(const avl_tree_node_t * const __restrict__ fix_node) {
     /* Return balance factor of the node */
@@ -362,9 +363,9 @@ static int32_t avl_get_node_balance(const avl_tree_node_t * const __restrict__ f
 }
 
 /**
- * @brief Helper function to fix up the balance of a avl_tree_t
+ * @brief Helper function to fix up the balance of an avl_tree_t
  * after insertion of one node. Function may fail if current
- * working tree and node are NULL.
+ * working tree and node is `nil`.
  * 
  * @param tree an allocated avl tree object
  * @param fix_node a pointer to a avl tree node object to start
@@ -418,13 +419,14 @@ static scl_error_t avl_insert_fix_node_up(avl_tree_t * const __restrict__ tree, 
         fix_node = fix_node->parent;
     }
 
+    /* All good */
     return SCL_OK;
 }
 
 /**
- * @brief Function to insert one generic data to a avl.
- * Function may fail if avl or data os not valid (have
- * address NULL) or not enough heap memory is left. You
+ * @brief Function to insert one generic data to an avl.
+ * Function may fail if avl or data are not valid (have
+ * address `NULL`) or not enough heap memory is left. You
  * CANNOT insert different data types into avl tree, this
  * will evolve into an uknown behavior or segmentation fault.
  * 
@@ -487,6 +489,7 @@ scl_error_t avl_insert(avl_tree_t * const __restrict__ tree, const void * __rest
             parent_iterator->right = new_node;
         }
 
+        /* Fix tree is needed */
         err = avl_insert_fix_node_up(tree, parent_iterator);
     } else {
 
@@ -509,7 +512,7 @@ scl_error_t avl_insert(avl_tree_t * const __restrict__ tree, const void * __rest
  * @param tree an allocated avl tree object
  * @param data pointer to an address of a generic data type
  * @return avl_tree_node_t* avl tree node object containing
- * data value or NULL in case no such node exists
+ * data value or `nil` in case no such node exists
  */
 static avl_tree_node_t* avl_find_node(const avl_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
     /* Check if input data is valid */
@@ -520,7 +523,7 @@ static avl_tree_node_t* avl_find_node(const avl_tree_t * const __restrict__ tree
     /* Set iterator pointer */
     avl_tree_node_t *iterator = tree->root;
 
-    /* Search for imput data (void *data) in all tree */
+    /* Search for input data (void *data) in all tree */
     while (tree->nil != iterator) {
         if (tree->cmp(iterator->data, data) <= -1) {
             iterator = iterator->right;
@@ -542,8 +545,8 @@ static avl_tree_node_t* avl_find_node(const avl_tree_t * const __restrict__ tree
  * 
  * @param tree an allocated avl tree object
  * @param data pointer to an address of a generic data type
- * @return const void* pointer to data pointer found in the tree or NULL
- * if data was not found
+ * @return const void* pointer to location of data type found in 
+ * the tree or `NULL` if data was not found
  */
 const void* avl_find_data(const avl_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
     /* Check if input data is valid */
@@ -551,7 +554,7 @@ const void* avl_find_data(const avl_tree_t * const __restrict__ tree, const void
         return NULL;
     }
 
-    /* Get data from found node or NULL if node is nil */
+    /* Get data from found node or `NULL` if node is `nil` */
     return avl_find_node(tree, data)->data;
 }
 
@@ -667,13 +670,13 @@ static int32_t avl_node_level(const avl_tree_t * const __restrict__ tree, const 
 
 /**
  * @brief Function to calculate the level(depth) of
- * a node in avl tree. Function may fail if input node
- * is not valid (allocated).
+ * a data node in avl tree. Function may fail if input data
+ * is not in the current working tree or it's address is `NULL`.
  * 
  * @param tree an allocated avl tree object
  * @param data pointer to a value type to find level of node
  * containing current data
- * @return int32_t level of input avl object node
+ * @return int32_t level of input avl object data node
  */
 int32_t avl_data_level(const avl_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
     /* Check if input data is valid */
@@ -681,12 +684,12 @@ int32_t avl_data_level(const avl_tree_t * const __restrict__ tree, const void * 
         return -1;
     }
 
-    /* Return level of the node according to data */
+    /* Return the level of the data node according to data */
     return avl_node_level(tree, avl_find_node(tree, data));
 }
 
 /**
- * @brief Function to check whether an avl
+ * @brief Function to check if an avl
  * tree object is empty or not.
  * 
  * @param tree an allocated avl tree
@@ -702,7 +705,7 @@ uint8_t is_avl_empty(const avl_tree_t * const __restrict__ tree) {
 }
 
 /**
- * @brief Function to get root node of the avl tree.
+ * @brief Function to get root data node of the avl tree.
  * 
  * @param tree an allocated avl tree object
  * @return const void* the root node data of the current avl tree
@@ -769,14 +772,13 @@ static avl_tree_node_t* avl_min_node(const avl_tree_t * const __restrict__ tree,
 
 /**
  * @brief Function to get the maximum data value from avl.
- * Function will search the maximum data considering root node
- * as the beginning of the tree (root != tree(root))
+ * Function will search the maximum data considering subroot data
+ * node as the beginning of the tree (root != tree(root))
  * 
  * @param tree an allocated avl tree object
  * @param subroot_data pointer to a data value that represents a node
- * to start searcing for maximum node, pointer may be NULL or not to be
- * in the avl tree
- * @return const void* pointer to maximum data value from avl tree
+ * to start searcing for maximum data node
+ * @return const void* pointer to maximum data value from avl tree or `NULL`
  */
 const void* avl_max_data(const avl_tree_t * const __restrict__ tree, const void * const __restrict__ subroot_data) {
     /* Check if input data is valid */
@@ -784,19 +786,18 @@ const void* avl_max_data(const avl_tree_t * const __restrict__ tree, const void 
         return NULL;
     }
 
-    /* Get maximum data from avl tree or NULL is node is nil*/
+    /* Get maximum data from avl tree or `NULL` is node is `nil` */
     return avl_max_node(tree, avl_find_node(tree, subroot_data))->data;
 }
 
 /**
  * @brief Function to get the minimum data value from avl.
- * Function will search the minimum data considering root node
- * as the beginning of the tree (root != tree(root))
+ * Function will search the minimum data considering subroot data
+ * node as the beginning of the tree (root != tree(root))
  * 
  * @param tree an allocated avl tree object
  * @param subroot_data pointer to a data value that represents a node
- * to start searcing for minimum node, pointer may be NULL or not to be
- * in the avl tree
+ * to start searcing for minimum node
  * @return const void* pointer to minimum data value from avl tree
  */
 const void* avl_min_data(const avl_tree_t * const __restrict__ tree, const void * const __restrict__ subroot_data) {
@@ -805,14 +806,14 @@ const void* avl_min_data(const avl_tree_t * const __restrict__ tree, const void 
         return NULL;
     }
 
-    /* Get minimum data from avl tree or NULL is node is nil*/
+    /* Get minimum data from avl tree or `NULL` is node is `nil` */
     return avl_min_node(tree, avl_find_node(tree, subroot_data))->data;
 }
 
 /**
  * @brief Helper function to fix up the balance of a avl_tree_t
  * after deletion of one node. Function may fail if current
- * working tree and node are NULL.
+ * working tree and node are `NULL`.
  * 
  * @param tree an allocated avl tree object
  * @param fix_node a pointer to a avl tree node object to start
@@ -1014,6 +1015,7 @@ scl_error_t avl_delete(avl_tree_t * const __restrict__ tree, const void * const 
     /* Deacrease tree size  */
     --(tree->size);
     
+    /* Fix avl tree if needed */
     return avl_delete_fix_node_up(tree, parent_delete_node);
 }
 
@@ -1026,7 +1028,7 @@ scl_error_t avl_delete(avl_tree_t * const __restrict__ tree, const void * const 
  * 
  * @param tree an allocated avl tree object
  * @param data pointer to an address of a generic data type
- * @return avl_tree_node_t* NULL or inorder predecessor of the
+ * @return avl_tree_node_t* `nil` or inorder predecessor of the
  * node containing (void *data) value.
  */
 static avl_tree_node_t* avl_predecessor_node(const avl_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
@@ -1038,7 +1040,7 @@ static avl_tree_node_t* avl_predecessor_node(const avl_tree_t * const __restrict
     /* Find node containing the data value */
     avl_tree_node_t *iterator = avl_find_node(tree, data);
 
-    /* If node is not in avl than return NULL */
+    /* If node is not in avl than return `nil` */
     if (tree->nil == iterator) {
         return tree->nil;
     }
@@ -1073,7 +1075,7 @@ static avl_tree_node_t* avl_predecessor_node(const avl_tree_t * const __restrict
  * 
  * @param tree an allocated avl tree object
  * @param data pointer to an address of a generic data type
- * @return avl_tree_node_t* NULL or inorder successor of the
+ * @return avl_tree_node_t* `nil` or inorder successor of the
  * node containing (void *data) value.
  */
 static avl_tree_node_t* avl_successor_node(const avl_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
@@ -1085,7 +1087,7 @@ static avl_tree_node_t* avl_successor_node(const avl_tree_t * const __restrict__
     /* Find node containing the data value */
     avl_tree_node_t *iterator = avl_find_node(tree, data);
 
-    /* If node is not in avl than return NULL */
+    /* If node is not in avl than return `nil` */
     if (tree->nil == iterator) {
         return tree->nil;
     }
@@ -1129,7 +1131,7 @@ const void* avl_predecessor_data(const avl_tree_t * const __restrict__ tree, con
         return NULL;
     }
 
-    /* Get the predecessor data or NULL if node is nil */
+    /* Get the predecessor data or `NULL` if node is `nil` */
     return avl_predecessor_node(tree, data)->data;
 }
 
@@ -1151,7 +1153,7 @@ const void* avl_succecessor_data(const avl_tree_t * const __restrict__ tree, con
         return NULL;
     }
 
-    /* Get the successor data or NULL if node is nil */
+    /* Get the successor data or `NULL` if node is `nil` */
     return avl_successor_node(tree, data)->data;
 }
 
@@ -1220,7 +1222,7 @@ const void* avl_lowest_common_ancestor_data(const avl_tree_t * const __restrict_
         return NULL;
     }
 
-    /* Get the lowest common ancestor data or NULL if node is nil */
+    /* Get the lowest common ancestor data or `NULL` if node is `nil` */
     return avl_lowest_common_ancestor_node(tree, data1, data2)->data;
 }
 
@@ -1234,7 +1236,7 @@ const void* avl_lowest_common_ancestor_data(const avl_tree_t * const __restrict_
  * @param action a pointer function to perform an action on one avl node object
  */
 static void avl_traverse_inorder_helper(const avl_tree_t * const __restrict__ tree, const avl_tree_node_t * const __restrict__ root, action_func action) {
-    /* Check if current working avl node is not NULL */
+    /* Check if current working avl node is not `nil` */
     if (tree->nil == root) {
         return;
     }
@@ -1255,7 +1257,7 @@ static void avl_traverse_inorder_helper(const avl_tree_t * const __restrict__ tr
  * Usually action will be a printing function, however you
  * can define a map function to map every node data to another
  * node data (the mapping proccess has to be injective to preserve
- * the avl prorpety)
+ * the avl property)
  * 
  * @param tree current working avl tree object
  * @param action a pointer to a function that will perform an action
@@ -1297,7 +1299,7 @@ scl_error_t avl_traverse_inorder(const avl_tree_t * const __restrict__ tree, act
  * @param action a pointer function to perform an action on one avl node object
  */
 static void avl_traverse_preorder_helper(const avl_tree_t * const __restrict__ tree, const avl_tree_node_t * const __restrict__ root, action_func action) {
-    /* Check if current working avl node is not NULL */
+    /* Check if current working avl node is not `nil` */
     if (tree->nil == root) {
         return;
     }
@@ -1318,7 +1320,7 @@ static void avl_traverse_preorder_helper(const avl_tree_t * const __restrict__ t
  * Usually action will be a printing function, however you
  * can define a map function to map every node data to another
  * node data (the mapping proccess has to be injective to preserve
- * the avl prorpety)
+ * the avl prroperty)
  * 
  * @param tree current working avl tree object
  * @param action a pointer to a function that will perform an action
@@ -1358,7 +1360,7 @@ scl_error_t avl_traverse_preorder(const avl_tree_t * const __restrict__ tree, ac
  * @param action a pointer function to perform an action on one avl node object
  */
 static void avl_traverse_postorder_helper(const avl_tree_t * const __restrict__ tree, const avl_tree_node_t * const __restrict__ root, action_func action) {
-    /* Check if current working avl node is not NULL */
+    /* Check if current working avl node is not `nil` */
     if (tree->nil == root) {
         return;
     }
@@ -1379,7 +1381,7 @@ static void avl_traverse_postorder_helper(const avl_tree_t * const __restrict__ 
  * Usually action will be a printing function, however you
  * can define a map function to map every node data to another
  * node data (the mapping proccess has to be injective to preserve
- * the avl prorpety)
+ * the avl property)
  * 
  * @param tree current working avl tree object
  * @param action a pointer to a function that will perform an action
@@ -1415,7 +1417,7 @@ scl_error_t avl_traverse_postorder(const avl_tree_t * const __restrict__ tree, a
  * Usually action will be a printing function, however you
  * can define a map function to map every node data to another
  * node data (the mapping proccess has to be injective to preserve
- * the avl prorpety)
+ * the avl property)
  * 
  * @param tree current working avl tree object
  * @param action a pointer to a function that will perform an action

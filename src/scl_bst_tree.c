@@ -27,7 +27,7 @@
 
 /**
  * @brief Create a bst object. Allocation may fail if there
- * is not enough memory on heap or compareData function is not valid
+ * is not enough memory on heap or cmp function is not valid
  * (data arranges in bst tree by comparation) in this case an exception will be thrown.
  * 
  * @param cmp pointer to a function to compare two sets of data
@@ -36,13 +36,14 @@
  * @return bst_tree_t* a new allocated binary search tree or NULL (if function failed)
  */
 bst_tree_t* create_bst(compare_func cmp, free_func frd, size_t data_size) {
-    /* Check if compareData function is valid */
+    /* Check if cmp function is valid */
     if (NULL == cmp) {
         errno = EINVAL;
         perror("Compare function undefined for binary search tree");
         return NULL;
     }
 
+    /* Check if data size is valid */
     if (0 == data_size) {
         errno = EINVAL;
         perror("Data size at creation is zero");
@@ -59,10 +60,10 @@ bst_tree_t* create_bst(compare_func cmp, free_func frd, size_t data_size) {
         new_tree->cmp = cmp;
         new_tree->frd = frd;
 
-        /* Create nil node */
+        /* Create `nil` node */
         new_tree->nil = malloc(sizeof(*new_tree->nil));
 
-        /* Set default values for a nil cell*/
+        /* Set default values for a `nil` cell*/
         if (NULL != new_tree->nil) {
             new_tree->nil->data = NULL;
             new_tree->nil->count = 1;
@@ -73,7 +74,7 @@ bst_tree_t* create_bst(compare_func cmp, free_func frd, size_t data_size) {
             perror("Not enough memory for nil red-black allocation");
         }
 
-        /* Set root and size of the red-black tree */
+        /* Set root and size of the binary search tree */
         new_tree->root = new_tree->nil;
         new_tree->data_size = data_size;
         new_tree->size = 0;
@@ -82,19 +83,19 @@ bst_tree_t* create_bst(compare_func cmp, free_func frd, size_t data_size) {
         perror("Not enough memory for bst allocation");
     }
     
-    /* Return a new allocated binary search tree or NULL */
+    /* Return a new allocated binary search tree or `NULL` */
     return new_tree;
 }
 
 /**
  * @brief Create a bst node object. Allocation of a new node
  * may fail if address of data is not valid or if not enough memory
- * is left on heap, in this case function will return NULL and an exception
+ * is left on heap, in this case function will return `nil` and an exception
  * will be thrown.
  * 
  * @param tree an allocated binary search tree object
  * @param data pointer to an address of a generic data
- * @return bst_tree_node_t* a new allocated binary search tree node object or NULL
+ * @return bst_tree_node_t* a new allocated binary search tree node object or `nil`
  */
 static bst_tree_node_t* create_bst_node(const bst_tree_t * const __restrict__ tree, const void * __restrict__ data) {
     /* Check if data address is valid */
@@ -137,7 +138,7 @@ static bst_tree_node_t* create_bst_node(const bst_tree_t * const __restrict__ tr
         perror("Not enough memory for node bst allocation");
     }
 
-    /* Return a new binary search tree node object or NULL */
+    /* Return a new binary search tree node object or `nil` */
     return new_node;
 }
 
@@ -183,7 +184,7 @@ static void free_bst_helper(const bst_tree_t * const __restrict__ tree, bst_tree
 /**
  * @brief Function to free every byte of memory allocated for a specific
  * binary search tree object. The function will iterate through all nodes
- * and will free the data content according to freeData function provided
+ * and will free the data content according to frd function provided
  * by user at creation of binary search tree, however if no free function
  * was provided it means that data pointer does not contain any dynamically
  * allocated elements.
@@ -198,7 +199,7 @@ scl_error_t free_bst(bst_tree_t *const __restrict__ tree) {
         /* Free every node from bst -> tree */
         free_bst_helper(tree, &tree->root);
         
-        /* Free nil cell*/
+        /* Free `nil` cell*/
         free(tree->nil);
 
         tree->nil = NULL;
@@ -296,7 +297,7 @@ scl_error_t bst_insert(bst_tree_t * const __restrict__ tree, const void * __rest
  * @param tree an allocated binary search tree object
  * @param data pointer to an address of a generic data type
  * @return bst_tree_node_t* binary search tree node object containing
- * data value or NULL in case no such node exists
+ * data value or `nil` in case no such node exists
  */
 static bst_tree_node_t* bst_find_node(const bst_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
     /* Check if input data is valid */
@@ -329,7 +330,7 @@ static bst_tree_node_t* bst_find_node(const bst_tree_t * const __restrict__ tree
  * 
  * @param tree an allocated binary search tree object
  * @param data pointer to an address of a generic data type
- * @return bst_tree_node_t* binary search tree node object containing
+ * @return const void* binary search tree data node object containing
  * data value or NULL in case no such node exists
  */
 const void* bst_find_data(const bst_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
@@ -340,7 +341,7 @@ const void* bst_find_data(const bst_tree_t * const __restrict__ tree, const void
 
     /* 
      * Find node according to data pointer and return pointer
-     * to location of the data from  node or NULL if node is nil
+     * to location of the data from  node or `NULL` if node is `nil`
      */
     return bst_find_node(tree, data)->data;
 }
@@ -492,7 +493,7 @@ uint8_t is_bst_empty(const bst_tree_t * const __restrict__ tree) {
 }
 
 /**
- * @brief Function to get root node of the bst tree.
+ * @brief Function to get root data node of the bst tree.
  * 
  * @param tree an allocated binary search tree object
  * @return const void* the root data node of the current binary
@@ -510,7 +511,7 @@ const void* get_bst_root(const bst_tree_t * const __restrict__ tree) {
  * @brief Function to get size of the bst tree.
  * 
  * @param tree an allocated binary search tree object
- * @return size_t size of the current bst tree
+ * @return size_t size of the current bst tree or SIZE_MAX
  */
 size_t get_bst_size(const bst_tree_t * const __restrict__ tree) {
     if (NULL == tree) {
@@ -560,13 +561,12 @@ static bst_tree_node_t* bst_min_node(const bst_tree_t * const __restrict__ tree,
 
 /**
  * @brief Function to get the maximum data value from bst.
- * Function will search the maximum data considering root node
- * as the beginning of the tree (root != tree(root))
+ * Function will search the maximum data considering subroot
+ * data node as the beginning of the tree (root != tree(root))
  * 
  * @param tree an allocated binary search tree object
  * @param subroot_data pointer to a data value that represents a node
- * to start searcing for maximum node, pointer may be NULL or not to be
- * in the binary search tree
+ * to start searcing for maximum node
  * @return const void* pointer to maximum data value from bst tree
  */
 const void* bst_max_data(const bst_tree_t * const __restrict__ tree, const void * const __restrict__ subroot_data) {
@@ -575,19 +575,18 @@ const void* bst_max_data(const bst_tree_t * const __restrict__ tree, const void 
         return NULL;
     }
 
-    /* Get maximum data from binary search tree or NULL is node is nil*/
+    /* Get maximum data from binary search tree or `NULL` is node is `nil` */
     return bst_max_node(tree, bst_find_node(tree, subroot_data))->data;
 }
 
 /**
  * @brief Function to get the minimum data value from bst.
- * Function will search the minimum data considering root node
- * as the beginning of the tree (root != tree(root))
+ * Function will search the minimum data considering sub root
+ * data node as the beginning of the tree (root != tree(root))
  * 
  * @param tree an allocated binary search tree object
  * @param subroot_data pointer to a data value that represents a node
- * to start searcing for minimum node, pointer may be NULL or not to be
- * in the binary search tree
+ * to start searcing for minimum node
  * @return const void* pointer to minimum data value from bst tree
  */
 const void* bst_min_data(const bst_tree_t * const __restrict__ tree, const void * const __restrict__ subroot_data) {
@@ -596,7 +595,7 @@ const void* bst_min_data(const bst_tree_t * const __restrict__ tree, const void 
         return NULL;
     }
 
-    /* Get minimum data from binary search or NULL is node is nil*/
+    /* Get minimum data from binary search or `NULL` is node is `nil` */
     return bst_min_node(tree, bst_find_node(tree, subroot_data))->data;
 }
 
@@ -711,7 +710,7 @@ scl_error_t bst_delete(bst_tree_t * const __restrict__ tree, const void * const 
 
             /*
                 * Selected node was root
-                * Update new root to NULL
+                * Update new root to `nil`
                 */
             tree->root = tree->nil;
         }
@@ -727,7 +726,7 @@ scl_error_t bst_delete(bst_tree_t * const __restrict__ tree, const void * const 
         free(delete_node->data);
     }
 
-    /* Set data pointer as NULL */
+    /* Set data pointer as `NULL` */
     delete_node->data = NULL;
 
     /* Free selected bst node pointer */
@@ -735,7 +734,7 @@ scl_error_t bst_delete(bst_tree_t * const __restrict__ tree, const void * const 
         free(delete_node);
     }
 
-    /* Set selected bst node as NULL */
+    /* Set selected bst node as `nil` */
     delete_node = tree->nil;
 
     /* Deacrease tree size  */
@@ -766,7 +765,7 @@ static bst_tree_node_t* bst_predecessor_node(const bst_tree_t * const __restrict
     /* Find node containing the data value */
     bst_tree_node_t *iterator = bst_find_node(tree, data);
 
-    /* If node is not in bst than return NULL */
+    /* If node is not in bst than return `nil` */
     if (tree->nil == iterator) {
         return tree->nil;
     }
@@ -813,7 +812,7 @@ static bst_tree_node_t* bst_successor_node(const bst_tree_t * const __restrict__
     /* Find node containing the data value */
     bst_tree_node_t *iterator = bst_find_node(tree, data);
 
-    /* If node is not in bst than return NULL */
+    /* If node is not in bst than return `nil` */
     if (tree->nil == iterator) {
         return tree->nil;
     }
@@ -848,8 +847,8 @@ static bst_tree_node_t* bst_successor_node(const bst_tree_t * const __restrict__
  * 
  * @param tree an allocated binary search tree object
  * @param data pointer to an address of a generic data type
- * @return const void* NULL or data of inorder predecessor of the
- * node containing (void *data) value.
+ * @return const void* NULL or pointer to data of inorder 
+ * predecessor of the node containing (void *data) value.
  */
 const void* bst_predecessor_data(const bst_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
     /* Check if input data is valid */
@@ -857,7 +856,7 @@ const void* bst_predecessor_data(const bst_tree_t * const __restrict__ tree, con
         return NULL;
     }
 
-    /* Get the predecessor data or NULL if node is nil */
+    /* Get the predecessor data or `NULL` if node is `nil` */
     return bst_predecessor_node(tree, data)->data;
 }
 
@@ -870,8 +869,8 @@ const void* bst_predecessor_data(const bst_tree_t * const __restrict__ tree, con
  * 
  * @param tree an allocated binary search tree object
  * @param data pointer to an address of a generic data type
- * @return const void* NULL or data of inorder successor of the
- * node containing (void *data) value.
+ * @return const void* NULL or pointer to data of inorder
+ * successor of the node containing (void *data) value.
  */
 const void* bst_succecessor_data(const bst_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
     /* Check if input data is valid */
@@ -879,7 +878,7 @@ const void* bst_succecessor_data(const bst_tree_t * const __restrict__ tree, con
         return NULL;
     }
 
-    /* Get the successor data or NULL if node is nil */
+    /* Get the successor data or `NULL` if node is `nil` */
     return bst_successor_node(tree, data)->data;
 }
 
@@ -948,7 +947,7 @@ const void* bst_lowest_common_ancestor_data(const bst_tree_t * const __restrict_
         return NULL;
     }
 
-    /* Get the lowest common ancestor data or NULL if node is nil */
+    /* Get the lowest common ancestor data or `NULL` if node is `nil` */
     return bst_lowest_common_ancestor_node(tree, data1, data2)->data;
 }
 
@@ -962,7 +961,7 @@ const void* bst_lowest_common_ancestor_data(const bst_tree_t * const __restrict_
  * @param action a pointer function to perform an action on one bst node object
  */
 static void bst_traverse_inorder_helper(const bst_tree_t * const __restrict__ tree, const bst_tree_node_t * const __restrict__ root, action_func action) {
-    /* Check if current working bst node is not NULL */
+    /* Check if current working bst node is not `nil` */
     if (tree->nil == root) {
         return;
     }
@@ -983,7 +982,7 @@ static void bst_traverse_inorder_helper(const bst_tree_t * const __restrict__ tr
  * Usually action will be a printing function, however you
  * can define a map function to map every node data to another
  * node data (the mapping proccess has to be injective to preserve
- * the bst prorpety)
+ * the bst prroperty)
  * 
  * @param tree current working binary search tree object
  * @param action a pointer to a function that will perform an action
@@ -1023,7 +1022,7 @@ scl_error_t bst_traverse_inorder(const bst_tree_t * const __restrict__ tree, act
  * @param action a pointer function to perform an action on one bst node object
  */
 static void bst_traverse_preorder_helper(const bst_tree_t * const __restrict__ tree, const bst_tree_node_t * const __restrict__ root, action_func action) {
-    /* Check if current working bst node is not NULL */
+    /* Check if current working bst node is not `nil` */
     if (tree->nil == root) {
         return;
     }
@@ -1044,7 +1043,7 @@ static void bst_traverse_preorder_helper(const bst_tree_t * const __restrict__ t
  * Usually action will be a printing function, however you
  * can define a map function to map every node data to another
  * node data (the mapping proccess has to be injective to preserve
- * the bst prorpety)
+ * the bst property)
  * 
  * @param tree current working binary search tree object
  * @param action a pointer to a function that will perform an action
@@ -1084,7 +1083,7 @@ scl_error_t bst_traverse_preorder(const bst_tree_t * const __restrict__ tree, ac
  * @param action a pointer function to perform an action on one bst node object
  */
 static void bst_traverse_postorder_helper(const bst_tree_t * const __restrict__ tree, const bst_tree_node_t * const __restrict__ root, action_func action) {
-    /* Check if current working bst node is not NULL */
+    /* Check if current working bst node is not `nil` */
     if (tree->nil == root) {
         return;
     }
@@ -1105,7 +1104,7 @@ static void bst_traverse_postorder_helper(const bst_tree_t * const __restrict__ 
  * Usually action will be a printing function, however you
  * can define a map function to map every node data to another
  * node data (the mapping proccess has to be injective to preserve
- * the bst prorpety)
+ * the bst property)
  * 
  * @param tree current working binary search tree object
  * @param action a pointer to a function that will perform an action
@@ -1141,7 +1140,7 @@ scl_error_t bst_traverse_postorder(const bst_tree_t * const __restrict__ tree, a
  * Usually action will be a printing function, however you
  * can define a map function to map every node data to another
  * node data (the mapping proccess has to be injective to preserve
- * the bst prorpety)
+ * the bst property)
  * 
  * @param tree current working binary search tree object
  * @param action a pointer to a function that will perform an action
