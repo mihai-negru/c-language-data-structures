@@ -113,10 +113,10 @@ typedef enum scl_error_s {
  * 
  */
 typedef         size_t          (*hash_func)            (const void * const);
-typedef         int             (*compare_func)         (const void * const, const void * const);
+typedef         int32_t         (*compare_func)         (const void * const, const void * const);
 typedef         void            (*free_func)            (void *);
 typedef         void            (*action_func)          (void * const);
-typedef         int             (*filter_func)          (const void * const);
+typedef         int32_t         (*filter_func)          (const void * const);
 
 void                            scl_error_message       (scl_error_t error_message);
 

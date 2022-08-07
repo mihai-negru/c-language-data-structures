@@ -50,21 +50,21 @@ void            print_double                    (void * const data);
 void            print_long_double               (void * const data);
 void            print_string                    (void * const data);
 
-int             compare_short_int               (const void * const data1, const void * const data2);
-int             compare_ushort_int              (const void * const data1, const void * const data2);
-int             compare_uint                    (const void * const data1, const void * const data2);
-int             compare_int                     (const void * const data1, const void * const data2);
-int             compare_long_int                (const void * const data1, const void * const data2);
-int             compare_ulong_int               (const void * const data1, const void * const data2);
-int             compare_llong_int               (const void * const data1, const void * const data2);
-int             compare_ullong_int              (const void * const data1, const void * const data2);
-int             compare_char                    (const void * const data1, const void * const data2);
-int             compare_uchar                   (const void * const data1, const void * const data2);
-int             compare_float                   (const void * const data1, const void * const data2);
-int             compare_double                  (const void * const data1, const void * const data2);
-int             compare_long_double             (const void * const data1, const void * const data2);
-int             compare_string_size             (const void * const data1, const void * const data2);
-int             compare_string_lexi             (const void * const data1, const void * const data2);
-int             compare_string                  (const void * const data1, const void * const data2);
+int32_t         compare_short_int               (const void * const data1, const void * const data2);
+int32_t         compare_ushort_int              (const void * const data1, const void * const data2);
+int32_t         compare_uint                    (const void * const data1, const void * const data2);
+int32_t         compare_int                     (const void * const data1, const void * const data2);
+int32_t         compare_long_int                (const void * const data1, const void * const data2);
+int32_t         compare_ulong_int               (const void * const data1, const void * const data2);
+int32_t         compare_llong_int               (const void * const data1, const void * const data2);
+int32_t         compare_ullong_int              (const void * const data1, const void * const data2);
+int32_t         compare_char                    (const void * const data1, const void * const data2);
+int32_t         compare_uchar                   (const void * const data1, const void * const data2);
+int32_t         compare_float                   (const void * const data1, const void * const data2);
+int32_t         compare_double                  (const void * const data1, const void * const data2);
+int32_t         compare_long_double             (const void * const data1, const void * const data2);
+int32_t         compare_string_size             (const void * const data1, const void * const data2);
+int32_t         compare_string_lexi             (const void * const data1, const void * const data2);
+int32_t         compare_string                  (const void * const data1, const void * const data2);
 
 #endif /* _FUNCTION_TYPES_H_ */

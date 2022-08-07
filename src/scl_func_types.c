@@ -268,11 +268,11 @@ void print_string(void * const data) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 is greater than data2,
+ * @return int32_t 1 if data1 is greater than data2,
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_short_int(const void * const data1, const void * const data2) {
+int32_t compare_short_int(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -294,11 +294,11 @@ int compare_short_int(const void * const data1, const void * const data2) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 is greater than data2,
+ * @return int32_t 1 if data1 is greater than data2,
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_ushort_int(const void * const data1, const void * const data2) {
+int32_t compare_ushort_int(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -326,11 +326,11 @@ int compare_ushort_int(const void * const data1, const void * const data2) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 is greater than data2,
+ * @return int32_t 1 if data1 is greater than data2,
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_uint(const void * const data1, const void * const data2) {
+int32_t compare_uint(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -358,11 +358,11 @@ int compare_uint(const void * const data1, const void * const data2) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 is greater than data2,
+ * @return int32_t 1 if data1 is greater than data2,
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_int(const void * const data1, const void * const data2) {
+int32_t compare_int(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -384,11 +384,11 @@ int compare_int(const void * const data1, const void * const data2) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 is greater than data2,
+ * @return int32_t 1 if data1 is greater than data2,
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_long_int(const void * const data1, const void * const data2) {
+int32_t compare_long_int(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -410,11 +410,11 @@ int compare_long_int(const void * const data1, const void * const data2) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 is greater than data2,
+ * @return int32_t 1 if data1 is greater than data2,
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_ulong_int(const void * const data1, const void * const data2) {
+int32_t compare_ulong_int(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -442,11 +442,11 @@ int compare_ulong_int(const void * const data1, const void * const data2) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 is greater than data2,
+ * @return int32_t 1 if data1 is greater than data2,
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_llong_int(const void * const data1, const void * const data2) {
+int32_t compare_llong_int(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -468,11 +468,11 @@ int compare_llong_int(const void * const data1, const void * const data2) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 is greater than data2,
+ * @return int32_t 1 if data1 is greater than data2,
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_ullong_int(const void * const data1, const void * const data2) {
+int32_t compare_ullong_int(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -500,11 +500,11 @@ int compare_ullong_int(const void * const data1, const void * const data2) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 is greater than data2,
+ * @return int32_t 1 if data1 is greater than data2,
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_char(const void * const data1, const void * const data2) {
+int32_t compare_char(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -532,11 +532,11 @@ int compare_char(const void * const data1, const void * const data2) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 is greater than data2,
+ * @return int32_t 1 if data1 is greater than data2,
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_uchar(const void * const data1, const void * const data2) {
+int32_t compare_uchar(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -564,11 +564,11 @@ int compare_uchar(const void * const data1, const void * const data2) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 is greater than data2,
+ * @return int32_t 1 if data1 is greater than data2,
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_float(const void * const data1, const void * const data2) {
+int32_t compare_float(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -596,11 +596,11 @@ int compare_float(const void * const data1, const void * const data2) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 is greater than data2,
+ * @return int32_t 1 if data1 is greater than data2,
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_double(const void * const data1, const void * const data2) {
+int32_t compare_double(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -628,11 +628,11 @@ int compare_double(const void * const data1, const void * const data2) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 is greater than data2,
+ * @return int32_t 1 if data1 is greater than data2,
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_long_double(const void * const data1, const void * const data2) {
+int32_t compare_long_double(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -660,12 +660,12 @@ int compare_long_double(const void * const data1, const void * const data2) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 length is greater
+ * @return int32_t 1 if data1 length is greater
  * than data2 length, -1 if data2 length is greater
  * than data1 length, 0 if data1 length is equal
  * with data2 length
  */
-int compare_string_size(const void * const data1, const void * const data2) {
+int32_t compare_string_size(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -693,12 +693,12 @@ int compare_string_size(const void * const data1, const void * const data2) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 is greater than data2,
+ * @return int32_t 1 if data1 is greater than data2,
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2. Elements are compared
  * lexicographycally
  */
-int compare_string_lexi(const void * const data1, const void * const data2) {
+int32_t compare_string_lexi(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
@@ -720,11 +720,11 @@ int compare_string_lexi(const void * const data1, const void * const data2) {
  * 
  * @param data1 pointer to data type 1 location
  * @param data2 pointer to data type 2 location
- * @return int 1 if data1 is greater than data2,
+ * @return int32_t 1 if data1 is greater than data2,
  * -1 if data2 is greater than data1, 0 if
  * data1 is equal with data2
  */
-int compare_string(const void * const data1, const void * const data2) {
+int32_t compare_string(const void * const data1, const void * const data2) {
     /* Check if data1 and data2 are valid */
     if ((NULL == data1) || (NULL == data2)) {
         errno = ENODATA;
