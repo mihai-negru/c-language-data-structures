@@ -94,13 +94,13 @@ priority_queue_t* create_priority_queue(size_t init_capacity, compare_func cmp_p
             return NULL;
         }
 
-        /* Initialize every heap node as NULL */
+        /* Initialize every heap node as `NULL` */
         for (size_t iter = 0; iter < init_capacity; ++iter) {
             new_pri_queue->nodes[iter] = NULL;    
         }  
     }
 
-    /* Return a new allocated priority queue or NULL */
+    /* Return a new allocated priority queue or `NULL` */
     return new_pri_queue;
 }
 
@@ -329,7 +329,7 @@ static scl_error_t sift_node_down(const priority_queue_t * const __restrict__ pq
 
 /**
  * @brief Create a priority queue node object. Function may fail if priority pointer
- * is `NULL` or if its size is 0. One priority queue node may have NO data (NULL), but
+ * is `NULL` or if its size is 0. One priority queue node may have NO data (`NULL`), but
  * it must have a valid priority.
  * 
  * @param pqueue an allocated priority queue object
@@ -360,7 +360,7 @@ static pri_node_t* create_priority_queue_node(const priority_queue_t * const __r
                 free(new_pri_queue_node);
             
                 errno = ENOMEM;
-                perror("Not enough memory for data allocation");
+                perror("Not enough memory for data value allocation");
             
                 return NULL;
             }
@@ -385,7 +385,7 @@ static pri_node_t* create_priority_queue_node(const priority_queue_t * const __r
             free(new_pri_queue_node);
             
             errno = ENOMEM;
-            perror("Not enough memory for priority allocation");
+            perror("Not enough memory for priority value allocation");
             
             return NULL;
         }
@@ -397,14 +397,14 @@ static pri_node_t* create_priority_queue_node(const priority_queue_t * const __r
         perror("Not enough memory for priority queue node allocation");
     }
 
-    /* Return a new allocated priority queue node or NULL */
+    /* Return a new allocated priority queue node or `NULL` */
     return new_pri_queue_node;
 }
 
 /**
  * @brief Function to create a priority queue starting from an array.
  * Function will take O(N) time to create the priority queue, which is
- * faster than O(NlogN) time. However function may fail and return NULL
+ * faster than O(NlogN) time. However function may fail and return `NULL`
  * if priority array is not allocated or an priority element is not allocated,
  * also a valid priority compare function.
  * 
@@ -428,7 +428,7 @@ scl_error_t heapify(priority_queue_t * const __restrict__ empty_pqueue, const vo
         if ((NULL != data) && (0 != empty_pqueue->data_size)) {
             new_pqueue_node = create_priority_queue_node(empty_pqueue, (const uint8_t *)data + iter * empty_pqueue->data_size, (const uint8_t *)priority + iter * empty_pqueue->pri_size);
         } else {
-            new_pqueue_node = create_priority_queue_node(empty_pqueue, NULL, (const uint8_t * const)priority + iter * empty_pqueue->pri_size);
+            new_pqueue_node = create_priority_queue_node(empty_pqueue, NULL, (const uint8_t *)priority + iter * empty_pqueue->pri_size);
         }
 
         /* Check if new priority queue node was created successfully */
@@ -470,14 +470,17 @@ scl_error_t change_node_priority(const priority_queue_t * const __restrict__ pqu
         return SCL_NULL_PRIORITY_QUEUE;
     }
 
+    /* Check if priority queue nodes are allocated */
     if (NULL == pqueue->nodes) {
         return SCL_NULL_PQUEUE_NODES;
     }
 
+    /* Check if index of the node is not out of bound */
     if ((SIZE_MAX == node_index) || (node_index >= pqueue->size)) {
         return SCL_INDEX_OVERFLOWS_SIZE;
     }
 
+    /* Check if selected node is in the priority queue */
     if (NULL == pqueue->nodes[node_index]) {
         return SCL_CHANGE_PRIORITY_TO_NULL;
     }
@@ -738,7 +741,7 @@ const void* pri_queue_top_pri(const priority_queue_t * const __restrict__ pqueue
 /**
  * @brief Function to remove the highest rank node from
  * current specified priority queue object. Function may
- * fail if queue is empty or not allocated.
+ * fail if priority queue is empty or not allocated.
  * 
  * @param pqueue priority queue object
  * @return scl_error_t enum object for handling errors
@@ -858,7 +861,7 @@ uint8_t is_priq_empty(const priority_queue_t * const __restrict__ pqueue) {
 /**
  * @brief Function to sort elements of an array by heap sort
  * method. Function will call heapify function to make a priority queue
- * where array elements will be priorities and data will be set as NULL.
+ * where array elements will be priorities and data will be set as `NULL`.
  * 
  * @param arr an array of any type to sort its elements
  * @param number_of_elem number of elements within the selected array

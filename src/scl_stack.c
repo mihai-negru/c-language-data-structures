@@ -31,7 +31,7 @@
  * 
  * @param frd pointer to a function to free content of one data
  * @param data_size length in bytes of the data data type
- * @return stack_t* a new allocated stack object or NULL (if function failed)
+ * @return stack_t* a new allocated stack object or `NULL` (if function failed)
  */
 stack_t* create_stack(free_func frd, size_t data_size) {
     if (0 == data_size) {
@@ -56,19 +56,19 @@ stack_t* create_stack(free_func frd, size_t data_size) {
         perror("Not enough memory for stack allocation");
     }
 
-    /* Return a new allocated stack or NULL */
+    /* Return a new allocated stack or `NULL` */
     return new_stack;
 }
 
 /**
  * @brief Create a stack node object. Allocation of a new node
  * may fail if address of data is not valid or if not enough
- * memory is left on heap, in this case function will return NULL
+ * memory is left on heap, in this case function will return `NULL`
  * and an exception will be thrown
  * 
  * @param stack an allocated stack object
  * @param data pointer to an address of a generic data
- * @return stack_node_t* new allocated stack node object or NULL
+ * @return stack_node_t* new allocated stack node object or `NULL`
  */
 static stack_node_t* create_stack_node(const stack_t * const __restrict__ stack, const void * __restrict__ data) {
     /* Check if data address is valid */
@@ -98,21 +98,21 @@ static stack_node_t* create_stack_node(const stack_t * const __restrict__ stack,
             new_node = NULL;
 
             errno = ENOMEM;
-            perror("Not enough memory for node stack allocation");
+            perror("Not enough memory for data node stack allocation");
         }
     } else {
         errno = ENOMEM;
-        perror("Not enough memory for node list allocation");
+        perror("Not enough memory for stack node allocation");
     }
 
-    /* Return a new stack node object or NULL */
+    /* Return a new stack node object or `NULL` */
     return new_node;
 }
 
 /**
  * @brief Function to free every byte of memory allocated for a specific
  * stack object. The function will iterate through all nodes and will
- * free the data content according to freeData function provided by user at
+ * free the data content according to frd function provided by user at
  * creation of stack, however if no free function was provided it means
  * that data pointer does not contain any dinamically allocated elements.
  * 
@@ -140,7 +140,7 @@ scl_error_t free_stack(stack_t * const __restrict__ stack) {
                 free(iterator->data);
             }
 
-            /* Set node pointer to data as NULL */
+            /* Set node pointer to data as `NULL` */
             iterator->data = NULL;
 
             /* Free node pointer */
@@ -148,7 +148,7 @@ scl_error_t free_stack(stack_t * const __restrict__ stack) {
                 free(iterator);
             }
 
-            /* Set node pointer as NULL */
+            /* Set node pointer as `NULL` */
             iterator = NULL;
         }
 
@@ -173,7 +173,7 @@ scl_error_t free_stack(stack_t * const __restrict__ stack) {
  * @return scl_error_t enum object for handling errors
  */
 scl_error_t print_stack(const stack_t * const __restrict__ stack, action_func print) {
-    /* Check if input datat is valid */
+    /* Check if input data is valid */
     if (NULL == stack) {
         return SCL_NULL_STACK;
     }
@@ -182,7 +182,7 @@ scl_error_t print_stack(const stack_t * const __restrict__ stack, action_func pr
         return SCL_NULL_ACTION_FUNC;
     } 
 
-    /* Queue is empty, print [] */
+    /* Stack is empty, print [] */
     if (NULL == stack->top) {
         printf("[ ]");
     } else {
@@ -190,7 +190,7 @@ scl_error_t print_stack(const stack_t * const __restrict__ stack, action_func pr
 
         /*
          * Print every node according
-         * to printData function
+         * to print function
          */
         while (NULL != iterator) {
             print(iterator->data);
@@ -204,8 +204,8 @@ scl_error_t print_stack(const stack_t * const __restrict__ stack, action_func pr
 /**
  * @brief Function to check if a stack object
  * is empty or not. The function tests if top of stack
- * is NULL in that case function will return true, otherwise
- * it will return false. A NULL stack is also considered as an
+ * is `NULL` in that case function will return true, otherwise
+ * it will return false. A `NULL` stack is also considered as an
  * empty stack
  * 
  * @param stack a stack object
@@ -221,7 +221,7 @@ uint8_t is_stack_empty(const stack_t * const __restrict__ stack) {
 
 /**
  * @brief Get the stack size object. If stack is not
- * allocated then function will return -1 value.
+ * allocated then function will return SIZE_MAX value.
  * 
  * @param stack a stack object
  * @return size_t SIZE_MAX if stack is not allocated or
@@ -236,9 +236,9 @@ size_t get_stack_size(const stack_t * const __restrict__ stack) {
 }
 
 /**
- * @brief Function to return the real data of the
+ * @brief Function to return a pointer to data of the
  * top node. If stack is not allocated or stack is empty
- * then NULL will be returned, otherwise a pointer to the actual
+ * then `NULL` will be returned, otherwise a pointer to the actual
  * data memory location will be returned
  * 
  * @param stack a stack object
@@ -255,9 +255,7 @@ const void* stack_top(const stack_t * const __restrict__ stack) {
 /**
  * @brief Function to push one generic data to a stack.
  * Function may fail if stack or data is not valid (have
- * address NULL) or not enough heap memory is left. You can
- * push different data types into stack, but you will have to define
- * diferent functions to print stack and to maintain it
+ * address `NULL`) or not enough heap memory is left.
  * 
  * @param stack a stack object
  * @param data pointer to an address of a generic data type
@@ -303,8 +301,8 @@ scl_error_t stack_push(stack_t * const __restrict__ stack, const void * __restri
 /**
  * @brief Function to pop one genric data from a stack.
  * Function may fail if stack or data is not valid (have
- * address NULL). Function will remove the top element from the stack
- * and will clear the content of the data accroding to freeData
+ * address `NULL`). Function will remove the top element from the stack
+ * and will clear the content of the data accroding to frd
  * function provided by the user at creation of the stack.
  * 
  * @param stack a stack object

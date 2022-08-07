@@ -26,14 +26,14 @@
 #include "./include/scl_queue.h"
 
 /**
- * @brief Create an red-black object. Allocation may fail if there
- * is not enough memory on heap or compareData function is not valid
+ * @brief Create a red-black tree object. Allocation may fail if there
+ * is not enough memory on heap or cmp function is not valid
  * (data arranges in red-black tree by comparation) in this case an exception will be thrown.
  * 
  * @param cmp pointer to a function to compare two sets of data
  * @param frd pointer to a function to free content of one data
  * @param data_size length in bytes of the data data type
- * @return rbk_tree_t* a new allocated red-black tree object or NULL (if function failed)
+ * @return rbk_tree_t* a new allocated red-black tree object or `NULL` (if function failed)
  */
 rbk_tree_t* create_rbk(compare_func cmp, free_func frd, size_t data_size) {
     /* Check if compareData function is valid */
@@ -43,6 +43,7 @@ rbk_tree_t* create_rbk(compare_func cmp, free_func frd, size_t data_size) {
         return NULL;
     }
 
+    /* Check if the data size of one node is valid */
     if (0 == data_size) {
         errno = EINVAL;
         perror("Data size at creation is zero");
@@ -59,10 +60,10 @@ rbk_tree_t* create_rbk(compare_func cmp, free_func frd, size_t data_size) {
         new_tree->cmp = cmp;
         new_tree->frd = frd;
 
-        /* Create nil node */
+        /* Create `nil` node */
         new_tree->nil = malloc(sizeof(*new_tree->nil));
 
-        /* Set default values for a nil cell*/
+        /* Set default values for a `nil` cell*/
         if (NULL != new_tree->nil) {
             new_tree->nil->data = NULL;
             new_tree->nil->color = BLACK;
@@ -83,19 +84,19 @@ rbk_tree_t* create_rbk(compare_func cmp, free_func frd, size_t data_size) {
         perror("Not enough memory for red-black allocation");
     }
     
-    /* Return a new allocated red-black tree object or NULL */
+    /* Return a new allocated red-black tree object or `NULL` */
     return new_tree;
 }
 
 /**
  * @brief Create an red-black node object. Allocation of a new node
  * may fail if address of data is not valid or if not enough memory
- * is left on heap, in this case function will return NULL and an exception
+ * is left on heap, in this case function will return `nil` and an exception
  * will be thrown.
  * 
  * @param tree an allocated red-black tree object
  * @param data pointer to an address of a generic data
- * @return rbk_tree_node_t* a new allocated red-black tree node object or nil
+ * @return rbk_tree_node_t* a new allocated red-black tree node object or `nil`
  */
 static rbk_tree_node_t* create_rbk_node(const rbk_tree_t * const __restrict__ tree, const void * __restrict__ data) {
     /* Check if data address is valid */
@@ -139,7 +140,7 @@ static rbk_tree_node_t* create_rbk_node(const rbk_tree_t * const __restrict__ tr
         perror("Not enough memory for node red-black allocation");
     }
 
-    /* Return a new red-black tree node object or nil */
+    /* Return a new red-black tree node object or `nil` */
     return new_node;
 }
 
@@ -171,7 +172,7 @@ static void free_rbk_helper(const rbk_tree_t * const __restrict__ tree, rbk_tree
         free((*root)->data);
     }
 
-    /* Set data pointer as NULL */
+    /* Set data pointer as `NULL` */
     (*root)->data = NULL;
 
     /* Free red-black node pointer */
@@ -185,7 +186,7 @@ static void free_rbk_helper(const rbk_tree_t * const __restrict__ tree, rbk_tree
 /**
  * @brief Function to free every byte of memory allocated for a specific
  * red-black tree object. The function will iterate through all nodes
- * and will free the data content according to freeData function provided
+ * and will free the data content according to frd function provided
  * by user at creation of red-black tree, however if no free function
  * was provided it means that data pointer does not contain any dynamically
  * allocated elements.
@@ -197,10 +198,10 @@ scl_error_t free_rbk(rbk_tree_t * const __restrict__ tree) {
     /* Check if tree needs to be freed */
     if (NULL != tree) {
 
-        /* Free every node from red-black -> tree */
+        /* Free every node from red-black tree */
         free_rbk_helper(tree, &tree->root);
         
-        /* Free nil cell*/
+        /* Free `nil` cell*/
         free(tree->nil);
 
         tree->nil = NULL;
@@ -218,7 +219,7 @@ scl_error_t free_rbk(rbk_tree_t * const __restrict__ tree) {
  * @brief Function to rotate to left a subtree starting 
  * from fix_node red-black tree node object. Function may fail
  * if red-black tree object is not allocated or red-black tree node
- * object is nil.
+ * object is `nil`.
  * 
  * @param tree an allocated red-black tree object
  * @param fix_node pointer to red-black tree node object to rotate
@@ -270,7 +271,7 @@ static void rbk_rotate_left(rbk_tree_t * const __restrict__ tree, rbk_tree_node_
  * @brief Function to rotate to right a subtree starting 
  * from fix_node red-black tree node object. Function may fail
  * if red-black tree object is not allocated or red-black tree node
- * object is NULL.
+ * object is `nil`.
  * 
  * @param tree an allocated red-black tree object
  * @param fix_node pointer to red-black tree node object to rotate
@@ -321,7 +322,7 @@ static void rbk_rotate_right(rbk_tree_t * const __restrict__ tree, rbk_tree_node
 /**
  * @brief Helper function to fix up the balance of a rbk_tree_t
  * after insertion of one node. Function may fail if current
- * working tree and node is nil.
+ * working tree and node is `nil`.
  * 
  * @param tree an allocated red-black tree object
  * @param fix_node a pointer to a red-black tree node object to start
@@ -440,7 +441,7 @@ static scl_error_t rbk_insert_fix_node_up(rbk_tree_t * const __restrict__ tree, 
 /**
  * @brief Function to insert one generic data to a red-black.
  * Function may fail if red-black or data os not valid (have
- * address NULL) or not enough heap memory is left. You
+ * address `NULL`) or not enough heap memory is left. You
  * CANNOT insert different data types into red-black tree, this
  * will evolve into an uknown behavior or segmentation fault.
  * 
@@ -520,14 +521,14 @@ scl_error_t rbk_insert(rbk_tree_t * const __restrict__ tree, const void * __rest
 }
 
 /**
- * @brief Function to search data in red-black tree O(log N).
+ * @brief Function to search node in red-black tree O(log N).
  * Function will start searching from red-black tree root and will
  * search the data value in all tree.
  * 
  * @param tree an allocated red-black tree object
  * @param data pointer to an address of a generic data type
  * @return rbk_tree_node_t* red-black tree node object containing
- * data value or NULL in case no such node exists
+ * data value or `nil` in case no such node exists
  */
 static rbk_tree_node_t* rbk_find_node(const rbk_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
     /* Check if input data is valid */
@@ -561,7 +562,7 @@ static rbk_tree_node_t* rbk_find_node(const rbk_tree_t * const __restrict__ tree
  * @param tree an allocated red-black tree object
  * @param data pointer to an address of a generic data type
  * @return const void* red-black tree node data object containing
- * data value or NULL in case node is nil (not found)
+ * data value or `NULL` in case node is nil (not found)
  */
 const void* rbk_find_data(const rbk_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
     /* Check if input data is valid */
@@ -569,16 +570,14 @@ const void* rbk_find_data(const rbk_tree_t * const __restrict__ tree, const void
         return NULL;
     }
 
-    /* Get the nide data or NULL if node is nil */
+    /* Get the nide data or `NULL` if node is `nil` */
     return rbk_find_node(tree, data)->data;
 }
 
 /**
- * @brief Function to change data bytes of destination pointer.
- * This function MUST NOT be used by users, because it will
- * break the proprety of red-black tree, it is used by program
- * to delete nodes from red-black tree and must be used just
- * in delete function provided by the program.
+ * @brief Function to swap two nodes from a red black tree.
+ * This function is a subroutine of the delete function to 
+ * change deleted node with its inorder successor.
  * 
  * @param dest_node red black node object to rewrite data bytes from src_node
  * @param src_node red black node object to copy data bytes
@@ -789,14 +788,13 @@ static rbk_tree_node_t* rbk_min_node(const rbk_tree_t * const __restrict__ tree,
 
 /**
  * @brief Function to get the maximum data value from red-black.
- * Function will search the maximum data considering root node
+ * Function will search the maximum data considering subroot data
  * as the beginning of the tree (root != tree(root))
  * 
  * @param tree an allocated red-black tree object
  * @param subroot_data pointer to a data value that represents a node
- * to start searcing for maximum node, pointer may be NULL or not to be
- * in the red-black tree
- * @return void* pointer to maximum data value from red-black tree
+ * to start searcing for maximum node
+ * @return const void* pointer to maximum data value from red-black tree
  */
 const void* rbk_max_data(const rbk_tree_t * const __restrict__ tree, const void * const __restrict__ subroot_data) {
     /* Check if input data is valid */
@@ -804,19 +802,18 @@ const void* rbk_max_data(const rbk_tree_t * const __restrict__ tree, const void 
         return NULL;
     }
 
-    /* Get maximum data from red-black or NULL is node is nil*/
+    /* Get maximum data from red-black or `NULL` is node is `nil` */
     return rbk_max_node(tree, rbk_find_node(tree, subroot_data))->data;
 }
 
 /**
  * @brief Function to get the minimum data value from red-black.
- * Function will search the minimum data considering root node
+ * Function will search the minimum data considering subroot data
  * as the beginning of the tree (root != tree(root))
  * 
  * @param tree an allocated red-black tree object
  * @param subroot_data pointer to a data value that represents a node
- * to start searcing for minimum node, pointer may be NULL or not to be
- * in the red-black tree
+ * to start searcing for minimum node
  * @return void* pointer to minimum data value from red-black tree
  */
 const void* rbk_min_data(const rbk_tree_t * const __restrict__ tree, const void * const __restrict__ subroot_data) {
@@ -825,14 +822,14 @@ const void* rbk_min_data(const rbk_tree_t * const __restrict__ tree, const void 
         return NULL;
     }
 
-    /* Get minimum data from red-black or NULL is node is nil*/
+    /* Get minimum data from red-black or `NULL` is node is `nil` */
     return rbk_min_node(tree, rbk_find_node(tree, subroot_data))->data;
 }
 
 /**
  * @brief Helper function to fix up the balance of a rbk_tree_t
  * after deletion of one node. Function may fail if current
- * working tree and node are NULL.
+ * working tree and node are `NULL/nil`.
  * 
  * @param tree an allocated red-black tree object
  * @param fix_node a pointer to a red-black tree node object that is a double black
@@ -1130,7 +1127,7 @@ scl_error_t rbk_delete(rbk_tree_t * const __restrict__ tree, const void * const 
         free(delete_node->data);
     }
 
-    /* Set data pointer as NULL */
+    /* Set data pointer as `NULL` */
     delete_node->data = NULL;
 
     /* Free selected red-black node pointer */
@@ -1138,7 +1135,7 @@ scl_error_t rbk_delete(rbk_tree_t * const __restrict__ tree, const void * const 
         free(delete_node);
     }
 
-    /* Set selected red-black node as NULL */
+    /* Set selected red-black node as `NULL` */
     delete_node = tree->nil;
 
     /* Deacrease tree size  */
@@ -1162,7 +1159,7 @@ scl_error_t rbk_delete(rbk_tree_t * const __restrict__ tree, const void * const 
  * 
  * @param tree an allocated red-black tree object
  * @param data pointer to an address of a generic data type
- * @return rbk_tree_node_t* NULL or inorder predecessor of the
+ * @return rbk_tree_node_t* `nil` or inorder predecessor of the
  * node containing (void *data) value.
  */
 static rbk_tree_node_t* rbk_predecessor_node(const rbk_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
@@ -1174,7 +1171,7 @@ static rbk_tree_node_t* rbk_predecessor_node(const rbk_tree_t * const __restrict
     /* Find node containing the data value */
     rbk_tree_node_t *iterator = rbk_find_node(tree, data);
 
-    /* If node is not in red-black than return NULL */
+    /* If node is not in red-black than return `nil` */
     if (tree->nil == iterator) {
         return tree->nil;
     }
@@ -1209,7 +1206,7 @@ static rbk_tree_node_t* rbk_predecessor_node(const rbk_tree_t * const __restrict
  * 
  * @param tree an allocated red-black tree object
  * @param data pointer to an address of a generic data type
- * @return rbk_tree_node_t* NULL or inorder successor of the
+ * @return rbk_tree_node_t* `nil` or inorder successor of the
  * node containing (void *data) value.
  */
 static rbk_tree_node_t* rbk_successor_node(const rbk_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
@@ -1221,7 +1218,7 @@ static rbk_tree_node_t* rbk_successor_node(const rbk_tree_t * const __restrict__
     /* Find node containing the data value */
     rbk_tree_node_t *iterator = rbk_find_node(tree, data);
 
-    /* If node is not in red-black than return NULL */
+    /* If node is not in red-black than return `nil` */
     if (tree->nil == iterator) {
         return tree->nil;
     }
@@ -1256,7 +1253,7 @@ static rbk_tree_node_t* rbk_successor_node(const rbk_tree_t * const __restrict__
  * 
  * @param tree an allocated red-black tree object
  * @param data pointer to an address of a generic data type
- * @return const void* NULL or data of inorder predecessor of the
+ * @return const void* `NULL` or data of inorder predecessor of the
  * node containing (void *data) value.
  */
 const void* rbk_predecessor_data(const rbk_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
@@ -1265,7 +1262,7 @@ const void* rbk_predecessor_data(const rbk_tree_t * const __restrict__ tree, con
         return NULL;
     }
 
-    /* Get the predecessor data or NULL if node is nil */
+    /* Get the predecessor data or NULL if node is `nil` */
     return rbk_predecessor_node(tree, data)->data;
 }
 
@@ -1278,7 +1275,7 @@ const void* rbk_predecessor_data(const rbk_tree_t * const __restrict__ tree, con
  * 
  * @param tree an allocated red-black tree object
  * @param data pointer to an address of a generic data type
- * @return const void* NULL or data of inorder successor of the
+ * @return const void* `NULL` or data of inorder successor of the
  * node containing (void *data) value.
  */
 const void* rbk_succecessor_data(const rbk_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
@@ -1287,7 +1284,7 @@ const void* rbk_succecessor_data(const rbk_tree_t * const __restrict__ tree, con
         return NULL;
     }
 
-    /* Get the successor data or NULL if node is nil */
+    /* Get the successor data or `NULL` if node is `nil` */
     return rbk_successor_node(tree, data)->data;
 }
 
@@ -1356,7 +1353,7 @@ const void* rbk_lowest_common_ancestor_data(const rbk_tree_t * const __restrict_
         return NULL;
     }
 
-    /* Get the lowest common ancestor data or NULL if node is nil */
+    /* Get the lowest common ancestor data or `NULL` if node is `nil` */
     return rbk_lowest_common_ancestor_node(tree, data1, data2)->data;
 }
 
@@ -1370,7 +1367,7 @@ const void* rbk_lowest_common_ancestor_data(const rbk_tree_t * const __restrict_
  * @param action a pointer function to perform an action on one red-black node object
  */
 static void rbk_traverse_inorder_helper(const rbk_tree_t * const __restrict__ tree, const rbk_tree_node_t * const __restrict__ root, action_func action) {
-    /* Check if current working red-black node is not nil */
+    /* Check if current working red-black node is not `nil` */
     if (tree->nil == root) {
         return;
     }
@@ -1432,7 +1429,7 @@ scl_error_t rbk_traverse_inorder(const rbk_tree_t * const __restrict__ tree, act
  * @param action a pointer function to perform an action on one red-black node object
  */
 static void rbk_traverse_preorder_helper(const rbk_tree_t * const __restrict__ tree, const rbk_tree_node_t * const __restrict__ root, action_func action) {
-    /* Check if current working red-black node is not NULL */
+    /* Check if current working red-black node is not `nil` */
     if (tree->nil == root) {
         return;
     }
@@ -1493,7 +1490,7 @@ scl_error_t rbk_traverse_preorder(const rbk_tree_t * const __restrict__ tree, ac
  * @param action a pointer function to perform an action on one red-black node object
  */
 static void rbk_traverse_postorder_helper(const rbk_tree_t * const __restrict__ tree, const rbk_tree_node_t * const __restrict__ root, action_func action) {
-    /* Check if current working red-black node is not NULL */
+    /* Check if current working red-black node is not `nil` */
     if (tree->nil == root) {
         return;
     }

@@ -272,9 +272,7 @@ const void* queue_back(const queue_t * const __restrict__ queue) {
 /**
  * @brief Function to push one generic data to a queue.
  * Function may fail if queue or data is not valid (have
- * address `NULL`) or not enough heap memory is left. You can
- * push different data types into queue, but you will have to define
- * diferent functions to print queue and to maintain it
+ * address `NULL`) or not enough heap memory is left.
  * 
  * @param queue a queue object
  * @param data pointer to an address of a generic data type

@@ -30,9 +30,9 @@
 #include <string.h>
 #include <errno.h>
 
-#define         vtoptr(VAR)                     (&(VAR))
-#define         lvtoptr(TYPE, LVAL)             (&(TYPE){(LVAL)})
-#define         make_pair(M1, M2)               (M1), (M2)
+#define         toptr(var)                      (&(var))
+#define         ltoptr(type, lval)              (&(type){(lval)})
+#define         make_pair(m1, m2)               (m1), (m2)
 
 void            print_all_data                  (void * const data);
 void            print_short_int                 (void * const data);
