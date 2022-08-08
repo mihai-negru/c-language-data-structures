@@ -71,4 +71,12 @@ size_t              graph_vertex_future_vertices            (const graph_t * con
 size_t              graph_vertex_anticone_vertices          (const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path);
 size_t              graph_tips_vertices                     (const graph_t * const __restrict__ gr, uint64_t * __restrict__ vertex_path);
 
+size_t              graph_topological_sort                  (const graph_t * const __restrict__ gr, uint64_t * __restrict__ vertex_path);
+scl_error_t         graph_dijkstra                          (const graph_t * const __restrict__ gr, uint64_t start_vertex, long double * __restrict__ vertex_dists, uint64_t * __restrict__ vertex_parents);
+scl_error_t         graph_prim                              (const graph_t * const __restrict__ gr, uint64_t start_vertex, long double * __restrict__ vertex_dists, uint64_t * __restrict__ vertex_parents);
+scl_error_t         graph_floyd_warshall                    (const graph_t * const __restrict__ gr, long double ** __restrict__ vertices_dists);
+
+uint8_t             graph_is_strongly_connected             (const graph_t * const __restrict__ gr);
+uint64_t**          graph_strongly_connected_components     (const graph_t * const __restrict__ gr, size_t *number_of_scc);
+
 #endif /* GRAPH_UTILS_H_ */

@@ -1,2 +1,0 @@
-# Taskuri
-* graphs

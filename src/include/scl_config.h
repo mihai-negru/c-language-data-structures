@@ -105,7 +105,12 @@ typedef enum scl_error_s {
     SCL_NULL_GRAPH_VERTEX                       = -53,
     SCL_REALLOC_GRAPH_VERTICES_FAIL             = -54,
     SCL_VERTEX_OUT_OF_BOUND                     = -55,
-    SCL_EDGE_NOT_FOUND                          = -56
+    SCL_EDGE_NOT_FOUND                          = -56,
+    SCL_NULL_VERTICES_DISTANCES                 = -57,
+    SCL_NULL_VERTICES_PARENTS                   = -58,
+    SCL_NULL_VISIT_MEMBER                       = -59,
+    SCL_INVALID_TRANSPOSED_GRAPH                = -60,
+    SCL_NULL_PATH_VECTOR                        = -61
 } scl_error_t;
 
 /**

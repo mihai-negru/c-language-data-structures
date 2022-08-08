@@ -24,6 +24,8 @@
 
 #include "./include/scl_graph.h"
 #include "./include/scl_queue.h"
+#include "./include/scl_stack.h"
+#include "./include/scl_priority_queue.h"
 
 graph_t* create_graph(size_t number_of_vertexes) {
     if (0 == number_of_vertexes) {
@@ -310,7 +312,7 @@ scl_error_t graph_print(const graph_t * const __restrict__ gr, const uint8_t ** 
                 link = link->next;
             }
 
-            printf("-|\n");
+            printf(" ~ (Null)\n");
         }
     }
     
@@ -487,15 +489,7 @@ scl_error_t graph_delete_vertex(graph_t * const __restrict__ gr, uint64_t vertex
 }
 
 size_t graph_bfs_traverse(const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path) {
-    if (NULL == gr) {
-        return 0;
-    }
-
-    if (NULL == gr->vertices) {
-        return 0;
-    }
-
-    if (start_vertex >= gr->size) {
+    if ((NULL == gr) || (NULL == gr->vertices) || (start_vertex >= gr->size)) {
         return 0;
     }
 
@@ -518,8 +512,12 @@ size_t graph_bfs_traverse(const graph_t * const __restrict__ gr, uint64_t start_
         while (!is_queue_empty(bfs_queue)) {
             const uint64_t *front_vertex = queue_front(bfs_queue);
 
-            vertex_path[traversed_vex++] = *front_vertex;
             /* Insted of adding in path variable you can perform an action */
+            if (NULL != vertex_path) {
+                vertex_path[traversed_vex] = *front_vertex; 
+            }
+
+            ++traversed_vex;
 
             if (SCL_OK != queue_pop(bfs_queue)) {
                 free_queue(bfs_queue);
@@ -551,7 +549,11 @@ size_t graph_bfs_traverse(const graph_t * const __restrict__ gr, uint64_t start_
 static void graph_dfs_traverse_helper(const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path, size_t * __restrict__ traversed_vex) {
     gr->visit[start_vertex] = 1;
 
-    vertex_path[(*traversed_vex)++] = start_vertex;
+    if (NULL != vertex_path) {
+       vertex_path[*traversed_vex] = start_vertex; 
+    }
+    
+    ++(*traversed_vex);
 
     graph_link_t *link = gr->vertices[start_vertex]->link;
 
@@ -565,15 +567,7 @@ static void graph_dfs_traverse_helper(const graph_t * const __restrict__ gr, uin
 }
 
 size_t graph_dfs_traverse(const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path) {
-    if (NULL == gr) {
-        return 0;
-    }
-
-    if (NULL == gr->vertices) {
-        return 0;
-    }
-
-    if (start_vertex >= gr->size) {
+    if ((NULL == gr) || (NULL == gr->vertices) || (start_vertex >= gr->size)) {
         return 0;
     }
 
@@ -630,15 +624,7 @@ uint8_t graph_has_cycle(const graph_t * const __restrict__ gr) {
 }
 
 size_t graph_vertex_past_vertices(const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path) {
-    if (NULL == gr) {
-        return 0;
-    }
-
-    if (NULL == gr->vertices) {
-        return 0;
-    }
-
-    if (start_vertex >= gr->size) {
+    if ((NULL == gr) || (NULL == gr->vertices) || (start_vertex >= gr->size) || (NULL == vertex_path)) {
         return 0;
     }
 
@@ -694,15 +680,7 @@ size_t graph_vertex_past_vertices(const graph_t * const __restrict__ gr, uint64_
 }
 
 size_t graph_vertex_future_vertices(const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path) {
-    if (NULL == gr) {
-        return 0;
-    }
-
-    if (NULL == gr->vertices) {
-        return 0;
-    }
-
-    if (start_vertex >= gr->size) {
+    if ((NULL == gr) || (NULL == gr->vertices) || (start_vertex >= gr->size) || (NULL == vertex_path)) {
         return 0;
     }
 
@@ -716,15 +694,7 @@ size_t graph_vertex_future_vertices(const graph_t * const __restrict__ gr, uint6
 }
 
 size_t graph_vertex_anticone_vertices(const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path) {
-    if (NULL == gr) {
-        return 0;
-    }
-
-    if (NULL == gr->vertices) {
-        return 0;
-    }
-
-    if (start_vertex >= gr->size) {
+    if ((NULL == gr) || (NULL == gr->vertices) || (start_vertex >= gr->size) || (NULL == vertex_path)) {
         return 0;
     }
 
@@ -769,11 +739,7 @@ size_t graph_vertex_anticone_vertices(const graph_t * const __restrict__ gr, uin
 }
 
 size_t graph_tips_vertices(const graph_t * const __restrict__ gr, uint64_t * __restrict__ vertex_path) {
-    if (NULL == gr) {
-        return 0;
-    }
-
-    if (NULL == gr->vertices) {
+    if ((NULL == gr) || (NULL == gr->vertices) || (NULL == vertex_path)) {
         return 0;
     }
 
@@ -790,7 +756,426 @@ size_t graph_tips_vertices(const graph_t * const __restrict__ gr, uint64_t * __r
     return traversed_size;
 }
 
+static void graph_topological_sort_helper(const graph_t * const __restrict__ gr, uint64_t start_vertex, stack_t * const __restrict__ stack) {
+    if (NULL == gr->vertices[start_vertex]) {
+        return;
+    }
 
+    gr->visit[start_vertex] = 1;
 
+    graph_link_t * link = gr->vertices[start_vertex]->link;
 
+    for(; link != NULL; link = link->next) {
+        if (0 == gr->visit[link->vertex]) {
+            graph_topological_sort_helper(gr, link->vertex, stack);
+        }
+    }
 
+    stack_push(stack, &start_vertex);
+}
+
+size_t graph_topological_sort(const graph_t * const __restrict__ gr, uint64_t * __restrict__ vertex_path) {
+    if ((NULL == gr) || (NULL == gr->vertices) || (NULL == gr->visit) || (NULL == vertex_path)) {
+        return 0;
+    }
+
+    stack_t *sort_stack = create_stack(NULL, sizeof(*vertex_path));
+
+    if (NULL == sort_stack) {
+        return 0;
+    }
+
+    for (size_t iter = 0; iter < gr->size; ++iter) {
+        gr->visit[iter] = 0;
+    }
+
+    for (size_t iter = 0; iter < gr->size; ++iter) {
+        if (0 == gr->visit[iter]) {
+            graph_topological_sort_helper(gr, iter, sort_stack);
+        }
+    }
+
+    size_t traversed_size = 0;
+    scl_error_t err = SCL_OK;
+
+    while (!is_stack_empty(sort_stack)) {
+        const uint64_t *top_vertex = stack_top(sort_stack);
+
+        vertex_path[traversed_size++] = *top_vertex;
+
+        err = stack_pop(sort_stack);
+
+        if (SCL_OK != err) {
+            free_stack(sort_stack);
+            return traversed_size;
+        }
+    }
+
+    free_stack(sort_stack);
+    return traversed_size;
+}
+
+static int32_t min_heap_cmp_func(const void * const elem1, const void * const elem2) {
+    if ((NULL != elem1) && (NULL != elem2)) {
+        const uint64_t * const f_elem1 = elem1;
+        const uint64_t * const f_elem2 = elem2;
+
+        if (*f_elem1 > *f_elem2) {
+            return -1;
+        } else if (*f_elem1 < *f_elem2) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    return 0;
+} 
+
+scl_error_t graph_dijkstra(const graph_t * const __restrict__ gr, uint64_t start_vertex, long double * __restrict__ vertex_dists, uint64_t * __restrict__ vertex_parents) {
+    if (NULL == gr) {
+        return SCL_NULL_GRAPH;
+    }
+
+    if (NULL == gr->vertices) {
+        return SCL_NULL_GRAPH_VERTICES;
+    }
+
+    if (NULL == vertex_dists) {
+        return SCL_NULL_VERTICES_DISTANCES;
+    }
+
+    uint64_t *vertices = malloc(sizeof(*vertices) * gr->size);
+
+    if (NULL == vertices) {
+        return SCL_NOT_ENOUGHT_MEM_FOR_OBJ;
+    }
+
+    if (NULL != vertex_parents) {
+        for (size_t iter = 0; iter < gr->size; ++iter) {
+            vertex_parents[iter] = UINT64_MAX;
+        }
+
+        vertex_parents[start_vertex] = -1;
+    }
+
+    for (size_t iter = 0; iter < gr->size; ++iter) {
+        vertices[iter] = iter;
+        vertex_dists[iter] = __LDBL_MAX__;
+    }
+
+    vertex_dists[start_vertex] = 0;
+
+    priority_queue_t *min_heap = create_priority_queue(gr->size, &min_heap_cmp_func, &min_heap_cmp_func, NULL, NULL, sizeof(*vertex_dists), sizeof(*vertices));
+
+    if (NULL == min_heap) {
+        free(vertices);
+
+        return SCL_NULL_PRIORITY_QUEUE;
+    }
+
+    scl_error_t err = heapify(min_heap, vertices, vertex_dists);
+    free(vertices);
+
+    if (SCL_OK != err) {
+        free_priority_queue(min_heap);
+
+        return err;
+    }
+
+    while (!is_priq_empty(min_heap)) {
+        uint64_t min_dist_vertex = *(uint64_t *)pri_queue_top(min_heap);
+        
+        err = pri_queue_pop(min_heap);
+
+        if (SCL_OK != err) {
+            free_priority_queue(min_heap);
+
+            return err;
+        }
+
+        if (NULL == gr->vertices[min_dist_vertex]) {
+            free_priority_queue(min_heap);
+
+            return SCL_NULL_GRAPH_VERTEX;
+        }
+
+        graph_link_t *link = gr->vertices[min_dist_vertex]->link;
+
+        for (; link != NULL; link = link->next) {
+            size_t vertex_heap_index = pri_find_data_index(min_heap, &link->vertex);
+
+            if ((SIZE_MAX != vertex_heap_index) &&
+                (vertex_dists[min_dist_vertex] != __LDBL_MAX__) &&
+                (link->edge_len + vertex_dists[min_dist_vertex] < vertex_dists[link->vertex])) {
+                if (NULL != vertex_parents) {
+                    vertex_parents[link->vertex] = min_dist_vertex;
+                }
+
+                vertex_dists[link->vertex] = vertex_dists[min_dist_vertex] + link->edge_len;
+
+                err = change_node_priority(min_heap, pri_find_data_index(min_heap, &link->vertex), &vertex_dists[link->vertex]);
+
+                if (SCL_OK != err) {
+                    free_priority_queue(min_heap);
+
+                    return err;
+                }
+            }
+        }
+    }
+
+    return free_priority_queue(min_heap);
+}
+
+scl_error_t graph_prim(const graph_t * const __restrict__ gr, uint64_t start_index, long double * __restrict__ vertex_dists, uint64_t * __restrict__ vertex_parents) {
+    if (NULL == gr) {
+        return SCL_NULL_GRAPH;
+    }
+
+    if (NULL == gr->vertices) {
+        return SCL_NULL_GRAPH_VERTICES;
+    }
+
+    if (NULL == vertex_dists) {
+        return SCL_NULL_VERTICES_DISTANCES;
+    }
+
+    if (NULL == vertex_parents) {
+        return SCL_NULL_VERTICES_PARENTS;
+    }
+
+    uint64_t *vertices = malloc(sizeof(*vertices) * gr->size);
+
+    if (NULL == vertices) {
+        return SCL_NOT_ENOUGHT_MEM_FOR_OBJ;
+    }
+
+    for (size_t iter = 0; iter < gr->size; ++iter) {
+        vertices[iter] = iter;
+        vertex_dists[iter] = __LDBL_MAX__;
+        vertex_parents[iter] = UINT64_MAX;
+    }
+
+    vertex_parents[start_index] = -1;
+    vertex_dists[start_index] = 0;
+
+    priority_queue_t *min_heap = create_priority_queue(gr->size, &min_heap_cmp_func, &min_heap_cmp_func, NULL, NULL, sizeof(*vertex_dists), sizeof(*vertices));
+
+    if (NULL == min_heap) {
+        free(vertices);
+
+        return SCL_NULL_PRIORITY_QUEUE;
+    }
+
+    scl_error_t err = heapify(min_heap, vertices, vertex_dists);
+    free(vertices);
+
+    if (SCL_OK != err) {
+        free_priority_queue(min_heap);
+
+        return err;
+    }
+
+    while (!is_priq_empty(min_heap)) {
+        uint64_t min_dist_vertex = *(uint64_t *)pri_queue_top(min_heap);
+        
+        err = pri_queue_pop(min_heap);
+
+        if (SCL_OK != err) {
+            free_priority_queue(min_heap);
+
+            return err;
+        }
+
+        if (NULL == gr->vertices[min_dist_vertex]) {
+            free_priority_queue(min_heap);
+
+            return SCL_NULL_GRAPH_VERTEX;
+        }
+
+        graph_link_t *link = gr->vertices[min_dist_vertex]->link;
+
+        for (; link != NULL; link = link->next) {
+            size_t vertex_heap_index = pri_find_data_index(min_heap, &link->vertex);
+
+            if ((SIZE_MAX != vertex_heap_index) &&
+                (vertex_dists[min_dist_vertex] != __LDBL_MAX__) &&
+                (link->edge_len < vertex_dists[link->vertex])) {
+
+                vertex_parents[link->vertex] = min_dist_vertex;
+                vertex_dists[link->vertex] = link->edge_len;
+
+                err = change_node_priority(min_heap, pri_find_data_index(min_heap, &link->vertex), &vertex_dists[link->vertex]);
+
+                if (SCL_OK != err) {
+                    free_priority_queue(min_heap);
+
+                    return err;
+                }
+            }
+        }
+    }
+
+    return free_priority_queue(min_heap);
+}
+
+scl_error_t graph_floyd_warshall(const graph_t * const __restrict__ gr, long double ** __restrict__ vertices_dists) {
+    if (NULL == gr) {
+        return SCL_NULL_GRAPH;
+    }
+
+    if (NULL == gr->vertices) {
+        return SCL_NULL_GRAPH_VERTICES;
+    }
+
+    for (size_t iter_i = 0; iter_i < gr->size; ++iter_i) {
+        for (size_t iter_j = 0; iter_j < gr->size; ++iter_j) {
+            vertices_dists[iter_i][iter_j] = __LDBL_MAX__;
+        }
+    }
+
+    for (size_t iter = 0; iter < gr->size; ++iter) {
+        if (NULL == gr->vertices[iter]) {
+            return SCL_NULL_GRAPH_VERTEX;
+        }
+
+        graph_link_t *link = gr->vertices[iter]->link;
+
+        for (; link != NULL; link = link->next) {
+            vertices_dists[iter][link->vertex] = link->edge_len;
+        }
+    }
+
+    for (size_t iter_k = 0; iter_k < gr->size; ++iter_k) {
+        for (size_t iter_i = 0; iter_i < gr->size; ++iter_i) {
+            for (size_t iter_j = 0; iter_j < gr->size; ++iter_j) {
+                if (vertices_dists[iter_i][iter_k] + vertices_dists[iter_k][iter_j] < vertices_dists[iter_i][iter_j]) {
+                    vertices_dists[iter_i][iter_j] = vertices_dists[iter_i][iter_k] + vertices_dists[iter_k][iter_j];
+                }
+            }
+        }
+    }
+
+    return SCL_OK;
+}
+
+uint8_t graph_is_strongly_connected(const graph_t * const __restrict__ gr) {
+    if ((NULL == gr) || (NULL == gr->visit) || (NULL == gr->vertices)) {
+        return 0;
+    }
+
+    size_t dfs_size = graph_dfs_traverse(gr, 0, NULL);
+
+    if (dfs_size != gr->size) {
+        return 0;
+    }
+
+    graph_t *transpose_gr = create_transpose_graph(gr);
+
+    if ((NULL == transpose_gr) || (NULL == transpose_gr->visit) || (NULL == transpose_gr->vertices)) {
+        return 0;
+    }
+
+    dfs_size = graph_dfs_traverse(transpose_gr, 0, NULL);
+
+    free_graph(transpose_gr);
+
+    if (dfs_size != gr->size) {
+        return 0;
+    }
+
+    return 1;
+}
+
+uint64_t** graph_strongly_connected_components(const graph_t * const __restrict__ gr, size_t *number_of_scc) {
+    if ((NULL == gr) || (NULL == gr->vertices) || (NULL == gr->visit) || (NULL == number_of_scc)) {
+        return NULL;
+    }
+
+    stack_t *scc_stack = create_stack(NULL, sizeof(uint64_t));
+
+    if (NULL == scc_stack) {
+        return NULL;
+    }
+
+    for (size_t iter = 0; iter < gr->size; ++iter) {
+        gr->visit[iter] = 0;
+    }
+
+    for (size_t iter = 0; iter < gr->size; ++iter) {
+        if (0 == gr->visit[iter]) {
+            graph_topological_sort_helper(gr, iter, scc_stack);
+        }
+    }
+
+    graph_t *transpose_gr = create_transpose_graph(gr);
+
+    if ((NULL == transpose_gr) || (NULL == transpose_gr->visit)) {
+        free_stack(scc_stack);
+
+        return NULL;
+    }
+
+    for (size_t iter = 0; iter < transpose_gr->size; ++iter) {
+        transpose_gr->visit[iter] = 0;
+    }
+
+    *number_of_scc = 0;
+    uint64_t **scc_paths = NULL;
+
+    while (!is_stack_empty(scc_stack)) {
+        uint64_t top_vertex = *(uint64_t *)stack_top(scc_stack);
+
+        stack_pop(scc_stack);
+
+        if (0 == transpose_gr->visit[top_vertex]) {
+            if (0 == *number_of_scc) {
+                scc_paths = malloc(sizeof(*scc_paths));
+
+                if (NULL == scc_paths) {
+                    free_stack(scc_stack);
+                    free_graph(transpose_gr);
+
+                    return NULL;
+                }
+            } else {
+                uint64_t **try_realloc = realloc(scc_paths, sizeof(*try_realloc) * (*number_of_scc + 1));
+
+                if (NULL == try_realloc) {
+                    free_stack(scc_stack);
+                    free_graph(transpose_gr);
+
+                    return scc_paths;
+                }
+
+                scc_paths = try_realloc;
+            }
+
+            scc_paths[*number_of_scc] = malloc(sizeof(*scc_paths[*number_of_scc]) * (gr->size + 1));
+
+            if (NULL != scc_paths[*number_of_scc]) {
+                scc_paths[*number_of_scc][0] = 0;
+
+                graph_dfs_traverse_helper(transpose_gr, top_vertex, scc_paths[*number_of_scc] + 1, &scc_paths[*number_of_scc][0]);
+
+                ++(*number_of_scc);
+            } else {
+                free_stack(scc_stack);
+                free_graph(transpose_gr);
+
+                return scc_paths;
+            }
+        }
+    }
+
+    if ((0 == *number_of_scc) && (NULL != scc_paths)) {
+        free(scc_paths);
+        scc_paths = NULL;
+    }
+
+    free_graph(transpose_gr);
+    free_stack(scc_stack);
+
+    return scc_paths;
+}
