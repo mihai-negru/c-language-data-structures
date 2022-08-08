@@ -992,7 +992,7 @@ scl_error_t list_map(const list_t * const __restrict__ list, action_func action)
     }
 
     if (NULL == list->head) {
-        return SCL_MAP_EMPTY_OBJECT;
+        return SCL_NULL_ACTION_FUNC;
     }
 
     if (NULL == action) {

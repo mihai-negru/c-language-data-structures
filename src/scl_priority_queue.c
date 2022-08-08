@@ -415,7 +415,7 @@ static pri_node_t* create_priority_queue_node(const priority_queue_t * const __r
  */
 scl_error_t heapify(priority_queue_t * const __restrict__ empty_pqueue, const void *data, const void *priority) {
     if (0 == is_priq_empty(empty_pqueue)) {
-        return SCL_NOT_EMPTY_PRIOTIRY_QUEUE;
+        return SCL_NOT_EMPTY_PRIORITY_QUEUE;
     }
 
     /* Fill up heap nodes pointers with real content without following heap rules */

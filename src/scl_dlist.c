@@ -994,7 +994,7 @@ scl_error_t dlist_traverse(const dlist_t * const __restrict__ list, action_func 
     }
 
     if (NULL == list->head) {
-        return SCL_MAP_EMPTY_OBJECT;
+        return SCL_NULL_ACTION_FUNC;
     }
 
     if (NULL == action) {

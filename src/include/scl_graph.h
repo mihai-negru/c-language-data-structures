@@ -32,22 +32,34 @@
 #include <errno.h>
 #include "scl_config.h"
 
+/**
+ * @brief Graph Edge Object definition as a linked list
+ * 
+ */
 typedef struct graph_link_s {
-    uint64_t vertex;
-    long double edge_len;
-    struct graph_link_s *next;
+    uint64_t vertex;                                        /* Vertex number that links with the original vertex */
+    long double edge_len;                                   /* Length of the edge starting from original vertex to number vartex */
+    struct graph_link_s *next;                              /* Pointer to the next link or edge from the graph */
 } graph_link_t;
 
+/**
+ * @brief Graph Vertex Object definition
+ * 
+ */
 typedef struct graph_vertex_s {
-    graph_link_t *link;
-    size_t in_deg;
-    size_t out_deg;
+    graph_link_t *link;                                     /* Linked list representing all edges with current vertex with other vertices */
+    size_t in_deg;                                          /* Number of edges that point to current vertex */
+    size_t out_deg;                                         /* Number of edges that point from current vertex */
 } graph_vertex_t;
 
+/**
+ * @brief Graph Object definition
+ * 
+ */
 typedef struct graph_s {
-    graph_vertex_t **vertices;
-    uint8_t *visit;
-    size_t size;
+    graph_vertex_t **vertices;                              /* Array of vertices of the graph */
+    uint8_t *visit;                                         /* Array of visited vertices from the current graph */
+    size_t size;                                            /* Number of vertices from the current graph object */
 } graph_t;
 
 graph_t*            create_graph                            (size_t number_of_vertexes);
