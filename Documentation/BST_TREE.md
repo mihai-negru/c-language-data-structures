@@ -1,4 +1,4 @@
-# Documentation for binary search tree object (bstUtils.h)
+# Documentation for binary search tree object ([scl_bst_tree.h](../src/include/scl_bst_tree.h))
 
 ## How to create a binary search tree and how to destroy it?
 
@@ -9,10 +9,10 @@ For creating a bst tree object you just need to:
 ```C
     // Somewhere in your program
 
-    bst_tree_t *my_tree = create_bst(&compare_data, &free_data);
+    bst_tree_t *my_tree = create_bst(&compare_data, &free_data, sizeof(data type));
 ```
 
->**NOTE:** As you observe you should provide a compare and a free data function, however if the compare function is a must, because data is inserted in the bst according to compare function the free function is optional. If you insert data that is not dynamically allocated by yourself and it is maintained on the stack that you must not provide a free function.
+>**NOTE:** As you observe you should provide a compare and a free data function, however if the compare function is a must, because data is inserted in the bst according to compare function, the free function is optional. If you insert data that is not dynamically allocated by yourself and it is maintained by the call stack that you must not provide a free function.
 
 Example of free function:
 
@@ -34,9 +34,9 @@ Example of free function:
     }
 ```
 
->**NOTE:** In any other case that you do not allocate memory for your single data element that no free function should be provided.
+>**NOTE:** In any other case that you do not allocate memory for your single data element than no free function should be provided.
 
-If you want to delete a binary search tree object and to free evry byte of memory ocupied by it you should call the following function:
+If you want to delete a binary search tree object and to free every byte of memory occupied by it you should call the following function:
 
 ```C
     // Somewhere in your code
@@ -51,8 +51,8 @@ If you want to delete a binary search tree object and to free evry byte of memor
 According to following functions:
 
 ```C
-    scl_error_t bst_insert(bst_tree_t * const tree, const void * const data, size_t data_size);
-    scl_error_t bst_delete(bst_tree_t * const tree, const void * const data, size_t data_size);
+    scl_error_t bst_insert(bst_tree_t * const __restrict__ tree, const void * __restrict__ data);
+    scl_error_t bst_delete(bst_tree_t * const __restrict__ tree, const void * const __restrict__ data);
 ```
 
 Let's assume that we work with integers in our program, so for now no need for a free function that's good:
@@ -61,13 +61,13 @@ Let's assume that we work with integers in our program, so for now no need for a
     int main(void) {
         scl_error_t err_msg = SCL_OK;
 
-        bst_tree_t *my_tree = create_bst(&compare_int, 0);
+        bst_tree_t *my_tree = create_bst(&compare_int, 0, sizeof(int));
         // You can find compare_int into scl_func_types.h
 
         for (int i = 0; i < 100; ++i) {
             int data = 0;
             scanf("%d", &data);
-            if ((err_msg = bst_insert(my_tree, &data, sizeof(data))) != SCL_OK) {
+            if ((err_msg = bst_insert(my_tree, toptr(data))) != SCL_OK) {
                 scl_error_message(err_msg);
             }
         }
@@ -75,9 +75,16 @@ Let's assume that we work with integers in our program, so for now no need for a
         int remove_data = 7;
 
         // Removes node containing 7 if it exists on my_tree
-        if ((err_msg = bst_delete(my_tree, &remove_data, sizeof(remove_data))) != SCL_OK) {
+        if ((err_msg = bst_delete(my_tree, toptr(remove_data))) != SCL_OK) {
             scl_error_message(err_msg);
         }
+
+        /* 
+         * Another way to perform the same action is to do:
+         * if ((err_msg = bst_delete(my_tree, ltoptr(int, 7))) != SCL_OK) {
+         *    scl_error_message(err_msg); 
+         * } 
+         */
 
         // Do not forget to free memory
         free_bst(my_tree);
@@ -86,6 +93,9 @@ Let's assume that we work with integers in our program, so for now no need for a
     }
 ```
 
+>**NOTE:** If you will want to use the `toptr` and `ltoptr` macros you will have to include [scl_func_types.h](../src/include/scl_func_types.h). You can use istead the toptr
+and ltoptr their definition, but i find it more fancy to use them. 
+
 >**NOTE:** You are not allowed to insert different object types into the bst Tree. The data has to have the same type, otherwise the behavior will evolve into a segmentation fault.
 
 ## Accessing nodes and data from binary search tree ?
@@ -93,17 +103,52 @@ Let's assume that we work with integers in our program, so for now no need for a
 For this section we have the following functions:
 
 ```C
-    uint8_t is_bst_empty(const bst_tree_t * const tree);
-    const void* bst_find_data(const bst_tree_t * const tree, const void * const data);
-    int32_t bst_data_level(const bst_tree_t * const tree, const void * const data);
-    const void* get_bst_root(const bst_tree_t * const tree);
-    size_t get_bst_size(const bst_tree_t * const tree);
-    void* bst_max_data(const bst_tree_t * const tree, const void * const subroot_data);
-    void* bst_min_data(const bst_tree_t * const tree, const void * const subroot_datat);
-    void* bst_predecessor_data(const bst_tree_t * const tree, const void * const data);
-    void* bst_succecessor_data(const bst_tree_t * const tree, const void * const data);
-    void* bst_lowest_common_ancestor_data(
-        const bst_tree_t * const tree, const void * const data1, const void * const data2
+    uint8_t is_bst_empty(
+        const bst_tree_t * const __restrict__ tree
+    );
+
+    const void* bst_find_data(
+        const bst_tree_t * const __restrict__ tree,
+        const void * const __restrict__ data
+    );
+
+    int32_t bst_data_level(
+        const bst_tree_t * const __restrict__ tree,
+        const void * const __restrict__ data
+    );
+
+    const void* get_bst_root(
+        const bst_tree_t * const __restrict__ tree
+    );
+
+    size_t get_bst_size(
+        const bst_tree_t * const __restrict__ tree
+    );
+
+    const void* bst_max_data(
+        const bst_tree_t * const __restrict__ tree,
+        const void * const __restrict__ subroot_data
+    );
+
+    const void* bst_min_data(
+        const bst_tree_t * const __restrict__ tree,
+        const void * const __restrict__ subroot_data
+    );
+
+    const void* bst_predecessor_data(
+        const bst_tree_t * const __restrict__ tree,
+        const void * const __restrict__ data
+    );
+
+    const void* bst_succecessor_data(
+        const bst_tree_t * const __restrict__ tree,
+        const void * const __restrict__ data
+    );
+
+    const void* bst_lowest_common_ancestor_data(
+        const bst_tree_t * const __restrict__ tree,
+        const void * const __restrict__ data1,
+        const void * const __restrict__ data2
     );
 ```
 
@@ -116,7 +161,7 @@ The functions do exacty what their name says, now let's see some quick examples 
 
     // I will need a function to work with the nodes
 
-    void printData(void * const data) {
+    void print_data(const void * const data) {
         if (NULL == data) {
             return;
         }
@@ -126,31 +171,34 @@ The functions do exacty what their name says, now let's see some quick examples 
 
     // Now let the carnage begin
     int main(void) {
-        bst_tree_t *my_tree = create_bst(&compare_int, 0);
+        bst_tree_t *my_tree = create_bst(&compare_int, 0, sizeof(int));
 
         for (int i = 0; i < 100; ++i) {
             int data = 0;
             scanf("%d", &data);
-            bst_insert(my_tree, &data, sizeof(data));
+            bst_insert(my_tree, toptr(data));
         }
 
         int data = 4;
-        printf("Level of node 4 is : %d\n", bst_data_level(my_tree, &data));
+        printf("Level of node 4 is : %d\n", bst_data_level(my_tree, toptr(data)));
+
+        // OR
+        printf("Level of node 4 is : %d\n", bst_data_level(my_tree, ltoptr(int, 4)));
 
         printf("Successor and Predecessor of node 4 is:\n");
-        printData(bst_successor_node(my_tree, &data));
-        printData(bst_predecessor_node(my_tree, &data));
+        print_data(bst_successor_node(my_tree, toptr(data)));
+        print_data(bst_predecessor_node(my_tree, toptr(data)));
 
         int data = 7;
         // !!! I supposed here that there is a successor of a successor
         printf("Successor of node's 7 successor is : %d",
-                *(const int * const )bst_successor_data(my_tree, &data));
+                *(const int * const )bst_successor_data(my_tree, toptr(data)));
 
-        free_bst(bst);
+        free_bst(my_tree);
     }
 ```
 
->**NOTE:** The rest of the functions that were not described in the example above work just like them, for example bst_min_node returns the minimum node from binary search tree and bst_min_data return the minimum data from the binary search tree.
+>**NOTE:** The rest of the functions that were not described in the example above work just like them, for example bst_min_data returns the minimum data node from binary search tree and bst_max_data return the maximum data node from the binary search tree.
 
 ## How to print the binary search tree, can I modify all nodes ?
 
@@ -161,9 +209,9 @@ I have prepared 4 functions that will help you traverse you binary search tree:
 * bst_traverse_postorder
 * bst_traverse_level
 
->**NOTE:** All of the above functions take as input your binary search tree and traverse evry single node from it.
+>**NOTE:** All of the above functions take as input your binary search tree and traverse every single node from it.
 
->**NOTE:** We will discuss juust one function of them, because they do the same thing but in different methods.
+>**NOTE:** We will discuss just one function of them, because they do the same thing but in different methods.
 
 **Let's print some nodes** :  you want to print all nodes not just successor or the lowest common ancestor, first you will have to define an **action** function that will do this job for you.
 The definition of an **action** function is:
@@ -174,7 +222,7 @@ The definition of an **action** function is:
 
 >**It takes one node and does whatever it wants**
 
-If we want to print the nodes we will have to define the **printData** functions from the above code:
+If we want to print the nodes we will have to define the **print_data** function from the above code:
 
 ```C
     // this is an action function, takes a node and does something
@@ -191,7 +239,7 @@ If we want to print the nodes we will have to define the **printData** functions
 
         // One way of printing the nodes is
 
-        bst_traverse_inorder(mytree, &print_data); // You may not check such function for error but if you want go on
+        bst_traverse_inorder(mytree, &print_data); // You may not check such function for error but if you want, go on
 
         // Yes !!! Simple as that
     }
@@ -225,7 +273,7 @@ Example:
 
 ```C
     int main(void) {
-        bst_tree_t *my_tree = create_bst(&compare_int, 0);
+        bst_tree_t *my_tree = create_bst(&compare_int, 0, sizeof(int));
 
         // Here insert you're data as you like
 
@@ -253,4 +301,4 @@ Example:
 >**NOTE:** You can also use freopen on **stdin** stream to read data from a desired file and not to worry about `fscanf, fgets, etc...`.
 
 ---
-## For some other examples of using binary search trees you can look up at /examples/bst_tree
+## For some other examples of using binary search trees you can look up at [examples](../examples/bst_tree/)

@@ -1,4 +1,4 @@
-# Documentation for AVL tree object (scl_avl_tree.h)
+# Documentation for AVL tree object ([scl_avl_tree.h](../src/include/scl_avl_tree.h))
 
 ## How to create a AVL tree and how to destroy it?
 
@@ -25,10 +25,10 @@ Example of free function:
 
     // Than your free function mush be like
 
-    void freePerson(void *data) {
+    void free_person(void *data) {
         if (data == NULL) return;
 
-        preson* t_data = data;
+        preson *t_data = data;
 
         free(t_data->name);
         t_data->name = NULL;
@@ -56,7 +56,7 @@ According to following functions:
 
 ```C
     slc_error_t avl_insert(avl_tree_t * const __restrict__ tree, const void * __restrict__ data);
-    scl_error_t avl_delete(avl_tree_t * const __restrict__ tree, const void * __restrict__ data, size_t data_size);
+    scl_error_t avl_delete(avl_tree_t * const __restrict__ tree, const void * __restrict__ data);
 ```
 
 Let's assume that we work with integers in our program, so for now no need for a free function, that's good:
@@ -79,11 +79,11 @@ Let's assume that we work with integers in our program, so for now no need for a
         int remove_data = 7;
 
         // Removes node containing 7 if it exists on my_tree
-        if ((err_msg = avl_delete(my_tree, to_ptr(remove_data))) != SCL_OK) {
+        if ((err_msg = avl_delete(my_tree, toptr(remove_data))) != SCL_OK) {
             scl_error_message(err_msg)
         }
 
-        // Do not forghet to free memory
+        // Do not forget to free memory
         if ((err = free_avl(my_tree)) != SCL_OK) {
             scl_error_message(err_msg);
         }
@@ -93,6 +93,9 @@ Let's assume that we work with integers in our program, so for now no need for a
         return 0;
     }
 ```
+
+>**NOTE:** If you will want to use the `toptr` and `ltoptr` macros you will have to include [scl_func_types.h](../src/include/scl_func_types.h). You can use istead the toptr
+and ltoptr their definition, but I find it more fancy to use them.
 
 >**NOTE:** You are not allowed to insert different object types into the avl Tree. The data has to have the same type, otherwise the behavior will evolve into a segmentation fault.
 
@@ -159,7 +162,7 @@ The functions do exacty what their name says, now let's see some quick examples 
 
     // I will need a function to work with the nodes
 
-    void print_data(void * const data) {
+    void print_data(const void * const data) {
         if (NULL == data) {
             return;
         }
@@ -180,10 +183,11 @@ The functions do exacty what their name says, now let's see some quick examples 
         int data = 4;
         printf("Level of node 4 is : %d\n", avl_data_level(my_tree, toptr(data)));
 
+        // Another way to to the same effect is to use the following:
+        printf("Level of node 4 is : %d\n", avl_data_level(my_tree, ltoptr(int, 4)));
+
         printf("Successor and Predecessor of node 4 is:\n");
 
-        // Here the const of the return data will be dicarded so you will
-        // get a warning the best to print it is by using printf
         print_data(avl_successor_data(my_tree, toptr(data)));
         print_data(avl_predecessor_data(my_tree, toptr(data)));
 
@@ -192,11 +196,11 @@ The functions do exacty what their name says, now let's see some quick examples 
         printf("Successor of node's 7 successor is : %d",
                 *(const int *)avl_successor_data(toptr(data)));
 
-        free_avl(avl);
+        free_avl(my_tree);
     }
 ```
 
->**NOTE:** The rest of the functions that were not described in the example above work just like them, for example avl_min_node returns the minimum node from AVL tree and avl_min_data return the minimum data from the AVL tree.
+>**NOTE:** The rest of the functions that were not described in the example above work just like them, for example avl_min_data returns the minimum data node from AVL tree and avl_max_data return the maximum data node from the AVL tree.
 
 ## How to print the AVL tree, can I modify all nodes ?
 

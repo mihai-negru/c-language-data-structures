@@ -59,7 +59,7 @@ typedef struct priority_queue_s {
 
 priority_queue_t*   create_priority_queue       (size_t init_capacity, compare_func cmp_pr, compare_func cmp_dt, free_func frd_pr, free_func frd_dt, size_t pri_size, size_t data_size);
 scl_error_t         free_priority_queue         (priority_queue_t * const __restrict__ pqueue);
-scl_error_t         heapify                     (priority_queue_t * const __restrict__ empty_pqueue, const void *data, const void *priority);
+scl_error_t         heapify                     (priority_queue_t * const __restrict__ empty_pqueue, const void *priority, const void *data);
 
 scl_error_t         change_node_priority        (const priority_queue_t * const __restrict__ pqueue, size_t node_index, const void * __restrict__ new_pri);
 scl_error_t         change_node_data            (const priority_queue_t * const __restrict__ pqueue, size_t node_index, const void * __restrict__ new_data);
@@ -67,7 +67,7 @@ scl_error_t         change_node_data            (const priority_queue_t * const 
 size_t              pri_find_data_index         (const priority_queue_t * const __restrict__ pqueue, const void * const __restrict__ data);
 size_t              pri_find_pri_index          (const priority_queue_t * const __restrict__ pqueue, const void * const __restrict__ priority);
 
-scl_error_t         pri_queue_push              (priority_queue_t * const __restrict__ pqueue, const void *data, const void *priority);
+scl_error_t         pri_queue_push              (priority_queue_t * const __restrict__ pqueue, const void *priority, const void *data);
 const void*         pri_queue_top               (const priority_queue_t * const __restrict__ pqueue);
 const void*         pri_queue_top_pri           (const priority_queue_t * const __restrict__ pqueue);
 scl_error_t         pri_queue_pop               (priority_queue_t * const __restrict__ pqueue);

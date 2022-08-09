@@ -1,4 +1,4 @@
-# Documentation for queue object (scl_priority_queue.h)
+# Documentation for queue object ([scl_priority_queue.h](../src/include/scl_priority_queue.h))
 
 ## How to create a priority queue and how to destroy it?
 
@@ -7,30 +7,26 @@ In the scl_priority_queue.h you have three functions that will help you by creat
 ```C
     priority_queue_t* create_priority_queue(
         size_t init_capacity,
-        compare_func cmp_dt,
         compare_func cmp_pr,
+        compare_func cmp_dt,
+        free_func frd_pr,
         free_func frd_dt,
-        free_func frd_pr
+        size_t data_size,
+        size_t pri_size
     );
 
     scl_error_t free_priority_queue(
-        priority_queue_t* pqueue
+        priority_queue_t * const __restrict__ pqueue
     );
 
-    priority_queue_t* heapify(
-        const void * const data,
-        const void * const priority,
-        size_t data_size,
-        size_t pri_size,
-        size_t number_of_data,
-        compare_func cmp_dt,
-        compare_func cmp_pr,
-        free_func frd_dt,
-        free_func frd_pr
+    scl_error_t heapify(
+        priority_queue_t * const __restrict__ empty_pqueue,
+        const void *priority,
+        const void *dat,
     );
 ```
 
-`create_priority_queue` and `heapify` will both allocate memory on heap and create a priority queue and will return a pointer to it's location on heap memory. Priority queue is implemented with **HEAPS**. First function `create_priority_queue` will create an empty priority queue, while `heapify` will take an array of the same data and priority type and will make a priority queue using input data (in C++ the heapify method is equal to **emplace** from priority_queue template).
+`create_priority_queue` will allocate memory on heap and create a priority queue and will return a pointer to it's location on heap memory. Priority queue is implemented with **HEAPS**. First function `create_priority_queue` will create an empty priority queue, while `heapify` will take an array of data and priority type and an empty priority queue and will fill it in O(N) complexity (in C++ the heapify method is equal to **emplace** from priority_queue template).
 
 Example of creating and deleting a priority queue:
 
@@ -39,7 +35,7 @@ Example of creating and deleting a priority queue:
 
     int main(void) {
         priority_queue_t* pq = create_priority_queue(
-            20, &compare_int, &compare_int, NULL, NULL);
+            20, &compare_int, &compare_int, NULL, NULL, sizeof(int), sizeof(int));
 
         // pq = [];
 
@@ -47,10 +43,7 @@ Example of creating and deleting a priority queue:
 
         int arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-        priority_queue* pq = heapify(
-            arr, arr, sizeof(int), sizeof(int),
-            sizeof(arr)/ sizeof(arr[0]), &compare_int, &compare_int,
-            NULL, NULL);
+        priority_queue* pq = heapify(pq, arr, arr);
 
         /*
             pq =    9
@@ -76,14 +69,14 @@ Example of creating and deleting a priority queue:
 Example of creating a heap:
 
 ```C
-    priority_queue* pq = create_priority_queue(20, 0, &compare_int, 0, 0);
+    priority_queue* pq = create_priority_queue(20, NULL, &compare_int, NULL, NULL, sizeof(int), 0);
 
     free_priority_queue(pq); // returns a scl_error_t
 ```
 
->**NOTE:** Even if you are working with not NULL data pointer (you keep some keys) then you can set **compare_data** to NULL, this function is used just to find a desired data to change its priority but if you o not care about comparing data then you are free to set it to NULL. However all priority functions MUST not be **NULL**, because the data is arranged in priority queue according to its priority.
+>**NOTE:** Even if you are working with not NULL data pointer (you keep some keys) then you can set **compare_data** to NULL, this function is used just to find a desired data to change its priority but if you do not care about comparing data then you are free to set it to NULL. However all priority functions MUST not be **NULL**, because the data is arranged in priority queue according to its priority.
 
->**NOTE:** I recommend to read all the readmes of data structures to understand how to use free_data, free_priority, compare_data, compare_priority functions from every structure.
+>**NOTE:** I recommend to read all the **readmes** of data structures to understand how to use free_data, free_priority, compare_data, compare_priority functions from every structure.
 
 ## How to insert and how to remove elements from priority queue?
 
@@ -91,28 +84,27 @@ You have 4 function that will maintain a queue:
 
 ```C
     scl_error_t pri_queue_push(
-        priority_queue_t * const pqueue,
-        const void * const data,
-        const void * const priority,
-        size_t data_size,
-        size_t pri_size);
+        priority_queue_t * const __restrict__ pqueue,
+        const void *priority,
+        const void *data,
+    );
 
     const void* pri_queue_top(
-        const priority_queue_t * const pqueue
+        const priority_queue_t * const __restrict__ pqueue
     );
 
     const void* pri_queue_top_pri(
-        const priority_queue_t * const pqueue
+        const priority_queue_t * const __restrict__ pqueue
     );
 
     scl_error_t pri_queue_pop(
-        priority_queue_t * const pqueue
+        priority_queue_t * const __restrict__ pqueue
     );
 ```
 
 It is very important to understand that in order to maintain the propreties of the priority queue the user is not allowed to modify by it's own the priority of one node because it will destroy the priority queue so the return value of the **pri_queue_top_pri** is **const**, however you are allowed to do what you want with your data later we will cover a function to change your data.
 
-`pri_queue_push` is a function to insert one node into the priority queue, the priority queue will itself arrange the node, also you can push a NULL data pointer, but you cannot push a NULL priority pointer, also the priority data size MUST not be 0, otherwise an exception will be thrown.
+`pri_queue_push` is a function to insert one node into the priority queue, the priority queue will itself arrange the node, also you can push a NULL data pointer, but you cannot push a NULL priority pointer, also the priority data size MUST not be 0, otherwise an exception will be thrown in stderr.
 
 `pri_queue_pop` will remove the highest ranked node from the priority queue. If priority queue is a max heap than the maximum element will be removed, if priority queue is a min heap than the minimum element will be removed. (Remember you can arrange your data, according to your fuctions it should not be a max or min function, you can define your own functions that will compare the priority, for example in a string you can consider a bigger string with bigger length, or with more small letters than another string and so own, the concept of min and max is very abstract).
 
@@ -120,14 +112,6 @@ Example of using above functions:
 
 ```C
     #include "./include/scl_datastruc.h"
-
-    void print_data(void * const data) {
-        if (NULL == data) {
-            return;
-        }
-
-        printf("%d ", *(const int * const)data);
-    }
 
     int main(void) {
 
@@ -143,7 +127,7 @@ Example of using above functions:
         scanf("%d", &nr_of_elem);
 
         priority_queue_t* pq = create_priority_queue(
-            10, &compare_int, &compare_int, NULL, NULL);
+            10, &compare_int, &compare_int, NULL, NULL, sizeof(int), sizeof(int));
 
         scl_error_t err = SCL_OK;
 
@@ -151,7 +135,7 @@ Example of using above functions:
             int data = 0;
             scanf("%d", &data);
 
-            if ((err = pri_queue_push(pq, &data, &data, sizeof(data), sizeof(data))) != SCL_OK) {
+            if ((err = pri_queue_push(pq, toptr(data), toptr(data))) != SCL_OK) {
                 scl_error_message(err);
             }
         }
@@ -162,7 +146,11 @@ Example of using above functions:
         pri_queue_pop(pq);
 
         int new_data = -100;
-        pri_queue_push(pq, &new_data, &new_data, sizeof(new_data), sizeof(new_data));
+        pri_queue_push(pq, toptr(new_data), toptr(new_data));
+
+        // OR
+
+        pri_queue_push(pq, ltoptr(int, -100), ltoptr(int, -100));
 
         const int *top_data = pri_queue_top(pq);
 
@@ -189,33 +177,31 @@ In the header file are specified 4 functions to find and change data and priorit
 
 ```C
     scl_error_t change_node_priority(
-        const priority_queue_t * const pqueue,
+        const priority_queue_t * const __restrict__ pqueue,
         size_t node_index,
-        const void * const new_pri,
-        size_t pri_size
+        const void * __restrict__ new_pri
     );
     
     scl_error_t change_node_data(
-        const priority_queue_t * const pqueue,
+        const priority_queue_t * const __restrict__ pqueue,
         size_t node_index,
-        const void * const new_data,
-        size_t data_size
+        const void * __restrict__ new_data
     );
 
     size_t pri_find_data_index(
-        const priority_queue_t * const pqueue,
-        const void * const data
+        const priority_queue_t * const __restrict__ pqueue,
+        const void * const __restrict__ data
     );
 
     size_t pri_find_pri_index(
-        const priority_queue_t * const pqueue,
-        const void * const priority
+        const priority_queue_t * const __restrict__ pqueue,
+        const void * const __restrict__ priority
     );
 ```
 
-The `change_node_data` function will take a priority queue object and a index (the index can be found using pri_find_data_index), also the function will take a pointer to new data location and its size (should be the same size you can use union if want to process different data types in the same priority queue). The following function will not modify the priority queue structure so all the process is requires O(data_size, because of the memcpy which will copy data_size bytes from **new_data** pointer into the old **data** pointer. However the data is not important for priority queue structure user must not modify by him/herself the data pointer, because it may cause an error when priority queue is freed.
+The `change_node_data` function will take a priority queue object and a index (the index can be found using pri_find_data_index), also the function will take a pointer to new data location. The following function will not modify the priority queue structure so all the process is requires O(data_size, because of the memcpy which will copy data_size bytes from **new_data** pointer into the old **data** pointer. However the data is not important for priority queue structure user must not modify by him/herself the data pointer, because it may cause an error when priority queue is freed.
 
-The `change_node_priority` does the same work as the `change_node_data`, but this function will modify the priority queue heap structure. Because the priority is changed then it will highly affect the data structure so user MUST not in any scenario modify but it's own the priority of one node (it is a bad thing not to have private member in a structure). To rearrange the node function will call static member functions as sift up or sift down according to new priority
+The `change_node_priority` does the same work as the `change_node_data`, but this function will modify the priority queue heap structure. Because the priority is changed then it will highly affect the data structure so user MUST not in any scenario modify but hisself own the priority of one node (it is a bad thing not to have private member in a structure). To rearrange the node function will call static member functions as sift up or sift down according to new priority
 
 Example of using above functions:
 
@@ -231,7 +217,7 @@ Example of using above functions:
         int pri = 1;
         int new_pri = 10;
 
-        if (change_node_priority(pq, pri_find_pri_index(pq, &pri), &new_pri, sizeof(pri)) != SCL_OK) {
+        if (change_node_priority(pq, pri_find_pri_index(pq, toptr(pri)), toptr(new_pri)) != SCL_OK) {
             printf("Something went wrong, must call the cops\n");
         } else {
             printf("Well you now how to change data and priority now\n");
@@ -248,11 +234,11 @@ Example of using above functions:
 
 ```C
     size_t pri_queue_size(
-        const priority_queue_t * const pqueue
+        const priority_queue_t * const __restrict__ pqueue
     );
 
     uint8_t is_priq_empty(
-        const priority_queue_t * const pqueue
+        const priority_queue_t * const __restrict__ pqueue
     );
 
     scl_error_t heap_sort(
@@ -265,4 +251,4 @@ Example of using above functions:
 
 I will talk just about heap sort function. Even if a priority queue as heap is created in O(NlogN) time, the heap from heap_sort uses the **heapify** method that will create a heap(priority_queue) in O(N) time which is an improvement. However the cration of the heap can be as fast as possible but popping from the heap requires O(logN) time and popping N elements the resulting time for executing the function will be O(NLogN) time. However this sorting methid is very stabble and and has the same worst and best time as the average time execution complexity. The usage of the heap sort is the same as the qsort implemented in c language standard library.
 
-## For some other examples of using queues you can look up at /examples/priority_queue
+## For some other examples of using queues you can look up at [examples](../examples/priority_queue/)

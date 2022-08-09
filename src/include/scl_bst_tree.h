@@ -61,7 +61,7 @@ bst_tree_t*             create_bst                          (compare_func cmp, f
 scl_error_t             free_bst                            (bst_tree_t * const __restrict__ tree);
 
 scl_error_t             bst_insert                          (bst_tree_t * const __restrict__ tree, const void * const __restrict__ data);
-const void*             bst_find_data                       (const bst_tree_t * const __restrict__ tree, const void * const __restrict__ data);
+const void*             bst_find_data                       (const bst_tree_t * const __restrict__ tree, const void * __restrict__ data);
 int32_t                 bst_data_level                      (const bst_tree_t * const __restrict__ tree, const void * const __restrict__ data);
 
 uint8_t                 is_bst_empty                        (const bst_tree_t * const __restrict__ tree);

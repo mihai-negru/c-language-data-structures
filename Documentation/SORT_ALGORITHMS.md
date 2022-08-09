@@ -1,4 +1,4 @@
-# Documentation for sorting algorithms (scl_sort_algo.h)
+# Documentation for sorting algorithms ([scl_sort_algo.h](../src/include/scl_sort_algo.h))
 
 ## What sort methods am I able to use ?
 
@@ -6,6 +6,8 @@ Well you have a range of some sort methods, as follows:
 
 ```C
     scl_error_t quick_sort(void *arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp);
+
+    scl_error_t heap_sort(void* arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp); // Imported from scl_priority_queue.h
 
     scl_error_t merge_sort(void *arr, size_t number_of_elem, size_t arr_elem_size, compare_func cmp);
 
@@ -81,4 +83,4 @@ Examples:
     // arr = {-22, -19, -1, 11, 1023, 43, 54, 76, 76}
 ```
 
-## For some other examples of using sorting methods you can look up at /examples/sort_algorithms
+## For some other examples of using sorting methods you can look up at [examples](../examples/sort_algorithms/)

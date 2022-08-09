@@ -333,11 +333,11 @@ static scl_error_t sift_node_down(const priority_queue_t * const __restrict__ pq
  * it must have a valid priority.
  * 
  * @param pqueue an allocated priority queue object
- * @param data pointer to a set of generic data type to insert in priority queue
  * @param priority pointer to a set of generic data type to represent priority in queue
+ * @param data pointer to a set of generic data type to insert in priority queue
  * @return pri_node_t* an allocated priority queue node object or `NULL` in case function fails
  */
-static pri_node_t* create_priority_queue_node(const priority_queue_t * const __restrict__ pqueue, const void *data, const void *priority) {
+static pri_node_t* create_priority_queue_node(const priority_queue_t * const __restrict__ pqueue, const void *priority, const void *data) {
     /* Check if input data is valid */
     if (NULL == priority) {
         return NULL;
@@ -409,11 +409,11 @@ static pri_node_t* create_priority_queue_node(const priority_queue_t * const __r
  * also a valid priority compare function.
  * 
  * @param empty_pqueue an allocated EMPTY priority queue object
- * @param data an array of elements to insert into a priority queue
  * @param priority an array of priorities to insert into a priority queue
+ * @param data an array of elements to insert into a priority queue
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t heapify(priority_queue_t * const __restrict__ empty_pqueue, const void *data, const void *priority) {
+scl_error_t heapify(priority_queue_t * const __restrict__ empty_pqueue, const void *priority, const void *data) {
     if (0 == is_priq_empty(empty_pqueue)) {
         return SCL_NOT_EMPTY_PRIORITY_QUEUE;
     }
@@ -426,9 +426,9 @@ scl_error_t heapify(priority_queue_t * const __restrict__ empty_pqueue, const vo
 
         /* Create a new priority queue node depending by data pointer */
         if ((NULL != data) && (0 != empty_pqueue->data_size)) {
-            new_pqueue_node = create_priority_queue_node(empty_pqueue, (const uint8_t *)data + iter * empty_pqueue->data_size, (const uint8_t *)priority + iter * empty_pqueue->pri_size);
+            new_pqueue_node = create_priority_queue_node(empty_pqueue, (const uint8_t *)priority + iter * empty_pqueue->pri_size, (const uint8_t *)data + iter * empty_pqueue->data_size);
         } else {
-            new_pqueue_node = create_priority_queue_node(empty_pqueue, NULL, (const uint8_t *)priority + iter * empty_pqueue->pri_size);
+            new_pqueue_node = create_priority_queue_node(empty_pqueue, (const uint8_t *)priority + iter * empty_pqueue->pri_size, NULL);
         }
 
         /* Check if new priority queue node was created successfully */
@@ -633,11 +633,11 @@ size_t pri_find_pri_index(const priority_queue_t * const __restrict__ pqueue, co
  * node is not created successfully.
  * 
  * @param pqueue priority queue object
- * @param data pointer to one data element
  * @param priority pointer to one priority element
+ * @param data pointer to one data element
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t pri_queue_push(priority_queue_t * const __restrict__ pqueue, const void *data, const void *priority) {
+scl_error_t pri_queue_push(priority_queue_t * const __restrict__ pqueue, const void *priority, const void *data) {
     /* Check if input data is valid */
     if (NULL == pqueue) {
         return SCL_NULL_PRIORITY_QUEUE;
@@ -685,7 +685,7 @@ scl_error_t pri_queue_push(priority_queue_t * const __restrict__ pqueue, const v
     }
 
     /* Create a new priority queue node */
-    pri_node_t *add_node = create_priority_queue_node(pqueue, data, priority);
+    pri_node_t *add_node = create_priority_queue_node(pqueue, priority, data);
 
     /* If new node was not created exit pushing function */
     if (NULL == add_node) {
@@ -890,7 +890,7 @@ scl_error_t heap_sort(void *arr, size_t number_of_elem, size_t arr_elem_size, co
     /* Heapify the input array in O(N) complexity */
     priority_queue_t *heap = create_priority_queue(number_of_elem, cmp, NULL, NULL, NULL, arr_elem_size, 0);
     
-    scl_error_t err = heapify(heap, NULL, arr);
+    scl_error_t err = heapify(heap, arr, NULL);
 
     if (SCL_OK != err) {
         return err;

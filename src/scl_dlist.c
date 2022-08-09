@@ -1001,20 +1001,20 @@ scl_error_t dlist_traverse(const dlist_t * const __restrict__ list, action_func 
         return SCL_NULL_ACTION_FUNC;
     }
 
-    const dlist_node_t *iterator = list->head;
+    if (NULL == list->head) {
+        printf("[ ]\n");
+    } else {
+        const dlist_node_t *iterator = list->head;
 
-    /*
-     * Iterate through every element in the list
-     * and map every single object
-     */
-    while (NULL != iterator) {
+        while (NULL != iterator) {
 
-        /* Copy mapped bytes in data bytes */
-        if (NULL != iterator->data) {
-            action(iterator->data);
+            /* Call the action function */
+            if (NULL != iterator->data) {
+                action(iterator->data);
+            }
+
+            iterator = iterator->next;
         }
-
-        iterator = iterator->next;
     }
 
     return SCL_OK;
