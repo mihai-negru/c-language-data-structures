@@ -327,5 +327,5 @@ Examples of list filter and mapping
 
 > **NOTE:** If filter function return **0** for every element then NULL pointer will be returned and no new_list will be created, however you can pass a NULL linked list pointer to **free_list**, but it will have no effect.
 
-## For some other examples of using double linked lists you can look up at [examples](../examples/list/)
+## For some other examples of using single linked lists you can look up at [examples](../examples/list/)
 

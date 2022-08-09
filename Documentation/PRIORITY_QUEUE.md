@@ -1,4 +1,4 @@
-# Documentation for queue object ([scl_priority_queue.h](../src/include/scl_priority_queue.h))
+# Documentation for priority queue object ([scl_priority_queue.h](../src/include/scl_priority_queue.h))
 
 ## How to create a priority queue and how to destroy it?
 
@@ -251,4 +251,4 @@ Example of using above functions:
 
 I will talk just about heap sort function. Even if a priority queue as heap is created in O(NlogN) time, the heap from heap_sort uses the **heapify** method that will create a heap(priority_queue) in O(N) time which is an improvement. However the cration of the heap can be as fast as possible but popping from the heap requires O(logN) time and popping N elements the resulting time for executing the function will be O(NLogN) time. However this sorting methid is very stabble and and has the same worst and best time as the average time execution complexity. The usage of the heap sort is the same as the qsort implemented in c language standard library.
 
-## For some other examples of using queues you can look up at [examples](../examples/priority_queue/)
+## For some other examples of using priority queues you can look up at [examples](../examples/priority_queue/)
