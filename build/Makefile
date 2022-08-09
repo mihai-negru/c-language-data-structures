@@ -1,4 +1,11 @@
-CFLAGS += -c -g -Wall -Wextra -Wpedantic \
+STATIC_CFLAGS += -c -g -Wall -Wextra -Wpedantic \
+		  -Wformat=2 -Wno-unused-parameter \
+		  -Wshadow -Wwrite-strings -Wstrict-prototypes \
+		  -Wold-style-definition -Wredundant-decls \
+		  -Wnested-externs -Wmissing-include-dirs \
+		  -Wjump-misses-init -Wlogical-op -O2
+
+DYNAMIC_CFLAGS += -c -fPIC -g -Wall -Wextra -Wpedantic \
 		  -Wformat=2 -Wno-unused-parameter \
 		  -Wshadow -Wwrite-strings -Wstrict-prototypes \
 		  -Wold-style-definition -Wredundant-decls \
@@ -15,25 +22,30 @@ FILES = $(PATH_TO_FILES)scl_avl_tree.c $(PATH_TO_FILES)scl_bst_tree.c \
 		$(PATH_TO_FILES)scl_queue.c $(PATH_TO_FILES)scl_stack.c $(PATH_TO_FILES)scl_config.c \
 		$(PATH_TO_FILES)scl_func_types.c \
 
-OUTFILES = scl_avl_tree.o scl_bst_tree.o scl_graph.o \
-		 scl_dlist.o scl_hash_table.o scl_config.o\
-		 scl_priority_queue.o scl_list.o \
-		 scl_red_black_tree.o scl_queue.o scl_sort_algo.o \
-		 scl_stack.o scl_func_types.o \
-		 
+STATIC_LIB = libdstruc.a
+DYNAMIC_LIB = libdstruc.so
 
-LIB = libdatastruc.a
+build: dynamic_lib static_lib
+	@echo "   <------ Building Project Went Successfully ------->"
 
-build: objFiles staticLib clean
+dynamic_lib: dynamic_obj_files
+	@gcc -shared -o $(DYNAMIC_LIB) *.o
+	@find . -type f -name "*.o" -exec rm -rf {} \;
+	@echo "<------ Building Dynamic Library Went Successfully ------->"
 
-objFiles: $(FILES)
-	gcc $(CFLAGS) $(FILES)
+dynamic_obj_files: $(FILES)
+	@gcc $(DYNAMIC_CFLAGS) $(FILES)
 
-staticLib: $(OUTFILES)
-	ar -rc $(LIB) *.o
+static_lib: static_obj_files
+	@ar -rc $(STATIC_LIB) *.o
+	@find . -type f -name "*.o" -exec rm -rf {} \;
+	@echo "<------ Building Static Library Went Successfully ------->"
 
-delLib: $(LIB)
-	rm -rf $(LIB)
+static_obj_files: $(FILES)
+	@gcc $(STATIC_CFLAGS) $(FILES)
 
-clean:
+del_libs:
+	@rm -rf $(DYNAMIC_LIB) $(STATIC_LIB)
+
+clean: del_libs
 	@find . -type f -name "*.o" -exec rm -rf {} \;
