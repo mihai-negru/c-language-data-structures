@@ -6,6 +6,7 @@ CFLAGS += -c -g -Wall -Wextra -Wpedantic \
 		  -Wjump-misses-init -Wlogical-op -O2
 
 DYNAMIC_LIB += /usr/local/lib/libdstruc.so
+
 VALGRIND_FLAGS += --leak-check=full \
 				  --show-leak-kinds=all \
 				  --track-origins=yes
@@ -17,7 +18,7 @@ VALGRIND += valgrind $(VALGRIND_FLAGS)
 build: e1 e2 e3
 
 e1: example1
-	@$(VALGRIND) --log-file=valgrind_out_1.txt ./example1
+	@$(VALGRIND) --log-file=valgrind_log_1.txt ./example1
 	@echo "Run QUEUE example no. 1: Done"
 	@rm -rf example1 example1.o
 
@@ -28,7 +29,7 @@ example1.o: example1.c
 	@gcc $(CFLAGS) example1.c
 
 e2: example2
-	@$(VALGRIND) --log-file=valgrind_out_2.txt ./example2
+	@$(VALGRIND) --log-file=valgrind_log_2.txt ./example2
 	@echo "Run QUEUE example no. 2: Done"
 	@rm -rf example2 example2.o
 
@@ -39,7 +40,7 @@ example2.o: example2.c
 	@gcc $(CFLAGS) example2.c
 
 e3: example3
-	@$(VALGRIND) --log-file=valgrind_out_3.txt ./example3
+	@$(VALGRIND) --log-file=valgrind_log_3.txt ./example3
 	@echo "Run QUEUE example no. 3: Done"
 	@rm -rf example3 example3.o
 
@@ -50,7 +51,4 @@ example3.o: example3.c
 	@gcc $(CFLAGS) example3.c
 
 clean:
-	@rm -rf out_1.txt out_2.txt out_3.txt \
-	        valgrind_out_1.txt valgrind_out_2.txt valgrind_out_3.txt \
-			example1.o example2.o example3.o \
-			example1 example2 example3
+	@rm -rf *.txt *o example1 example2 example3
