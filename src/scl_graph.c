@@ -696,6 +696,22 @@ scl_error_t graph_delete_vertex(graph_t * const __restrict__ gr, uint64_t vertex
 }
 
 /**
+ * @brief Function to get the number of vertices from the
+ * selected graph. If pointer to graph object is NULL than
+ * SIZE_MAX will be returned
+ * 
+ * @param gr a pointer to an allocated graph object
+ * @return size_t SIZE_MAX or the actual size of the graph
+ */
+size_t get_graph_size(const graph_t * const __restrict__ gr) {
+    if (NULL == gr) {
+        return SIZE_MAX;
+    }
+
+    return gr->size;
+}
+
+/**
  * @brief Function to traverse the vertices of the graph object by
  * breath-first-search method. Function will get as input an allocated
  * array to save the path of bfs, if the array is `NULL` then the path

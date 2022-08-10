@@ -74,6 +74,8 @@ scl_error_t         graph_delete_edge                       (const graph_t * con
 scl_error_t         graph_delete_all_edges                  (const graph_t * const __restrict__ gr, uint64_t first_vertex, uint64_t second_vertex);
 scl_error_t         graph_delete_vertex                     (graph_t * const __restrict__ gr, uint64_t vertex);
 
+size_t              get_graph_size                          (const graph_t * const __restrict__ gr);
+
 size_t              graph_bfs_traverse                      (const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path);
 size_t              graph_dfs_traverse                      (const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path);
 
