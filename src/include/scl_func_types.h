@@ -34,6 +34,7 @@
 #define         toptr(var)                      (&(var))
 #define         ltoptr(type, lval)              (&(type){(lval)})
 #define         make_pair(m1, m2)               (m1), (m2)
+#define         make_triplet(m1, m2, m3)        (m1), (m2), (m3)
 
 void            print_short_int                 (void * const data);
 void            print_ushort_int                (void * const data);
