@@ -1,4 +1,8 @@
-.vscode/c_cpp_properties.json
-.vscode/settings.json
-build/libdstruc.a
-build/libdstruc.so
+.vscode
+libdstruc.a
+libdstruc.so
+Makefile
+*.txt
+!*.c
+!*.h
+!*.md
