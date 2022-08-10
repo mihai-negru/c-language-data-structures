@@ -55,7 +55,7 @@ Example of using maintaining functions for the graph:
     #include <scl_datastruc.h>
 
     int main(void) {
-        graph_t *gg = create_graph(3); // Will create 10 vertices with no edges
+        graph_t *gg = create_graph(3); // Will create 3 vertices with no edges
 
         scl_error_t err = SCL_OK;
 
