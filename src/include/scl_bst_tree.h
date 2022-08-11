@@ -74,7 +74,7 @@ const void*             bst_min_data                        (const bst_tree_t * 
 scl_error_t             bst_delete                          (bst_tree_t * const __restrict__ tree, const void * const __restrict__ data);
 
 const void*             bst_predecessor_data                (const bst_tree_t * const __restrict__ tree, const void * const __restrict__ data);
-const void*             bst_succecessor_data                (const bst_tree_t * const __restrict__ tree, const void * const __restrict__ data);
+const void*             bst_successor_data                  (const bst_tree_t * const __restrict__ tree, const void * const __restrict__ data);
 const void*             bst_lowest_common_ancestor_data     (const bst_tree_t * const __restrict__ tree, const void * const __restrict__ data1, const void * const __restrict__ data2);
 
 scl_error_t             bst_traverse_inorder                (const bst_tree_t * const __restrict__ tree, action_func action);

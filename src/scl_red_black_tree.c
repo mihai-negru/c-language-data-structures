@@ -1016,10 +1016,10 @@ scl_error_t rbk_delete(rbk_tree_t * const __restrict__ tree, const void * const 
     if ((tree->nil != delete_node->left) && (tree->nil != delete_node->right)) {
 
         /* Find a replacement for selected node */
-        rbk_tree_node_t *delete_succecessor = rbk_min_node(tree, delete_node->right);
+        rbk_tree_node_t *delete_successor = rbk_min_node(tree, delete_node->right);
                 
         /* Replace the selected red-black node and remove the dublicate */
-        scl_error_t err = rbk_swap_nodes(tree, delete_node, delete_succecessor);
+        scl_error_t err = rbk_swap_nodes(tree, delete_node, delete_successor);
 
         if (SCL_OK != err) {
             return err;
@@ -1278,7 +1278,7 @@ const void* rbk_predecessor_data(const rbk_tree_t * const __restrict__ tree, con
  * @return const void* `NULL` or data of inorder successor of the
  * node containing (void *data) value.
  */
-const void* rbk_succecessor_data(const rbk_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
+const void* rbk_successor_data(const rbk_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
     /* Check if input data is valid */
     if ((NULL == tree) || (NULL == data)) {
         return NULL;

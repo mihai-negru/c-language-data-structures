@@ -75,7 +75,7 @@ const void*             avl_min_data                        (const avl_tree_t * 
 scl_error_t             avl_delete                          (avl_tree_t * const __restrict__ tree, const void * const __restrict__ data);
 
 const void*             avl_predecessor_data                (const avl_tree_t * const __restrict__ tree, const void * const __restrict__ data);
-const void*             avl_succecessor_data                (const avl_tree_t * const __restrict__ tree, const void * const __restrict__ data);
+const void*             avl_successor_data                  (const avl_tree_t * const __restrict__ tree, const void * const __restrict__ data);
 const void*             avl_lowest_common_ancestor_data     (const avl_tree_t * const __restrict__ tree, const void * const __restrict__ data1, const void * const __restrict__ data2);
 
 scl_error_t             avl_traverse_inorder                (const avl_tree_t * const __restrict__ tree, action_func action);

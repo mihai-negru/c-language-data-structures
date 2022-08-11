@@ -908,10 +908,10 @@ scl_error_t avl_delete(avl_tree_t * const __restrict__ tree, const void * const 
         /* Selected node has two children */
 
         /* Find a replacement for selected node */
-        avl_tree_node_t *delete_succecessor = avl_min_node(tree, delete_node->right);
+        avl_tree_node_t *delete_successor = avl_min_node(tree, delete_node->right);
                 
         /* Replace the selected avl node and remove the dublicate */
-        scl_error_t err = avl_swap_nodes(tree, delete_node, delete_succecessor);
+        scl_error_t err = avl_swap_nodes(tree, delete_node, delete_successor);
 
         if (SCL_OK != err) {
             return err;
@@ -1147,7 +1147,7 @@ const void* avl_predecessor_data(const avl_tree_t * const __restrict__ tree, con
  * @return const void* NULL or data of inorder successor of the
  * node containing (void *data) value.
  */
-const void* avl_succecessor_data(const avl_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
+const void* avl_successor_data(const avl_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
     /* Check if input data is valid */
     if ((NULL == tree) || (NULL == data)) {
         return NULL;

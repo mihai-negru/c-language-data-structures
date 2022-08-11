@@ -637,10 +637,10 @@ scl_error_t bst_delete(bst_tree_t * const __restrict__ tree, const void * const 
         /* Selected node has two children */
 
         /* Find a replacement for selected node */
-        bst_tree_node_t *delete_succecessor = bst_min_node(tree, delete_node->right);
+        bst_tree_node_t *delete_successor = bst_min_node(tree, delete_node->right);
                 
         /* Replace the selected bst node and remove the dublicate */
-        scl_error_t err = bst_swap_nodes(tree, delete_node, delete_succecessor);
+        scl_error_t err = bst_swap_nodes(tree, delete_node, delete_successor);
         
         if (SCL_OK != err) {
             return err;
@@ -872,7 +872,7 @@ const void* bst_predecessor_data(const bst_tree_t * const __restrict__ tree, con
  * @return const void* NULL or pointer to data of inorder
  * successor of the node containing (void *data) value.
  */
-const void* bst_succecessor_data(const bst_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
+const void* bst_successor_data(const bst_tree_t * const __restrict__ tree, const void * const __restrict__ data) {
     /* Check if input data is valid */
     if ((NULL == tree) || (NULL == data)) {
         return NULL;
