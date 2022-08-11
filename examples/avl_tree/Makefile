@@ -18,8 +18,9 @@ VALGRIND += valgrind $(VALGRIND_FLAGS)
 build: e1 e2 e3
 
 e1: example1
+	@printf "Run AVL TREE example no. 1: "
 	@$(VALGRIND) --log-file=valgrind_log_1.txt ./example1
-	@echo "Run AVL TREE example no. 1: Done"
+	@printf "Done\n"
 	@rm -rf example1 example1.o
 
 example1: example1.o $(DYNAMIC_LIB)
@@ -29,8 +30,9 @@ example1.o: example1.c
 	@gcc $(CFLAGS) example1.c
 
 e2: example2
+	@printf "Run AVL TREE example no. 2: "
 	@$(VALGRIND) --log-file=valgrind_log_2.txt ./example2
-	@echo "Run AVL TREE example no. 2: Done"
+	@printf "Done\n"
 	@rm -rf example2 example2.o
 
 example2: example2.o $(DYNAMIC_LIB)
@@ -40,8 +42,9 @@ example2.o: example2.c
 	@gcc $(CFLAGS) example2.c
 
 e3: example3
+	@printf "Run AVL TREE example no. 3: "
 	@$(VALGRIND) --log-file=valgrind_log_3.txt ./example3
-	@echo "Run AVL TREE example no. 3: Done"
+	@printf "Done\n"
 	@rm -rf example3 example3.o
 
 example3: example3.o $(DYNAMIC_LIB)
