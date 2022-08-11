@@ -1016,6 +1016,10 @@ scl_error_t avl_delete(avl_tree_t * const __restrict__ tree, const void * const 
     --(tree->size);
     
     /* Fix avl tree if needed */
+    if (tree->nil == parent_delete_node) {
+        return SCL_OK;
+    }
+
     return avl_delete_fix_node_up(tree, parent_delete_node);
 }
 
