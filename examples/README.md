@@ -37,3 +37,5 @@ If you want to remove all the **txt** files and to clear all the directory from 
 ```
 
 >**NOTE:** Same actions you can do in any example data structure directory from **/examples/** directory
+
+>**NOTE:** Some examples are benchmarks, usually example number **3**, so do not worry if the running time is a bit to much.
