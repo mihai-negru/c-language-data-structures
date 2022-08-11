@@ -2,6 +2,7 @@
 libdstruc.a
 libdstruc.so
 Makefile
+/examples/*
 *.txt
 !*.c
 !*.h
