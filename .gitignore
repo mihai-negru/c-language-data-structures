@@ -13,6 +13,7 @@ examples/queue/*
 examples/red_black_tree/*
 examples/sort_algorithms/*
 examples/stack/*
+!*.in
 !*.c
 *.txt
 !*.h
