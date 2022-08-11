@@ -1142,7 +1142,7 @@ scl_error_t rbk_delete(rbk_tree_t * const __restrict__ tree, const void * const 
     --(tree->size);
 
     /* Check if fixing is needed */
-    if (0 != need_fixing_tree) {
+    if ((0 != need_fixing_tree) && (tree->nil != parent_delete_node)) {
         return rbk_delete_fix_node_up(tree, delete_node_child, parent_delete_node);
     }
 
