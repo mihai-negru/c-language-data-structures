@@ -460,6 +460,10 @@ scl_error_t dlist_insert_order(dlist_t * const __restrict__ list, const void * _
             new_node->prev = iterator->prev;
             iterator->prev->next = new_node;
             iterator->prev = new_node;
+
+            if (NULL == iterator) {
+                list->tail = new_node;
+            }
         }
     }
 
@@ -578,6 +582,10 @@ scl_error_t dlist_insert_index(dlist_t * const __restrict__ list, const void * _
     new_node->prev = iterator;
     new_node->next->prev = new_node;
     iterator->next = new_node;
+
+    if (NULL == new_node->next) {
+        list->tail = new_node;
+    }
 
     /* Increase list size */
     ++(list->size);

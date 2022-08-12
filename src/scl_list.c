@@ -454,6 +454,10 @@ scl_error_t list_insert_order(list_t * const __restrict__ list, const void * __r
             /* Insert element at the new position */
             new_node->next = iterator;
             prev_iterator->next = new_node;
+
+            if (NULL == iterator) {
+                list->tail = new_node;
+            }
         }
     }
 
@@ -568,6 +572,10 @@ scl_error_t list_insert_index(list_t * const __restrict__ list, const void * __r
     /* Insert node and update links */
     new_node->next = iterator->next;
     iterator->next = new_node;
+
+    if (NULL == new_node->next) {
+        list->head = new_node;
+    }
 
     /* Increase list size */
     ++(list->size);
@@ -982,7 +990,7 @@ list_t* list_filter(const list_t * const __restrict__ list, filter_func filter) 
  * @param action a pointer to an action function(can be also a mapping func)
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t list_map(const list_t * const __restrict__ list, action_func action) {
+scl_error_t list_traverse(const list_t * const __restrict__ list, action_func action) {
     /*
      * Check if list is allocated and is not empty
      * Check if user provided a valid map function
