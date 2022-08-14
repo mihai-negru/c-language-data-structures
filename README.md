@@ -1,5 +1,10 @@
 ![Projec Logo](images/logo.png)
 
+[![GitHub issues](https://img.shields.io/github/issues/Matrix22/C-language-Data-Structures?label=Issues)](https://github.com/Matrix22/C-language-Data-Structures/issues)
+[![GitHub forks](https://img.shields.io/github/forks/Matrix22/C-language-Data-Structures?label=Forks)](https://github.com/Matrix22/C-language-Data-Structures/network)
+[![GitHub stars](https://img.shields.io/github/stars/Matrix22/C-language-Data-Structures?label=Stars)](https://github.com/Matrix22/C-language-Data-Structures/stargazers)
+[![GitHub license](https://img.shields.io/github/license/Matrix22/C-language-Data-Structures?label=License)](https://github.com/Matrix22/C-language-Data-Structures/blob/master/LICENCE)
+
 # Table of Contents
 1. [Getting Started](#start-description)
 2. [Building the Project](#build-description)
@@ -123,13 +128,24 @@ source file that will be a benchmark to test the power of data structures on you
 depending on your system.
 
 For examples how to build and how to run the examples you must read the documentation related to the examples section.
-The link to documentation [HERE](examples/README.md).
+The link to documentation **[HERE](examples/README.md)**.
 
 Make sure after you are done with one data structure exaxmple to run:
 
 ```BASH
     make clean
 ```
+
+<a name="contributing-description"></a>
+
+## Contributing
+
+I am very open for contributing, however if you want to take part of this project you will have to follow some set of rules:
+
+* First you should respect the code styling, some references are [C Style](https://github.com/mcinglis/c-style)
+* You should provide documentation (respecting doxygen standard) for every function or piece of code
+* You should come with some tests or examples to show how to work with your new functions
+* Be happy and don't stop coding :) 
 
 
 
