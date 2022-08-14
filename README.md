@@ -1,12 +1,13 @@
 ![Projec Logo](images/logo.png)
 
 # Table of Contents
-1. [Getting Started](#start-secription)
+1. [Getting Started](#start-description)
 2. [Building the Project](#build-description)
 3. [Using the library](#use-description)
 4. [Running examples](#examples-description)
 5. [Contributing](#contributing-description)
 
+<a name="start-description"></a>
 ## Getting Started
 
 Project "C Language Data Structures" has come as an idea to supply C Language with some basic **generic** data structures, as follows:
@@ -34,6 +35,7 @@ I tried for every known object to keep their function definitions as in **C++** 
 
 **It is very important** not to use directly the members of the structure objects, however if you feel safe to access them by yourself there should be no problem.
 
+<a name="build-description"></a>
 ## Building the Project
 
 In order to build and to install the project you must be sure that you are working on a **LINUX** environment or if you are on **WINDOWS** to use WSL(Windows Subsystem for Linux). Even if the building can pass on a windows system the executables generated will be incompatible.
@@ -86,6 +88,7 @@ In **build** directory will appear 2 files, representing the dynamic and static 
 
 After running the above commands, everything is set up and now you can use the library and its beauty!
 
+<a name="use-description"></a>
 ## Using the library
 
 If you installed either the dynamic library or the static library into your system then in your source file you shall include:
@@ -109,7 +112,7 @@ For static library first copy the library into **your** current working folder:
     gcc your_file.o -L. -ldstruc -o your_file
 ```
 
-If the building process didn't pass you will not be able to use the **libraries**
+If the building process didn't pass you will not be able to use the **libraries**.
 
 
 
