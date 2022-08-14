@@ -30,4 +30,4 @@ example1.o: example1.c
 	@gcc $(CFLAGS) example1.c
 
 clean:
-	@rm -rf *.txt *o example1 example2 example3
+	@rm -rf *.txt *o example1
