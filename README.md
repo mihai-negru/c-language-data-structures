@@ -1,11 +1,11 @@
 ![Projec Logo](images/logo.png)
 
 # Table of Contents
-1. [Getting Started](#start)
-2. [Building the Project](#build)
-3. [Using the library](#use)
-4. [Running examples](#examples)
-5. [Contributing](#contributing)
+1. [Getting Started](#start-secription)
+2. [Building the Project](#build-description)
+3. [Using the library](#use-description)
+4. [Running examples](#examples-description)
+5. [Contributing](#contributing-description)
 
 ## Getting Started
 
@@ -67,7 +67,7 @@ After executing the following commands you will get prompt some messages showing
         <------ Installing Project Went Successfully ------->
 ```
 
-If one of the above messages haven't showed, something went wrong so I encourage you to try one's again.
+If one of the above messages haven't showed, something went wrong so I encourage you to try ones again.
 
 If you just want to build the libraries and not to register the dynami clibrary into your system you shall run:
 
@@ -85,5 +85,32 @@ In **build** directory will appear 2 files, representing the dynamic and static 
 ```
 
 After running the above commands, everything is set up and now you can use the library and its beauty!
+
+## Using the library
+
+If you installed either the dynamic library or the static library into your system then in your source file you shall include:
+
+```C
+    #include <scl_datastruct.h> // To include all data structures
+    #include <scl_avl_tree.h> // For AVL Tree and so on
+```
+
+And when you compile your program you shall link it as follows for dynamic library:
+
+```BASH
+    gcc -c your_file.c
+    gcc your_file.o -ldstruc -o your_file
+```
+
+For static library first copy the library into **your** current working folder:
+
+```BASH
+    gcc -c your_file.c
+    gcc your_file.o -L. -ldstruc -o your_file
+```
+
+If the building process didn't pass you will not be able to use the **libraries**
+
+
 
 
