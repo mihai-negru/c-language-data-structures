@@ -24,15 +24,15 @@ DYNAMIC_LIB += libdstruc.so
 
 .PHONY: all build dynamic_lib dynamic_obj_files static_lib static_obj_files install install_dynamic_lib register_dynamic_lib del_libs clean
 
-all: clean build install
+all: clean build install_header_files install
 
-build: dynamic_lib static_lib
-	@echo "   <------ Building Project Went Successfully ------->\n"
+build: dynamic_lib static_lib install_header_files
+	@printf "   <------ Building Project Went Successfully ------->\n"
 
 dynamic_lib: dynamic_obj_files
 	@gcc -shared -o $(DYNAMIC_LIB) *.o
 	@find . -type f -name "*.o" -exec rm -rf {} \;
-	@echo "<------ Building Dynamic Library Went Successfully ------->"
+	@printf "<------ Building Dynamic Library Went Successfully ------->\n"
 
 dynamic_obj_files: $(FILES)
 	@gcc -fPIC $(CFLAGS) $(FILES)
@@ -40,13 +40,13 @@ dynamic_obj_files: $(FILES)
 static_lib: static_obj_files
 	@ar -rc $(STATIC_LIB) *.o
 	@find . -type f -name "*.o" -exec rm -rf {} \;
-	@echo "<------ Building Static Library Went Successfully ------->"
+	@printf "<------ Building Static Library Went Successfully ------->\n"
 
 static_obj_files: $(FILES)
 	@gcc $(CFLAGS) $(FILES)
 
-install: install_dynamic_lib install_header_files register_dynamic_lib
-	@echo "  <------ Installing Project Went Successfully ------->"
+install: install_dynamic_lib register_dynamic_lib
+	@printf "  <------ Installing Project Went Successfully ------->\n"
 
 install_dynamic_lib: $(DYNAMIC_LIB)
 	@mv $(DYNAMIC_LIB) $(INSTALL_LIB_PATH)
