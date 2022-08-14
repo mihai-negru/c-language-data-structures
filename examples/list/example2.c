@@ -2,7 +2,7 @@
 
 #define MAX_STRING_SIZE 100
 
-int32_t comapre_ptr_str(const void * const elem1, const void * const elem2) {
+int32_t compare_ptr_str(const void * const elem1, const void * const elem2) {
     const char * const * const f1 = elem1;
     const char * const * const f2 = elem2;
 
@@ -73,7 +73,7 @@ int main(void) {
 
     fseek(fin, 0, SEEK_SET);
 
-    list_t *strings_2 = create_list(&compare_string, &free_str, sizeof(char *)); 
+    list_t *strings_2 = create_list(&compare_ptr_str, &free_str, sizeof(char *)); 
 
     str_num = 0;
     check = 0;
