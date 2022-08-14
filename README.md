@@ -105,7 +105,7 @@ And when you compile your program you shall link it as follows for dynamic libra
     gcc your_file.o -ldstruc -o your_file
 ```
 
-For static library first copy the library into **your** current working folder:
+For static library, first copy the library into **your** current working folder:
 
 ```BASH
     gcc -c your_file.c
@@ -113,6 +113,23 @@ For static library first copy the library into **your** current working folder:
 ```
 
 If the building process didn't pass you will not be able to use the **libraries**.
+
+<a name="examples-description"></a>
+## Running examples
+
+Some data structures have some **examples** for you to undestand what you should and what you should not. Also the examples
+will show you some **untraditional** ways to solve some things. In every example folder for different data structure exists one
+source file that will be a benchmark to test the power of data structures on your system. The benchmarks can run a little slow
+depending on your system.
+
+For examples how to build and how to run the examples you must read the documentation related to the examples section.
+The link to documentation [HERE](examples/README.md).
+
+Make sure after you are done with one data structure exaxmple to run:
+
+```BASH
+    make clean
+```
 
 
 
