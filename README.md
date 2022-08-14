@@ -3,8 +3,8 @@
 # Table of Contents
 1. [Getting Started](#start)
 2. [Building the Project](#build)
-3. [Running examples](#examples)
-4. [Using the library](#use)
+3. [Using the library](#use)
+4. [Running examples](#examples)
 5. [Contributing](#contributing)
 
 ## Getting Started
@@ -30,8 +30,60 @@ Project "C Language Data Structures" has come as an idea to supply C Language wi
 Every single **data structure** from this project can be used in any scopes and with **different** data types, however you must follow a set of rules so you don't break the program.
 Every set of rules for every data structure can be found in [Documentation](Documentation/) folder from current project.
 
-I tried for every known object to keep their function definitions as in **C++** and also followed the standart naming of methods according to specific data structure.
+I tried for every known object to keep their function definitions as in **C++** and also followed the standard naming of methods according to specific data structure.
 
-**It is very important** not to use directly the members of the structure objects, however if you will safe to access them by yourself there should be no problem.
+**It is very important** not to use directly the members of the structure objects, however if you feel safe to access them by yourself there should be no problem.
+
+## Building the Project
+
+In order to build and to install the project you must be sure that you are working on a **LINUX** environment or if you are on **WINDOWS** to use WSL(Windows Subsystem for Linux). Even if the building can pass on a windows system the executables generated will be incompatible.
+
+The Project will create you two libraries: **one dynamically generated** and **one statically generated**. For static library there is no instalation process and you can play with the library ass you want (And link it statically to your future projects), however for the dynamic library the program should **register** the library into your system.
+
+### Dependencies
+
+* Linux or WSL System
+* GCC Compiler
+* ldconfig (For library register)
+
+### Building
+
+For this step make sure that you opened a linux terminal service and have root privileges, also check if you had changed directory to the current working project ("C-language-Data-Structures").
+
+If you want to build the libraries and to install (register) the dynamic library into your system you shall execute:
+
+```BASH
+    cd build
+    sudo make
+```
+
+After executing the following commands you will get prompt some messages showing you that building and installing proccess went successfully
+
+```BASH
+    <------ Building Dynamic Library Went Successfully ------->
+    <------ Building Static Library Went Successfully ------->
+        <------ Building Project Went Successfully ------->
+
+        <------ Installing Project Went Successfully ------->
+```
+
+If one of the above messages haven't showed, something went wrong so I encourage you to try one's again.
+
+If you just want to build the libraries and not to register the dynami clibrary into your system you shall run:
+
+```BASH
+    cd build
+    sudo make build
+```
+
+In **build** directory will appear 2 files, representing the dynamic and static libraries.
+
+**If something went wrong** and you want to rerun the building process you may run:
+
+```BASH
+    make clean # This command will delete libraries as well
+```
+
+After running the above commands, everything is set up and now you can use the library and its beauty!
 
 
