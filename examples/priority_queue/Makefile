@@ -13,9 +13,9 @@ VALGRIND_FLAGS += --leak-check=full \
 
 VALGRIND += valgrind $(VALGRIND_FLAGS)
 
-.PHONY: build e1 e2 e3 clean
+.PHONY: build e1 e2 clean
 
-build: e1 e2 e3
+build: e1 e2
 
 e1: example1
 	@printf "Run PRIORITY QUEUE example no. 1: "
@@ -41,17 +41,5 @@ example2: example2.o $(DYNAMIC_LIB)
 example2.o: example2.c
 	@gcc $(CFLAGS) example2.c
 
-e3: example3
-	@printf "Run PRIORITY QUEUE example no. 3: "
-	@$(VALGRIND) --log-file=valgrind_log_3.txt ./example3
-	@printf "Done\n"
-	@rm -rf example3 example3.o
-
-example3: example3.o $(DYNAMIC_LIB)
-	@gcc example3.o -ldstruc -o example3
-
-example3.o: example3.c
-	@gcc $(CFLAGS) example3.c
-
 clean:
-	@rm -rf *.txt *o example1 example2 example3
+	@rm -rf *.txt *o example1 example2
