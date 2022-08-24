@@ -285,7 +285,13 @@ int32_t compare_short_int(const void * const data1, const void * const data2) {
     const short int * const typed_data2 = data2;
 
     /* Compare data type */
-    return (*typed_data1 - *typed_data2);
+    if (*typed_data1 > *typed_data2) {
+        return 1;
+    } else if (*typed_data1 < *typed_data2) {
+        return -1;
+    } else {
+        return 0;
+    }
 }
 
 /**
@@ -375,7 +381,13 @@ int32_t compare_int(const void * const data1, const void * const data2) {
     const int * const typed_data2 = data2;
 
     /* Compare data type */
-    return (*typed_data1 - *typed_data2);
+    if (*typed_data1 > *typed_data2) {
+        return 1;
+    } else if (*typed_data1 < *typed_data2) {
+        return -1;
+    } else {
+        return 0;
+    }
 }
 
 /**
@@ -401,7 +413,13 @@ int32_t compare_long_int(const void * const data1, const void * const data2) {
     const long int * const typed_data2 = data2;
 
     /* Compare data type */
-    return (*typed_data1 - *typed_data2);
+    if (*typed_data1 > *typed_data2) {
+        return 1;
+    } else if (*typed_data1 < *typed_data2) {
+        return -1;
+    } else {
+        return 0;
+    }
 }
 
 /**
@@ -459,7 +477,13 @@ int32_t compare_llong_int(const void * const data1, const void * const data2) {
     const long long int * const typed_data2 = data2;
 
     /* Compare data type */
-    return (*typed_data1 - *typed_data2);
+    if (*typed_data1 > *typed_data2) {
+        return 1;
+    } else if (*typed_data1 < *typed_data2) {
+        return -1;
+    } else {
+        return 0;
+    }
 }
 
 /**

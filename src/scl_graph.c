@@ -201,7 +201,7 @@ scl_error_t free_graph(graph_t * const __restrict__ gr) {
 
 /**
  * @brief Create a graph edge node for linked list.
- * Function may fail if vertex value is `UINT64_MAX`
+ * Function may fail if vertex value is `SIZE_MAX`
  * or edge length is `__LBDL_MAX__` or no heap memory is
  * left for memory allocation.
  * 
@@ -210,9 +210,9 @@ scl_error_t free_graph(graph_t * const __restrict__ gr) {
  * @return graph_link_t* a new allocated edge node object or `NULL`
  * if function fails
  */
-static graph_link_t* create_graph_link(uint64_t vertex, long double edge_len) {
+static graph_link_t* create_graph_link(size_t vertex, long double edge_len) {
     /* Check if input data is valid */
-    if ((UINT64_MAX == vertex) || (__LDBL_MAX__ == edge_len)) {
+    if ((SIZE_MAX == vertex) || (__LDBL_MAX__ == edge_len)) {
         errno = EINVAL;
         perror("Data input for link creation is invalid");
         return NULL;
@@ -250,7 +250,7 @@ static graph_link_t* create_graph_link(uint64_t vertex, long double edge_len) {
  * @param edge_len the length of the edge that links two vertices
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t graph_insert_edge(const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t end_vertex, long double edge_len) {
+scl_error_t graph_insert_edge(const graph_t * const __restrict__ gr, size_t start_vertex, size_t end_vertex, long double edge_len) {
     /* Check if graph object is valid */
     if (NULL == gr) {
         return SCL_NULL_GRAPH;
@@ -478,7 +478,7 @@ scl_error_t graph_print(const graph_t * const __restrict__ gr, const uint8_t ** 
  * @param second_vertex second vertex that edge end to
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t graph_delete_edge(const graph_t * const __restrict__ gr, uint64_t first_vertex, uint64_t second_vertex) {
+scl_error_t graph_delete_edge(const graph_t * const __restrict__ gr, size_t first_vertex, size_t second_vertex) {
     /* Check if graph pointer is valid */
     if (NULL == gr) {
         return SCL_NULL_GRAPH;
@@ -543,7 +543,7 @@ scl_error_t graph_delete_edge(const graph_t * const __restrict__ gr, uint64_t fi
  * @param second_vertex second vertex that edge end to
  * @return scl_error_t enum object for handling errors 
  */
-scl_error_t graph_delete_all_edges(const graph_t * const __restrict__ gr, uint64_t first_vertex, uint64_t second_vertex) {
+scl_error_t graph_delete_all_edges(const graph_t * const __restrict__ gr, size_t first_vertex, size_t second_vertex) {
     /* Check if graph pointer is valid */
     if (NULL == gr) {
         return SCL_NULL_GRAPH;
@@ -609,7 +609,7 @@ scl_error_t graph_delete_all_edges(const graph_t * const __restrict__ gr, uint64
  * @param vertex selected vertex number to delet from graph
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t graph_delete_vertex(graph_t * const __restrict__ gr, uint64_t vertex) {
+scl_error_t graph_delete_vertex(graph_t * const __restrict__ gr, size_t vertex) {
     /* Check if graph pointer is valid */
     if (NULL == gr) {
         return SCL_NULL_GRAPH;
@@ -723,7 +723,7 @@ size_t get_graph_size(const graph_t * const __restrict__ gr) {
  * @param vertex_path an array to save the path of bfs traversal can be `NULL`
  * @return size_t size of the traversed vertices or 0 if function failed
  */
-size_t graph_bfs_traverse(const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path) {
+size_t graph_bfs_traverse(const graph_t * const __restrict__ gr, size_t start_vertex, size_t * __restrict__ vertex_path) {
     /* Check if input data is valids */
     if ((NULL == gr) || (NULL == gr->vertices) || (start_vertex >= gr->size)) {
         return 0;
@@ -752,7 +752,7 @@ size_t graph_bfs_traverse(const graph_t * const __restrict__ gr, uint64_t start_
         }
 
         while (!is_queue_empty(bfs_queue)) {
-            const uint64_t *front_vertex = queue_front(bfs_queue);
+            const size_t *front_vertex = queue_front(bfs_queue);
 
             
             if (NULL != vertex_path) {
@@ -801,7 +801,7 @@ size_t graph_bfs_traverse(const graph_t * const __restrict__ gr, uint64_t start_
  * @param vertex_path an array to save dfs path can be `NULL`
  * @param traversed_vex size of the traversed vertices in the dfs call
  */
-static void graph_dfs_traverse_helper(const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path, size_t * __restrict__ traversed_vex) {
+static void graph_dfs_traverse_helper(const graph_t * const __restrict__ gr, size_t start_vertex, size_t * __restrict__ vertex_path, size_t * __restrict__ traversed_vex) {
     /* Visit the current vertex */
     gr->visit[start_vertex] = 1;
 
@@ -837,7 +837,7 @@ static void graph_dfs_traverse_helper(const graph_t * const __restrict__ gr, uin
  * @param vertex_path an array to save the path of dfs traversal can be `NULL`
  * @return size_t size of the traversed vertices or 0 if function failed 
  */
-size_t graph_dfs_traverse(const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path) {
+size_t graph_dfs_traverse(const graph_t * const __restrict__ gr, size_t start_vertex, size_t * __restrict__ vertex_path) {
     /* Check if input data is valid */
     if ((NULL == gr) || (NULL == gr->vertices) || (start_vertex >= gr->size)) {
         return 0;
@@ -868,7 +868,7 @@ size_t graph_dfs_traverse(const graph_t * const __restrict__ gr, uint64_t start_
  * @param current_vertex current working vertex of the dfs traversal
  * @return uint8_t 1 if graph has a cycle starting from start_vertex or 0 otherwise
  */
-static uint8_t graph_has_cycle_helper(const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t current_vertex) {
+static uint8_t graph_has_cycle_helper(const graph_t * const __restrict__ gr, size_t start_vertex, size_t current_vertex) {
     /* All vertices were visited and start vertex is the last visited vertex */
     if ((1 == gr->visit[start_vertex]) && (start_vertex == current_vertex)) {
         return 1;
@@ -938,7 +938,7 @@ uint8_t graph_has_cycle(const graph_t * const __restrict__ gr) {
  * @param vertex_path an allocated array to save all past vertices
  * @return size_t size of the past vertices or 0 if function failed 
  */
-size_t graph_vertex_past_vertices(const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path) {
+size_t graph_vertex_past_vertices(const graph_t * const __restrict__ gr, size_t start_vertex, size_t * __restrict__ vertex_path) {
     /* Check if graph object is valid */
     if ((NULL == gr) || (NULL == gr->vertices) || (start_vertex >= gr->size) || (NULL == vertex_path)) {
         return 0;
@@ -964,7 +964,7 @@ size_t graph_vertex_past_vertices(const graph_t * const __restrict__ gr, uint64_
 
         /* Start the bfs traversal */
         while (!is_queue_empty(bfs_queue)) {
-            const uint64_t *front_vertex = queue_front(bfs_queue);
+            const size_t *front_vertex = queue_front(bfs_queue);
 
             /* Add node to past nodes */
             if (start_vertex != *front_vertex) {
@@ -1008,7 +1008,7 @@ size_t graph_vertex_past_vertices(const graph_t * const __restrict__ gr, uint64_
  * @param vertex_path an allocated array to save all future vertices
  * @return size_t size of the future vertices or 0 if function failed 
  */
-size_t graph_vertex_future_vertices(const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path) {
+size_t graph_vertex_future_vertices(const graph_t * const __restrict__ gr, size_t start_vertex, size_t * __restrict__ vertex_path) {
     /* Check if the graph object is valid */
     if ((NULL == gr) || (NULL == gr->vertices) || (start_vertex >= gr->size) || (NULL == vertex_path)) {
         return 0;
@@ -1040,21 +1040,21 @@ size_t graph_vertex_future_vertices(const graph_t * const __restrict__ gr, uint6
  * @param vertex_path an allocated array to save all anticone vertices
  * @return size_t size of the anticone vertices or 0 if function failed 
  */
-size_t graph_vertex_anticone_vertices(const graph_t * const __restrict__ gr, uint64_t start_vertex, uint64_t * __restrict__ vertex_path) {
+size_t graph_vertex_anticone_vertices(const graph_t * const __restrict__ gr, size_t start_vertex, size_t * __restrict__ vertex_path) {
     /* Check if graph object is valid */
     if ((NULL == gr) || (NULL == gr->vertices) || (start_vertex >= gr->size) || (NULL == vertex_path)) {
         return 0;
     }
 
     /* Allocate the past vertices array */
-    uint64_t * __restrict__ past_vertices = malloc(sizeof(*past_vertices) * gr->size);
+    size_t * __restrict__ past_vertices = malloc(sizeof(*past_vertices) * gr->size);
 
     if (NULL == past_vertices) {
         return 0;
     }
 
     /* Allocate the future vertices array */
-    uint64_t * __restrict__ future_vertices = malloc(sizeof(*future_vertices) * gr->size);
+    size_t * __restrict__ future_vertices = malloc(sizeof(*future_vertices) * gr->size);
 
     if (NULL == future_vertices) {
         free(past_vertices);
@@ -1104,7 +1104,7 @@ size_t graph_vertex_anticone_vertices(const graph_t * const __restrict__ gr, uin
  * @param vertex_path an allocated array to save all tips vertices
  * @return size_t size of the tips vertices or 0 if function failed 
  */
-size_t graph_tips_vertices(const graph_t * const __restrict__ gr, uint64_t * __restrict__ vertex_path) {
+size_t graph_tips_vertices(const graph_t * const __restrict__ gr, size_t * __restrict__ vertex_path) {
     /* Check if graph object is valid */
     if ((NULL == gr) || (NULL == gr->vertices) || (NULL == vertex_path)) {
         return 0;
@@ -1133,7 +1133,7 @@ size_t graph_tips_vertices(const graph_t * const __restrict__ gr, uint64_t * __r
  * @param start_vertex vertex to perform a dfs traversa;
  * @param stack pointer to a stack object to push vertices
  */
-static void graph_topological_sort_helper(const graph_t * const __restrict__ gr, uint64_t start_vertex, stack_t * const __restrict__ stack) {
+static void graph_topological_sort_helper(const graph_t * const __restrict__ gr, size_t start_vertex, stack_t * const __restrict__ stack) {
     /* Check if selected vertex is allocated */
     if (NULL == gr->vertices[start_vertex]) {
         return;
@@ -1164,7 +1164,7 @@ static void graph_topological_sort_helper(const graph_t * const __restrict__ gr,
  * @param vertex_path an allocated array to save the path of topological sort
  * @return size_t the number of the traversed vertices by topological sort
  */
-size_t graph_topological_sort(const graph_t * const __restrict__ gr, uint64_t * __restrict__ vertex_path) {
+size_t graph_topological_sort(const graph_t * const __restrict__ gr, size_t * __restrict__ vertex_path) {
     /* Check if graph object is valid */
     if ((NULL == gr) || (NULL == gr->vertices) || (NULL == gr->visit) || (NULL == vertex_path)) {
         return 0;
@@ -1194,7 +1194,7 @@ size_t graph_topological_sort(const graph_t * const __restrict__ gr, uint64_t * 
 
     /* The topological sort of the graph is the reverse of the dfs calls */
     while (!is_stack_empty(sort_stack)) {
-        const uint64_t *top_vertex = stack_top(sort_stack);
+        const size_t *top_vertex = stack_top(sort_stack);
 
         vertex_path[traversed_size++] = *top_vertex;
 
@@ -1224,8 +1224,8 @@ size_t graph_topological_sort(const graph_t * const __restrict__ gr, uint64_t * 
  */
 static int32_t min_heap_cmp_func(const void * const elem1, const void * const elem2) {
     if ((NULL != elem1) && (NULL != elem2)) {
-        const uint64_t * const f_elem1 = elem1;
-        const uint64_t * const f_elem2 = elem2;
+        const size_t * const f_elem1 = elem1;
+        const size_t * const f_elem2 = elem2;
 
         if (*f_elem1 > *f_elem2) {
             return -1;
@@ -1254,7 +1254,7 @@ static int32_t min_heap_cmp_func(const void * const elem1, const void * const el
  * start_vertex to any other vertex
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t graph_dijkstra(const graph_t * const __restrict__ gr, uint64_t start_vertex, long double * __restrict__ vertex_dists, uint64_t * __restrict__ vertex_parents) {
+scl_error_t graph_dijkstra(const graph_t * const __restrict__ gr, size_t start_vertex, long double * __restrict__ vertex_dists, size_t * __restrict__ vertex_parents) {
     /* Check if graph pointer is valid */
     if (NULL == gr) {
         return SCL_NULL_GRAPH;
@@ -1271,7 +1271,7 @@ scl_error_t graph_dijkstra(const graph_t * const __restrict__ gr, uint64_t start
     }
 
     /* Allocate a vertices array to heapify the min heap */
-    uint64_t *vertices = malloc(sizeof(*vertices) * gr->size);
+    size_t *vertices = malloc(sizeof(*vertices) * gr->size);
 
     if (NULL == vertices) {
         return SCL_NOT_ENOUGHT_MEM_FOR_OBJ;
@@ -1279,7 +1279,7 @@ scl_error_t graph_dijkstra(const graph_t * const __restrict__ gr, uint64_t start
 
     if (NULL != vertex_parents) {
         for (size_t iter = 0; iter < gr->size; ++iter) {
-            vertex_parents[iter] = UINT64_MAX;
+            vertex_parents[iter] = SIZE_MAX;
         }
 
         vertex_parents[start_vertex] = -1;
@@ -1316,7 +1316,7 @@ scl_error_t graph_dijkstra(const graph_t * const __restrict__ gr, uint64_t start
     while (!is_priq_empty(min_heap)) {
 
         /* Get the vertex with the minimum distance */
-        uint64_t min_dist_vertex = *(uint64_t *)pri_queue_top(min_heap);
+        size_t min_dist_vertex = *(size_t *)pri_queue_top(min_heap);
         
         err = pri_queue_pop(min_heap);
 
@@ -1374,7 +1374,7 @@ scl_error_t graph_dijkstra(const graph_t * const __restrict__ gr, uint64_t start
  * @param vertex_parents an allocated array with vertices showing the minimum cost spanning tree
  * @return scl_error_t enum object for handling errors
  */
-scl_error_t graph_prim(const graph_t * const __restrict__ gr, uint64_t start_index, long double * __restrict__ vertex_dists, uint64_t * __restrict__ vertex_parents) {
+scl_error_t graph_prim(const graph_t * const __restrict__ gr, size_t start_index, long double * __restrict__ vertex_dists, size_t * __restrict__ vertex_parents) {
     /* Check if graph pointer is valid */
     if (NULL == gr) {
         return SCL_NULL_GRAPH;
@@ -1396,7 +1396,7 @@ scl_error_t graph_prim(const graph_t * const __restrict__ gr, uint64_t start_ind
     }
 
     /* Allocate a vertices array to heapify the min heap */
-    uint64_t *vertices = malloc(sizeof(*vertices) * gr->size);
+    size_t *vertices = malloc(sizeof(*vertices) * gr->size);
 
     if (NULL == vertices) {
         return SCL_NOT_ENOUGHT_MEM_FOR_OBJ;
@@ -1406,7 +1406,7 @@ scl_error_t graph_prim(const graph_t * const __restrict__ gr, uint64_t start_ind
     for (size_t iter = 0; iter < gr->size; ++iter) {
         vertices[iter] = iter;
         vertex_dists[iter] = __LDBL_MAX__;
-        vertex_parents[iter] = UINT64_MAX;
+        vertex_parents[iter] = SIZE_MAX;
     }
 
     vertex_parents[start_index] = -1;
@@ -1435,7 +1435,7 @@ scl_error_t graph_prim(const graph_t * const __restrict__ gr, uint64_t start_ind
     while (!is_priq_empty(min_heap)) {
 
         /* Get the vertex with the minimum distance */
-        uint64_t min_dist_vertex = *(uint64_t *)pri_queue_top(min_heap);
+        size_t min_dist_vertex = *(size_t *)pri_queue_top(min_heap);
         
         err = pri_queue_pop(min_heap);
 
@@ -1591,17 +1591,17 @@ uint8_t graph_is_strongly_connected(const graph_t * const __restrict__ gr) {
  * 
  * @param gr a pointer to an allocated graph object
  * @param number_of_scc pointer to location of the number of strongly connected components
- * @return uint64_t** matrix containing on every row the vertices from a strongly connected
+ * @return size_t** matrix containing on every row the vertices from a strongly connected
  * component or NULL if function fails
  */
-uint64_t** graph_strongly_connected_components(const graph_t * const __restrict__ gr, size_t *number_of_scc) {
+size_t** graph_strongly_connected_components(const graph_t * const __restrict__ gr, size_t *number_of_scc) {
     /* Check if graph object is valid */
     if ((NULL == gr) || (NULL == gr->vertices) || (NULL == gr->visit) || (NULL == number_of_scc)) {
         return NULL;
     }
 
     /* Create the subroutine stack for strongly connected components */
-    stack_t *scc_stack = create_stack(NULL, sizeof(uint64_t));
+    stack_t *scc_stack = create_stack(NULL, sizeof(size_t));
 
     if (NULL == scc_stack) {
         return NULL;
@@ -1634,13 +1634,13 @@ uint64_t** graph_strongly_connected_components(const graph_t * const __restrict_
     }
 
     *number_of_scc = 0;
-    uint64_t **scc_paths = NULL;
+    size_t **scc_paths = NULL;
 
     /* Compute the strongly connected components */
     while (!is_stack_empty(scc_stack)) {
 
         /* Get the top vertex from stack subroutine */
-        uint64_t top_vertex = *(uint64_t *)stack_top(scc_stack);
+        size_t top_vertex = *(size_t *)stack_top(scc_stack);
 
         stack_pop(scc_stack);
 
@@ -1660,7 +1660,7 @@ uint64_t** graph_strongly_connected_components(const graph_t * const __restrict_
             } else {
 
                 /* Add one more slot for strongly connected component */
-                uint64_t **try_realloc = realloc(scc_paths, sizeof(*try_realloc) * (*number_of_scc + 1));
+                size_t **try_realloc = realloc(scc_paths, sizeof(*try_realloc) * (*number_of_scc + 1));
 
                 if (NULL == try_realloc) {
                     free_stack(scc_stack);

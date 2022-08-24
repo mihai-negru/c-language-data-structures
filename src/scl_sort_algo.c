@@ -822,7 +822,8 @@ void* binary_search(void *arr, void *data, size_t number_of_elem, size_t arr_ele
     while (left_ptr < right_ptr) {
 
         /* Compute the middle element pointer */
-        uint8_t *middle_ptr = left_ptr + arr_elem_size * ((right_ptr - left_ptr) / (2 * arr_elem_size));
+        size_t elems_to_pass = ((right_ptr - left_ptr) / arr_elem_size) / 2;
+        uint8_t *middle_ptr = left_ptr + arr_elem_size * elems_to_pass;
 
         /* Compare middle data with input data */
         int32_t compare_data = cmp(middle_ptr, data);

@@ -3,8 +3,28 @@
 
 #define MAX_ARR 40
 
-int32_t cmp(const void * const elem1, const void * const elem2) {
-    return -1 * compare_int(elem1, elem2);
+int32_t cmp(const void * const data1, const void * const data2) {
+    /* Check if data1 and data2 are valid */
+    if ((NULL == data1) || (NULL == data2)) {
+        errno = ENODATA;
+        perror("Data is not allocated");
+        exit(EXIT_FAILURE);
+
+        return 0;
+    }
+
+    /* Cast data types to working type */
+    const int * const typed_data1 = data1;
+    const int * const typed_data2 = data2;
+
+    /* Compare data type */
+    if (*typed_data1 > *typed_data2) {
+        return -1;
+    } else if (*typed_data1 < *typed_data2) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 int main(void) {
