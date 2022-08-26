@@ -162,7 +162,7 @@ Example of using graph traversals:
     // The best case is that all the vertices will be traversed
     // so let's allocate the path array with graph size elements
 
-    uint64_t *path = malloc(sizeof(*path) * get_graph_size(gg));
+    size_t *path = malloc(sizeof(*path) * get_graph_size(gg));
 
     if (NULL != path) {
         size_t traversed_vertices = graph_bfs_traversal(gg, 0, path);
@@ -208,7 +208,7 @@ Example of using above functions;
     // have graph size elements so we allocate as follows
 
     if (0 == graph_has_cycle(gg)) {
-        uint64_t *path = malloc(sizeof(*path) * get_graph_size(gg));
+        size_t *path = malloc(sizeof(*path) * get_graph_size(gg));
 
         // now
 
@@ -225,7 +225,7 @@ Example of using above functions;
 
     size_t number_of_scc = 0;
 
-    uint64_t **path = graph_strongly_connected_componets(gg, &number_of_scc);
+    size_t **path = graph_strongly_connected_componets(gg, &number_of_scc);
 
     if (NULL != path) {
 
