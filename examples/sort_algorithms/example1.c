@@ -87,7 +87,7 @@ int main(void) {
         // Function specified with binary search to compare data
         // has to be same as the function specified in the sorting method
         // otherwise unknown result can be printed
-        int *find = binary_search(arr, toptr(i), 40, sizeof(*arr), &cmp);
+        int *find = binary_search(arr, toptr(i), MAX_ARR, sizeof(*arr), &cmp);
 
         if (NULL != find) {
             printf("Binary search found %d value in array\n", i);
