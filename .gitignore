@@ -1,7 +1,10 @@
 .vscode
+
 libdstruc.a
 libdstruc.so
+
 Makefile
+
 examples/avl_tree/*
 examples/bst_tree/*
 examples/dlist/*
@@ -13,8 +16,13 @@ examples/queue/*
 examples/red_black_tree/*
 examples/sort_algorithms/*
 examples/stack/*
+
 !*.in
 !*.c
 *.txt
 !*.h
 !*.md
+
+dynamic_obj
+static_obj
+libs
