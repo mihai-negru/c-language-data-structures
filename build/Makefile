@@ -1,64 +1,161 @@
-CFLAGS += -c -g -Wall -Wextra -Wpedantic \
-		  -Wformat=2 -Wno-unused-parameter \
-		  -Wshadow -Wwrite-strings -Wstrict-prototypes \
-		  -Wold-style-definition -Wredundant-decls \
-		  -Wnested-externs -Wmissing-include-dirs \
-		  -Wjump-misses-init -Wlogical-op -O2
+### CONSTANT DEFINITIONS ###
 
-PATH_TO_FILES += ../src
-PATH_TO_HEADER_FILES += $(PATH_TO_FILES)/include
-INSTALL_PATH += /usr/local
-INSTALL_LIB_PATH += $(INSTALL_PATH)/lib
-INSTALL_HEADER_PATH += $(INSTALL_PATH)/include
+# C language compiler and flags
+CC 						:=		gcc
+CFLAGS 					:= 		-g -Wall -Wextra -Wpedantic \
+								-Wformat=2 -Wno-unused-parameter \
+								-Wshadow -Wwrite-strings -Wstrict-prototypes \
+								-Wold-style-definition -Wredundant-decls \
+								-Wnested-externs -Wmissing-include-dirs \
+								-Wjump-misses-init -Wlogical-op -O2
 
-FILES += $(PATH_TO_FILES)/scl_avl_tree.c $(PATH_TO_FILES)/scl_bst_tree.c \
-		$(PATH_TO_FILES)/scl_graph.c $(PATH_TO_FILES)/scl_list.c \
-		$(PATH_TO_FILES)/scl_dlist.c $(PATH_TO_FILES)/scl_priority_queue.c \
-		$(PATH_TO_FILES)/scl_hash_table.c $(PATH_TO_FILES)/scl_sort_algo.c \
-		$(PATH_TO_FILES)/scl_red_black_tree.c \
-		$(PATH_TO_FILES)/scl_queue.c $(PATH_TO_FILES)/scl_stack.c $(PATH_TO_FILES)/scl_config.c \
-		$(PATH_TO_FILES)/scl_func_types.c \
+# Linux commands for basic routines
+COPY					:=		cp
+LIB_CONF				:=		ldconfig
 
-STATIC_LIB += libdstruc.a
-DYNAMIC_LIB += libdstruc.so
+# Maximum Padding String
+PADDING 				:= 		............................................................
 
-.PHONY: all build dynamic_lib dynamic_obj_files static_lib static_obj_files install install_dynamic_lib register_dynamic_lib del_libs clean
+# Source files info
+SRC_PATH 				:= 		../src
+SRC_FILES 				:= 		$(wildcard $(SRC_PATH)/*.c)
 
-all: clean build install_header_files install
+# Libraries files info
+LIBS_PATH 				:= 		../libs
 
-build: dynamic_lib static_lib install_header_files
-	@printf "   <------ Building Project Went Successfully ------->\n"
+# Dynamic Library info
+DYNAMIC_LIB_NAME 		:= 		libdstruc.so
+DYNAMIC_LIB 			:= 		$(LIBS_PATH)/$(DYNAMIC_LIB_NAME)
+DYNAMIC_OBJ_PATH 		:= 		dynamic_obj
+DYNAMIC_OFILES 			:= 		$(patsubst $(SRC_PATH)/%.c,$(DYNAMIC_OBJ_PATH)/%.o,$(SRC_FILES))
 
-dynamic_lib: dynamic_obj_files
-	@gcc -shared -o $(DYNAMIC_LIB) *.o
-	@find . -type f -name "*.o" -exec rm -rf {} \;
-	@printf "<------ Building Dynamic Library Went Successfully ------->\n"
+# Static Library info
+STATIC_LIB_NAME 		:= 		libdstruc.a
+STATIC_LIB 				:= 		$(LIBS_PATH)/$(STATIC_LIB_NAME)
+STATIC_OBJ_PATH 		:= 		static_obj
+STATIC_OFILES 			:= 		$(patsubst $(SRC_PATH)/%.c,$(STATIC_OBJ_PATH)/%.o,$(SRC_FILES))
 
-dynamic_obj_files: $(FILES)
-	@gcc -fPIC $(CFLAGS) $(FILES)
+# Header files info
+INCLUDE_PATH 			:= 		$(SRC_PATH)/include
+HEADER_FILES			:=		$(wildcard $(INCLUDE_PATH)/*.h)
 
-static_lib: static_obj_files
-	@ar -rc $(STATIC_LIB) *.o
-	@find . -type f -name "*.o" -exec rm -rf {} \;
-	@printf "<------ Building Static Library Went Successfully ------->\n"
+# Installing Dynamic Library info
+INSTALL_PATH 			:= 		/usr/local
+INSTALL_INCLUDE_PATH	:= 		$(INSTALL_PATH)/include
+INSTALL_LIB_PATH 		:= 		$(INSTALL_PATH)/lib
 
-static_obj_files: $(FILES)
-	@gcc $(CFLAGS) $(FILES)
+.PHONY: all build clear_term install_header_files install install_dynamic_lib register_dynamic_lib clean
 
-install: install_dynamic_lib register_dynamic_lib
-	@printf "  <------ Installing Project Went Successfully ------->\n"
+### END OF CONSTANT DEFINITIONS ###
 
+### DEFAULT TARGET ###
+
+# Target to Build and Install the project
+all: build clean install
+	@printf "Finished Project "
+	@printf "%0.37s" $(PADDING)
+	@printf "%s\n\n" " PASSED"
+
+### END OF DEFAULT TARGET ###
+
+### BUILDING ###
+
+# Target to build the libraries from source files
+build: clear_term $(LIBS_PATH) $(DYNAMIC_OBJ_PATH) $(DYNAMIC_LIB) $(STATIC_OBJ_PATH) $(STATIC_LIB)
+
+# Target to clear the terminal screen
+clear_term:
+	@clear
+
+# Create a directory for the libraries
+$(LIBS_PATH):
+	@mkdir -p $@
+
+# Create a directory for the dynamic object files
+$(DYNAMIC_OBJ_PATH):
+	@mkdir -p $@
+
+# Create the dynamic library
+$(DYNAMIC_LIB): $(DYNAMIC_OFILES)
+	@printf "\n"
+	
+	@$(CC) -shared -o $@ $<
+
+	@printf "%s" "Building Dynamic Library "
+	@printf "%0.29s" $(PADDING)
+	@printf "%s\n\n" " PASSED"
+
+# Create all object files from the source code for dynamic library
+$(DYNAMIC_OBJ_PATH)/%.o: $(SRC_PATH)/%.c $(INCLUDE_PATH)/%.h
+	@gcc -fPIC $(CFLAGS) -o $@ -c $<
+
+	@printf "%s" "Building dynamic $(shell basename $@ .o) "
+	@file=$@ && printf "%0.$$((50 - $${#file}))s" $(PADDING)
+	@printf "%s\n" " PASSED"
+
+# Create a directory for the static object files
+$(STATIC_OBJ_PATH):
+	@mkdir -p $@
+
+# Create the static library
+$(STATIC_LIB): $(STATIC_OFILES)
+	@printf "\n"
+	
+	@ar -rc $@ $<
+
+	@printf "%s" "Building Static Library "
+	@printf "%0.30s" $(PADDING)
+	@printf "%s\n\n" " PASSED"
+
+# Create all object files from the source code for static library
+$(STATIC_OBJ_PATH)/%.o: $(SRC_PATH)/%.c $(INCLUDE_PATH)/%.h
+	@gcc $(CFLAGS) -o $@ -c $<
+
+	@printf "%s" "Building static $(shell basename $@ .o) "
+	@file=$@ && printf "%0.$$((50 - $${#file}))s" $(PADDING)
+	@printf "%s\n" " PASSED"
+
+### END OF BUILDING ###
+
+### INSTALLING DYNAMIC LIBRARY ###
+
+# Target to load the dynamic librari on system
+install: install_header_files install_dynamic_lib register_dynamic_lib
+
+# Target to copy all header files to default system header location
+install_header_files: $(HEADER_FILES)
+	@$(COPY) -R $< $(INSTALL_INCLUDE_PATH)
+
+	@printf "Installing Header Files "
+	@printf "%0.30s" $(PADDING)
+	@printf "%s\n" " PASSED"
+
+# Target to copy the dynamic library to default system library location
 install_dynamic_lib: $(DYNAMIC_LIB)
-	@mv $(DYNAMIC_LIB) $(INSTALL_LIB_PATH)
+	@$(COPY) $(DYNAMIC_LIB) $(INSTALL_LIB_PATH)
 
-install_header_files:
-	@cp -R $(PATH_TO_HEADER_FILES)/* $(INSTALL_HEADER_PATH)
+	@printf "Installing Dynamic Library "
+	@printf "%0.27s" $(PADDING)
+	@printf "%s\n" " PASSED"
 
-register_dynamic_lib: $(INSTALL_LIB_PATH)/$(DYNAMIC_LIB)
-	@cd $(INSTALL_LIB_PATH)/ && ldconfig
+# Target to load the dynamic library on system
+register_dynamic_lib: $(INSTALL_LIB_PATH)/$(DYNAMIC_LIB_NAME)
+	@cd $(INSTALL_LIB_PATH)/ && $(LIB_CONF)
 
-del_libs:
-	@rm -rf $(DYNAMIC_LIB) $(STATIC_LIB)
+	@printf "Loading Dynamic Library "
+	@printf "%0.30s" $(PADDING)
+	@printf "%s\n\n" " PASSED"
 
-clean: del_libs
-	@find . -type f -name "*.o" -exec rm -rf {} \;
+### END OF INSTALLING DYNAMIC LIBRARY ###
+
+### CLEANING ###
+
+# Target to clean just object files
+clean:
+	@rm -rf $(DYNAMIC_OBJ_PATH) $(STATIC_OBJ_PATH)
+
+# Target to clean everything obtained from all or build target
+cleanall:
+	@rm -rf $(DYNAMIC_OBJ_PATH) $(STATIC_OBJ_PATH) $(LIBS_PATH)
+
+### END OF CLEANING ###
