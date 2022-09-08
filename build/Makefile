@@ -12,6 +12,7 @@ CFLAGS 					:= 		-g -Wall -Wextra -Wpedantic \
 # Linux commands for basic routines
 COPY					:=		cp
 LIB_CONF				:=		ldconfig
+REMOVE					:=		rm
 
 # Maximum Padding String
 PADDING 				:= 		............................................................
@@ -43,6 +44,9 @@ HEADER_FILES			:=		$(wildcard $(INCLUDE_PATH)/*.h)
 INSTALL_PATH 			:= 		/usr/local
 INSTALL_INCLUDE_PATH	:= 		$(INSTALL_PATH)/include
 INSTALL_LIB_PATH 		:= 		$(INSTALL_PATH)/lib
+
+# Unninstall Dynamic Library info
+UNINSTALL_HEADER_FILES	:=		$(patsubst $(INCLUDE_PATH),$(INSTALL_INCLUDE_PATH),$(HEADER_FILES))
 
 .PHONY: all build clear_term install_header_files install install_dynamic_lib register_dynamic_lib clean
 
@@ -148,14 +152,28 @@ register_dynamic_lib: $(INSTALL_LIB_PATH)/$(DYNAMIC_LIB_NAME)
 
 ### END OF INSTALLING DYNAMIC LIBRARY ###
 
+### REMOVE DYNAMIC LIBRARY ###
+
+uninstall: uninstall_header_files uninstall_dynamic_lib
+	@printf "Library purged successfully\n"
+
+uninstall_header_files: $(UNINSTALL_HEADER_FILES)
+	@sudo $(REMOVE) -rf $^ 
+
+
+uninstall_dynamic_lib: $(INSTALL_LIB_PATH)/$(DYNAMIC_LIB_NAME)
+	@sudo $(REMOVE) -rf $<
+
+### END OF REMOVE DYNAMIC LIBRARY ###
+
 ### CLEANING ###
 
 # Target to clean just object files
 clean:
-	@rm -rf $(DYNAMIC_OBJ_PATH) $(STATIC_OBJ_PATH)
+	@$(REMOVE) -rf $(DYNAMIC_OBJ_PATH) $(STATIC_OBJ_PATH)
 
 # Target to clean everything obtained from all or build target
 cleanall:
-	@rm -rf $(DYNAMIC_OBJ_PATH) $(STATIC_OBJ_PATH) $(LIBS_PATH)
+	@$(REMOVE) -rf $(DYNAMIC_OBJ_PATH) $(STATIC_OBJ_PATH) $(LIBS_PATH)
 
 ### END OF CLEANING ###
