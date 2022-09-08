@@ -46,9 +46,9 @@ INSTALL_INCLUDE_PATH	:= 		$(INSTALL_PATH)/include
 INSTALL_LIB_PATH 		:= 		$(INSTALL_PATH)/lib
 
 # Unninstall Dynamic Library info
-UNINSTALL_HEADER_FILES	:=		$(patsubst $(INCLUDE_PATH),$(INSTALL_INCLUDE_PATH),$(HEADER_FILES))
+UNINSTALL_HEADER_FILES	:=		$(patsubst $(INCLUDE_PATH)/%.h,$(INSTALL_INCLUDE_PATH)/%.h,$(HEADER_FILES))
 
-.PHONY: all build clear_term install_header_files install install_dynamic_lib register_dynamic_lib clean
+.PHONY: all build clear_term install_header_files install install_dynamic_lib register_dynamic_lib clean uninstall uninstall_header_files uninstall_dynamic_lib
 
 ### END OF CONSTANT DEFINITIONS ###
 
