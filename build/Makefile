@@ -83,7 +83,7 @@ $(DYNAMIC_OBJ_PATH):
 $(DYNAMIC_LIB): $(DYNAMIC_OFILES)
 	@printf "\n"
 	
-	@$(CC) -shared -o $@ $<
+	@$(CC) -shared -o $@ $^
 
 	@printf "%s" "Building Dynamic Library "
 	@printf "%0.29s" $(PADDING)
@@ -105,7 +105,7 @@ $(STATIC_OBJ_PATH):
 $(STATIC_LIB): $(STATIC_OFILES)
 	@printf "\n"
 	
-	@ar -rc $@ $<
+	@ar -rc $@ $^
 
 	@printf "%s" "Building Static Library "
 	@printf "%0.30s" $(PADDING)
@@ -128,7 +128,7 @@ install: install_header_files install_dynamic_lib register_dynamic_lib
 
 # Target to copy all header files to default system header location
 install_header_files: $(HEADER_FILES)
-	@$(COPY) -R $< $(INSTALL_INCLUDE_PATH)
+	@$(COPY) -R $^ $(INSTALL_INCLUDE_PATH)
 
 	@printf "Installing Header Files "
 	@printf "%0.30s" $(PADDING)
