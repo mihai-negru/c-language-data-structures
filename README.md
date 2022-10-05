@@ -144,7 +144,7 @@ In order not to compile every object file even if you haven't modified it you sh
 ```BASH
     cd build
     make build # Repeat the command when you modify just one source file or header file
-    sudo mame install # For dynamic library instalation
+    sudo make install # For dynamic library instalation
 ```
 
 The command **sudo make** will create the libraries and then will wipe out all the temporary files as (object files) and if you will want to recompile it will
