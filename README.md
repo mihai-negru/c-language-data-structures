@@ -30,7 +30,7 @@ Project "C Language Data Structures" has come as an idea to supply C Language wi
 | [Single Linked List](Documentation/SINGLE_LINKED_LIST.md)     |  [scl_list.h](src/include/scl_list.h)                     |  [scl_list.c](src/scl_list.c)                             |
 | [Priority Queue](Documentation/PRIORITY_QUEUE.md)             |  [scl_priority_queue.h](src/include/scl_priority_queue.h) |  [scl_priority_queue.c](src/scl_priority_queue.c)         |
 | [Queue](Documentation/QUEUE.md)                               |  [scl_queue.h](src/include/scl_queue.h)                   |  [scl_queue.c](src/scl_queue.c)                           |
-| [Red Black Tree](Documentation/RED_BLACK_TREE.md)             |  [scl_rbk_tree.h](src/include/scl_rbk_tree.h)             |  [scl_rbk_tree.c](src/scl_rbk_tree.c)                     |
+| [Red Black Tree](Documentation/RED_BLACK_TREE.md)             |  [scl_rbk_tree.h](src/include/scl_red_black_tree.h)             |  [scl_rbk_tree.c](src/scl_rbk_tree.c)                     |
 | [Sorting Algorithms](Documentation/SORT_ALGORITHMS.md)        |  [scl_sort_algo.h](src/include/scl_sort_algo.h)           |  [scl_sort_algo.c](src/scl_sort_algo.c)                   |
 | [Stack](Documentation/STACK.md)                               |  [scl_stack.h](src/include/scl_stack.h)                   |  [scl_stack.c](src/scl_stack.c)                           |
 
