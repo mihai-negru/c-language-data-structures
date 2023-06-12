@@ -1,3 +1,0 @@
-An example of using stacks to covert "infix expressions" into the "postfix expressions" and to evaluate a "postfix expression" some subroutine that every compiler does.
-The link to the example (project is):
-https://github.com/Matrix22/c-infix-expression-eval
