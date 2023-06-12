@@ -28,12 +28,9 @@
 
 #include "./m_config.h"
 
-#define DEFINE_PTR_FUNC(type)                                                  \
-  typedef int32_t (*type##_compare_func)(const type *const,                    \
-                                         const type *const);                   \
-  typedef void (*type##_free_func)(type *);
-
-#define DEFINE_GENERIC_LIST(type)                                              \
+#define DEFINE_MLIST(type)                                                     \
+  DEFINE_PTR_FUNC(type);                                                       \
+                                                                               \
   typedef struct type##_mlist_node_s {                                         \
     type data;                                                                 \
     struct type##_mlist_node_s *next;                                          \
@@ -45,31 +42,40 @@
     type##_compare_func cmp;                                                   \
     type##_free_func frd;                                                      \
     size_t size;                                                               \
-  } type##_mlist_ptr_t, *type##_mlist_t;                                       \
+  } type##_mlist_ptr_t, *type##_mlist_t
+
+#define GENERATE_MLIST(type)                                                   \
+  type##_mlist_t type##_mlist(type##_compare_func cmp, type##_free_func frd) { \
+    type##_mlist_t list = malloc(sizeof *list);                                \
                                                                                \
-  m_err_t type##_mlist(type##_mlist_t *__restrict__ list,                      \
-                       type##_compare_func cmp, type##_free_func frd) {        \
-    if (list == NULL || (*list) != NULL) {                                     \
-      return M_MUST_BE_NULL;                                                   \
+    if (list == NULL) {                                                        \
+      return NULL;                                                             \
     }                                                                          \
                                                                                \
-    *list = malloc(sizeof *list);                                              \
+    list->cmp = cmp;                                                           \
+    list->frd = frd;                                                           \
                                                                                \
-    if (*list == NULL) {                                                       \
-      return M_MALLOC_FAILED;                                                  \
-    }                                                                          \
+    list->head = list->tail = NULL;                                            \
+    list->size = 0;                                                            \
                                                                                \
-    (*list)->cmp = cmp;                                                        \
-    (*list)->frd = frd;                                                        \
-                                                                               \
-    (*list)->head = (*list)->tail = NULL;                                      \
-    (*list)->size = 0;                                                         \
-                                                                               \
-    return M_OK;                                                               \
+    return list;                                                               \
   }                                                                            \
                                                                                \
-  m_err_t type##_free_mlist(type##_mlist_t *__restrict__ list) {               \
-    if ((list == NULL) || (*list == NULL)) {                                   \
+  static type##_mlist_node_t type##_mlist_node(type data) {                    \
+    type##_mlist_node_t new_node = malloc(sizeof *new_node);                   \
+                                                                               \
+    if (new_node == NULL) {                                                    \
+      return NULL;                                                             \
+    }                                                                          \
+                                                                               \
+    new_node->next = NULL;                                                     \
+    new_node->data = data;                                                     \
+                                                                               \
+    return new_node;                                                           \
+  }                                                                            \
+                                                                               \
+  merr_t type##_free_mlist(type##_mlist_t *__restrict__ list) {                \
+    if ((list != NULL) || (*list != NULL)) {                                   \
       while ((*list)->head != NULL) {                                          \
         type##_mlist_node_t iterator = (*list)->head;                          \
         (*list)->head = (*list)->head->next;                                   \
@@ -82,10 +88,87 @@
                                                                                \
       free(*list);                                                             \
       *list = NULL;                                                            \
+                                                                               \
       return M_OK;                                                             \
     }                                                                          \
                                                                                \
     return M_FREE_NULL;                                                        \
   }
+
+#define REFLEXION_MLIST(type)                                                  \
+  mbool_t type##_mlist_empty(const type##_mlist_t const __restrict__ list) {   \
+    if ((list == NULL) || (list->head == NULL)) {                              \
+      return mtrue;                                                            \
+    }                                                                          \
+                                                                               \
+    return mfalse;                                                             \
+  }                                                                            \
+                                                                               \
+  size_t type##_mlist_size(const type##_mlist_t const __restrict__ list) {     \
+    if (list == NULL) {                                                        \
+      return SIZE_MAX;                                                         \
+    }                                                                          \
+                                                                               \
+    return list->size;                                                         \
+  }                                                                            \
+                                                                               \
+  merr_t type##_mlist_head(const type##_mlist_t const __restrict__ list,       \
+                           type *const acc) {                                  \
+    if (list == NULL) {                                                        \
+      return M_NULL_INPUT;                                                     \
+    }                                                                          \
+                                                                               \
+    *acc = list->head->data;                                                   \
+                                                                               \
+    return M_OK;                                                               \
+  }                                                                            \
+                                                                               \
+  merr_t type##_mlist_tail(const type##_mlist_t const __restrict__ list,       \
+                           type *const acc) {                                  \
+    if (list == NULL) {                                                        \
+      return M_NULL_INPUT;                                                     \
+    }                                                                          \
+                                                                               \
+    *acc = list->tail->data;                                                   \
+                                                                               \
+    return M_OK;                                                               \
+  }
+
+#define FIND_MLIST(type)
+#define MODIFY_MLIST(type)                                                     \
+  merr_t type##_mlist_insert(type##_mlist_t const __restrict__ list,           \
+                             type data) {                                      \
+    if (list == NULL) {                                                        \
+      return M_NULL_INPUT;                                                     \
+    }                                                                          \
+                                                                               \
+    type##_mlist_node_t new_node = type##_mlist_node(data);                    \
+                                                                               \
+    if (new_node == NULL) {                                                    \
+      return M_MALLOC_FAILED;                                                  \
+    }                                                                          \
+                                                                               \
+    if (list->head == NULL) {                                                  \
+      list->head = new_node;                                                   \
+      list->tail = new_node;                                                   \
+    } else {                                                                   \
+      list->tail->next = new_node;                                             \
+      list->tail = new_node;                                                   \
+    }                                                                          \
+                                                                               \
+    ++(list->size);                                                            \
+                                                                               \
+    return M_OK;                                                               \
+  }
+
+#define FUNCTIONAL_MLIST(type)
+
+#define ALL_MLIST(type)                                                        \
+  DEFINE_MLIST(type);                                                          \
+  GENERATE_MLIST(type);                                                        \
+  REFLEXION_MLIST(type);                                                       \
+  FIND_MLIST(type);                                                            \
+  MODIFY_MLIST(type);                                                          \
+  FUNCTIONAL_MLIST(type);
 
 #endif /* MACROS_GENERIC_LIST_UTILS_H_ */

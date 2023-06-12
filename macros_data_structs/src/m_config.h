@@ -31,12 +31,20 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef enum m_err_s {
+typedef enum mbool_s { mfalse = 0, mtrue = 1 } mbool_t;
+
+typedef enum merr_s {
   M_OK,
 
   M_MUST_BE_NULL,
   M_MALLOC_FAILED,
-  M_FREE_NULL
-} m_err_t;
+  M_FREE_NULL,
+  M_NULL_INPUT
+} merr_t;
+
+#define DEFINE_PTR_FUNC(type)                                                  \
+  typedef int32_t (*type##_compare_func)(const type *const,                    \
+                                         const type *const);                   \
+  typedef void (*type##_free_func)(type *)
 
 #endif /* MACROS_GENERICS_CONFIG_H_ */
