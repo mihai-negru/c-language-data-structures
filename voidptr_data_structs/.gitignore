@@ -20,6 +20,7 @@ examples/stack/*
 *.txt
 !*.h
 !*.md
+!Makefile
 
 dynamic_obj
 static_obj
