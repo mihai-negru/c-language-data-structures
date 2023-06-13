@@ -46,18 +46,16 @@ typedef enum merr_s {
   M_NULL_ACTION
 } merr_t;
 
-#define CMP_FUNC(name, type)                                                   \
-  typedef int32_t (*name##_compare_func)(const type *const, const type *const);
+#define CMP_FUNC(ID, T)                                                        \
+  typedef int32_t (*ID##_compare_func)(const T *const, const T *const);
 
-#define FREE_FUNC(name, type) typedef void (*name##_free_func)(type *);
+#define FREE_FUNC(ID, T) typedef void (*ID##_free_func)(T *);
 
-#define FILTER_FUNC(name, type)                                                \
-  typedef mbool_t (*name##_filter_func)(const type *const);
+#define FILTER_FUNC(ID, T) typedef mbool_t (*ID##_filter_func)(const T *const);
 
-#define MAP_FUNC(name1, type1, name2, type2)                                   \
-  typedef type2 (*name1##_to_##name2##_map_func)(const type1 *const);
+#define MAP_FUNC(ID1, T1, ID2, T2)                                             \
+  typedef T2 (*ID1##_to_##ID2##_map_func)(const T1 *const);
 
-#define ACTION_FUNC(name, type)                                                \
-  typedef void (*name##_action_func)(const type *const);
+#define ACTION_FUNC(ID, T) typedef void (*ID##_action_func)(const T *const);
 
 #endif /* MACROS_GENERICS_CONFIG_H_ */
