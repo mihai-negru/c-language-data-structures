@@ -95,7 +95,7 @@
   }                                                                            \
                                                                                \
   merr_t ID##_mlist_free(ID##_mlist_t *self) {                                 \
-    if ((self != NULL) || (*self != NULL)) {                                   \
+    if ((self != NULL) && (*self != NULL)) {                                   \
       while ((*self)->head != NULL) {                                          \
         ID##_mlist_node_t iterator = (*self)->head;                            \
         (*self)->head = (*self)->head->next;                                   \

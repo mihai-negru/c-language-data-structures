@@ -44,7 +44,7 @@
  * If data represents a structure which contains pointers allocated, then the
  * free function must free those fields.
  */
-#define MSTACK(T, ID)                                                          \
+#define MSTACK(ID, T)                                                          \
   FREE_FUNC(ID, T)                                                             \
                                                                                \
   typedef struct ID##_mstack_node_s {                                          \
@@ -87,7 +87,7 @@
   }                                                                            \
                                                                                \
   merr_t ID##_mstack_free(ID##_mstack_t *self) {                               \
-    if ((self != NULL) || (*self != NULL)) {                                   \
+    if ((self != NULL) && (*self != NULL)) {                                   \
       while ((*self)->top != NULL) {                                           \
         ID##_mstack_node_t iterator = (*self)->top;                            \
         (*self)->top = (*self)->top->next;                                     \
@@ -112,7 +112,7 @@
  * @brief Traverses all stack and do action(basically it is used for printing
  * the stack) on all data nodes.
  */
-#define MSTACK_TRAVERSE(T, ID)                                                 \
+#define MSTACK_TRAVERSE(ID, T)                                                 \
   ACTION_FUNC(ID, T)                                                           \
                                                                                \
   merr_t ID##_mstack_traverse(const ID##_mstack_ptr_t *self,                   \
@@ -147,7 +147,7 @@
  * true, otherwise it will return false. A `NULL` stack is also considered as an
  * empty stack.
  */
-#define MSTACK_EMPTY(T, ID)                                                    \
+#define MSTACK_EMPTY(ID, T)                                                    \
   mbool_t ID##_mstack_empty(const ID##_mstack_ptr_t *const self) {             \
     if ((self == NULL) || (self->top == NULL)) {                               \
       return mtrue;                                                            \
@@ -160,7 +160,7 @@
  * @brief Get the stack size object. If stack is not allocated then function
  * will return SIZE_MAX value.
  */
-#define MSTACK_SIZE(T, ID)                                                     \
+#define MSTACK_SIZE(ID, T)                                                     \
   size_t ID##_mstack_size(const ID##_mstack_ptr_t *const self) {               \
     if (self == NULL) {                                                        \
       return SIZE_MAX;                                                         \
@@ -173,7 +173,7 @@
  * @brief Get the stack top node data, stored in an accumulator, the accumulator
  * should not be NULL.
  */
-#define MSTACK_TOP(T, ID)                                                      \
+#define MSTACK_TOP(ID, T)                                                      \
   merr_t ID##_mstack_top(const ID##_mstack_ptr_t *const self, T *const acc) {  \
     if ((self == NULL) || (acc == NULL)) {                                     \
       return M_NULL_INPUT;                                                     \
@@ -191,7 +191,7 @@
 /**
  * @brief Inserts an element to the end of the stack.
  */
-#define MSTACK_PUSH(T, ID)                                                     \
+#define MSTACK_PUSH(ID, T)                                                     \
   merr_t ID##_mstack_push(const ID##_mstack_t self, T data) {                  \
     if (self == NULL) {                                                        \
       return M_NULL_INPUT;                                                     \
@@ -219,7 +219,7 @@
  * @brief Removed the top element from the stack object, or returs an error if
  * the stack was empty or `NULL`.
  */
-#define MSTACK_POP(T, ID)                                                      \
+#define MSTACK_POP(ID, T)                                                      \
   merr_t ID##_mstack_pop(const ID##_mstack_t self) {                           \
     if (self == NULL) {                                                        \
       return M_NULL_INPUT;                                                     \
@@ -253,13 +253,13 @@
  * different files want to have the same two typed structures in order to avoid
  * name collisions.
  */
-#define MSTACK_ALL(T, ID)                                                      \
-  MSTACK(T, ID)                                                                \
-  MSTACK_TRAVERSE(T, ID)                                                       \
-  MSTACK_EMPTY(T, ID)                                                          \
-  MSTACK_SIZE(T, ID)                                                           \
-  MSTACK_TOP(T, ID)                                                            \
-  MSTACK_PUSH(T, ID)                                                           \
-  MSTACK_POP(T, ID)
+#define MSTACK_ALL(ID, T)                                                      \
+  MSTACK(ID, T)                                                                \
+  MSTACK_TRAVERSE(ID, T)                                                       \
+  MSTACK_EMPTY(ID, T)                                                          \
+  MSTACK_SIZE(ID, T)                                                           \
+  MSTACK_TOP(ID, T)                                                            \
+  MSTACK_PUSH(ID, T)                                                           \
+  MSTACK_POP(ID, T)
 
 #endif /* MACROS_GENERIC_STACK_UTILS_H_ */

@@ -44,7 +44,7 @@
  * If data represents a structure which contains pointers allocated, then the
  * free function must free those fields.
  */
-#define MQUEUE(T, ID)                                                          \
+#define MQUEUE(ID, T)                                                          \
   FREE_FUNC(ID, T)                                                             \
                                                                                \
   typedef struct ID##_mqueue_node_s {                                          \
@@ -88,7 +88,7 @@
   }                                                                            \
                                                                                \
   merr_t ID##_mqueue_free(ID##_mqueue_t *self) {                               \
-    if ((self != NULL) || (*self != NULL)) {                                   \
+    if ((self != NULL) && (*self != NULL)) {                                   \
       while ((*self)->front != NULL) {                                         \
         ID##_mqueue_node_t iterator = (*self)->front;                          \
         (*self)->front = (*self)->front->next;                                 \
@@ -113,7 +113,7 @@
  * @brief Traverses all queue and do action(basically it is used for printing
  * the queue) on all data nodes.
  */
-#define MQUEUE_TRAVERSE(T, ID)                                                 \
+#define MQUEUE_TRAVERSE(ID, T)                                                 \
   ACTION_FUNC(ID, T)                                                           \
                                                                                \
   merr_t ID##_mqueue_traverse(const ID##_mqueue_ptr_t *self,                   \
@@ -148,7 +148,7 @@
  * true, otherwise it will return false. A `NULL` queue is also considered as an
  * empty queue.
  */
-#define MQUEUE_EMPTY(T, ID)                                                    \
+#define MQUEUE_EMPTY(ID, T)                                                    \
   mbool_t ID##_mqueue_empty(const ID##_mqueue_ptr_t *const self) {             \
     if ((self == NULL) || (self->front == NULL)) {                             \
       return mtrue;                                                            \
@@ -161,7 +161,7 @@
  * @brief Get the queue size object. If queue is not allocated then function
  * will return SIZE_MAX value.
  */
-#define MQUEUE_SIZE(T, ID)                                                     \
+#define MQUEUE_SIZE(ID, T)                                                     \
   size_t ID##_mqueue_size(const ID##_mqueue_ptr_t *const self) {               \
     if (self == NULL) {                                                        \
       return SIZE_MAX;                                                         \
@@ -174,7 +174,7 @@
  * @brief Get the queue front node data, stored in an accumulator, the
  * accumulator should not be NULL.
  */
-#define MQUEUE_FRONT(T, ID)                                                    \
+#define MQUEUE_FRONT(ID, T)                                                    \
   merr_t ID##_mqueue_front(const ID##_mqueue_ptr_t *const self,                \
                            T *const acc) {                                     \
     if ((self == NULL) || (acc == NULL)) {                                     \
@@ -194,7 +194,7 @@
  * @brief Get the queue back node data, stored in an accumulator, the
  * accumulator should not be NULL.
  */
-#define MQUEUE_BACK(T, ID)                                                     \
+#define MQUEUE_BACK(ID, T)                                                     \
   merr_t ID##_mqueue_back(const ID##_mqueue_ptr_t *const self, T *const acc) { \
     if ((self == NULL) || (acc == NULL)) {                                     \
       return M_NULL_INPUT;                                                     \
@@ -212,7 +212,7 @@
 /**
  * @brief Inserts an element to the end of the queue.
  */
-#define MQUEUE_PUSH(T, ID)                                                     \
+#define MQUEUE_PUSH(ID, T)                                                     \
   merr_t ID##_mqueue_push(const ID##_mqueue_t self, T data) {                  \
     if (self == NULL) {                                                        \
       return M_NULL_INPUT;                                                     \
@@ -241,7 +241,7 @@
  * @brief Removed the front element from the queue object, or returs an error if
  * the queue was empty or `NULL`.
  */
-#define MQUEUE_POP(T, ID)                                                      \
+#define MQUEUE_POP(ID, T)                                                      \
   merr_t ID##_mqueue_pop(const ID##_mqueue_t self) {                           \
     if (self == NULL) {                                                        \
       return M_NULL_INPUT;                                                     \
@@ -275,14 +275,14 @@
  * different files want to have the same two typed structures in order to avoid
  * name collisions.
  */
-#define MQUEUE_ALL(T, ID)                                                      \
-  MQUEUE(T, ID)                                                                \
-  MQUEUE_TRAVERSE(T, ID)                                                       \
-  MQUEUE_EMPTY(T, ID)                                                          \
-  MQUEUE_SIZE(T, ID)                                                           \
-  MQUEUE_FRONT(T, ID)                                                          \
-  MQUEUE_BACK(T, ID)                                                           \
-  MQUEUE_PUSH(T, ID)                                                           \
-  MQUEUE_POP(T, ID)
+#define MQUEUE_ALL(ID, T)                                                      \
+  MQUEUE(ID, T)                                                                \
+  MQUEUE_TRAVERSE(ID, T)                                                       \
+  MQUEUE_EMPTY(ID, T)                                                          \
+  MQUEUE_SIZE(ID, T)                                                           \
+  MQUEUE_FRONT(ID, T)                                                          \
+  MQUEUE_BACK(ID, T)                                                           \
+  MQUEUE_PUSH(ID, T)                                                           \
+  MQUEUE_POP(ID, T)
 
 #endif /* MACROS_GENERIC_QUEUE_UTILS_H_ */
