@@ -103,6 +103,7 @@
         if ((*self)->frd != NULL) {                                            \
           (*self)->frd(&iterator->data);                                       \
         }                                                                      \
+                                                                               \
         free(iterator);                                                        \
       }                                                                        \
                                                                                \
@@ -119,7 +120,7 @@
  * @brief Function to check if a linked list object is empty or not. The
  * function tests if head of list is `NULL` in that case function will return
  * true, otherwise it will return false. A `NULL` list is also considered as an
- * empty list
+ * empty list.
  */
 #define MLIST_EMPTY(ID, T)                                                     \
   mbool_t ID##_mlist_empty(const ID##_mlist_ptr_t *const self) {               \
@@ -146,7 +147,6 @@
 /**
  * @brief Get the list head node data, stored in an accumulator, the accumulator
  * should not be NULL.
- *
  */
 #define MLIST_HEAD(ID, T)                                                      \
   merr_t ID##_mlist_head(const ID##_mlist_ptr_t *const self, T *const acc) {   \
@@ -162,7 +162,6 @@
 /**
  * @brief Get the list tail node data, stored in an accumulator, the accumulator
  * should not be NULL.
- *
  */
 #define MLIST_TAIL(ID, T)                                                      \
   merr_t ID##_mlist_tail(const ID##_mlist_ptr_t *const self, T *const acc) {   \
@@ -352,7 +351,6 @@
 /**
  * @brief Changes the data to a new data. If the idx is greater than the size of
  * the list an error is returned.
- *
  */
 #define MLIST_CHANGE_IDX(ID, T)                                                \
   merr_t ID##_mlist_change_idx(const ID##_mlist_t self, size_t idx, T new) {   \
@@ -521,7 +519,7 @@
  * @brief Deletes a node based on a value. Program will recieve a list and a
  * pointer to data that user wants to be deleted. However data pointer has to be
  * valid and to exist in the current list (If you are not sure that data exists
- * you should not call list_find_data because delete function will find it by
+ * you should not call mlist_find_data because delete function will find it by
  * itself and in case it does not exist it will return an error).
  */
 #define MLIST_POP(ID, T)                                                       \
@@ -726,6 +724,38 @@
   }
 
 /**
+ * @brief Traverses all list and do action on all data nodes.
+ */
+#define MLIST_TRAVERSE(ID, T)                                                  \
+  ACTION_FUNC(ID, T)                                                           \
+                                                                               \
+  merr_t ID##_mlist_traverse(const ID##_mlist_ptr_t *self,                     \
+                             ID##_action_func action) {                        \
+    if (self == NULL) {                                                        \
+      return M_NULL_INPUT;                                                     \
+    }                                                                          \
+                                                                               \
+    if (action == NULL) {                                                      \
+      return M_NULL_ACTION;                                                    \
+    }                                                                          \
+                                                                               \
+    if (self->head == NULL) {                                                  \
+      printf("[ ]\n");                                                         \
+    } else {                                                                   \
+      printf("[");                                                             \
+      ID##_mlist_node_t iterator = self->head;                                 \
+                                                                               \
+      while (iterator != NULL) {                                               \
+        action(&iterator->data);                                               \
+        iterator = iterator->next;                                             \
+      }                                                                        \
+      printf(" ]");                                                            \
+    }                                                                          \
+                                                                               \
+    return M_OK;                                                               \
+  }
+
+/**
  * @brief Maps a linked list from first type to second type, by providing a
  * function that maps the data. By default a list has mapping from type to type,
  * if type1 is not equal to type2 then the user should declare a new `MLIST_MAP`
@@ -761,38 +791,6 @@
     }                                                                          \
                                                                                \
     return map_list;                                                           \
-  }
-
-/**
- * @brief Traverses all list and do action on all data nodes.
- */
-#define MLIST_TRAVERSE(ID, T)                                                  \
-  ACTION_FUNC(ID, T)                                                           \
-                                                                               \
-  merr_t ID##_mlist_traverse(const ID##_mlist_ptr_t *self,                     \
-                             ID##_action_func action) {                        \
-    if (self == NULL) {                                                        \
-      return M_NULL_INPUT;                                                     \
-    }                                                                          \
-                                                                               \
-    if (action == NULL) {                                                      \
-      return M_NULL_ACTION;                                                    \
-    }                                                                          \
-                                                                               \
-    if (self->head == NULL) {                                                  \
-      printf("[ ]\n");                                                         \
-    } else {                                                                   \
-      printf("[");                                                             \
-      ID##_mlist_node_t iterator = self->head;                                 \
-                                                                               \
-      while (iterator != NULL) {                                               \
-        action(&iterator->data);                                               \
-        iterator = iterator->next;                                             \
-      }                                                                        \
-      printf(" ]");                                                            \
-    }                                                                          \
-                                                                               \
-    return M_OK;                                                               \
   }
 
 /**
