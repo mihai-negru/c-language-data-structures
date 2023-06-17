@@ -154,6 +154,10 @@
       return M_NULL_INPUT;                                                     \
     }                                                                          \
                                                                                \
+    if (self->head == NULL) {                                                  \
+      return M_EMPTY_STRUCTURE;                                                \
+    }                                                                          \
+                                                                               \
     *acc = self->head->data;                                                   \
                                                                                \
     return M_OK;                                                               \
@@ -167,6 +171,10 @@
   merr_t ID##_mlist_tail(const ID##_mlist_ptr_t *const self, T *const acc) {   \
     if ((self == NULL) || (acc == NULL)) {                                     \
       return M_NULL_INPUT;                                                     \
+    }                                                                          \
+                                                                               \
+    if (self->tail == NULL) {                                                  \
+      return M_EMPTY_STRUCTURE;                                                \
     }                                                                          \
                                                                                \
     *acc = self->tail->data;                                                   \

@@ -179,6 +179,10 @@
       return M_NULL_INPUT;                                                     \
     }                                                                          \
                                                                                \
+    if (self->top == NULL) {                                                   \
+      return M_EMPTY_STRUCTURE;                                                \
+    }                                                                          \
+                                                                               \
     *acc = self->top->data;                                                    \
                                                                                \
     return M_OK;                                                               \
