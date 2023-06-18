@@ -28,6 +28,22 @@
 
 #include "./m_config.h"
 
+/**
+ * @brief Utility file containing macros that generate functions for generic
+ * single linked list.
+ *
+ * @param ID the id of the structure in order to reduce name collisions.
+ * @param T the type of the data stored inside the structure.
+ */
+
+/**
+ * @brief Generates the `mbst_t` structure depending on the name and type.
+ * Also generates basic function for creation and freeing memory for the
+ * structure. This structure require a method for comparing data and for freeing
+ * data memory, if data is not stored as a pointer (T <=> *M), then the free
+ * function must be `NULL`. If data represents a structure which contains
+ * pointers allocated, then the free function must free those fields.
+ */
 #define MBST(ID, T)                                                            \
   CMP_FUNC(ID, T)                                                              \
   FREE_FUNC(ID, T)                                                             \
@@ -124,6 +140,10 @@
     return M_FREE_NULL;                                                        \
   }
 
+/**
+ * @brief Checks whether a binary
+ * searc tree object is empty or not.
+ */
 #define MBST_EMPTY(ID, T)                                                      \
   mbool_t ID##_mbst_empty(const ID##_mbst_ptr_t *const self) {                 \
     if ((self == NULL) || (self->root == self->nil) || (self->size == 0)) {    \
@@ -133,6 +153,10 @@
     return mfalse;                                                             \
   }
 
+/**
+ * @brief Fetches the size of the binary search tree of unique nodes,
+ * which means that the count of a single node is not taken in account.
+ */
 #define MBST_SIZE(ID, T)                                                       \
   size_t ID##_mbst_size(const ID##_mbst_ptr_t *const self) {                   \
     if (self == NULL) {                                                        \
@@ -142,6 +166,9 @@
     return self->size;                                                         \
   }
 
+/**
+ * @brief Gets the data under the root node of the binary search tree.
+ */
 #define MBST_ROOT(ID, T)                                                       \
   merr_t ID##_mbst_root(const ID##_mbst_ptr_t *const self, T *const acc) {     \
     if ((self == NULL) || (acc == NULL)) {                                     \
@@ -179,6 +206,14 @@
     return self->nil;                                                          \
   }
 
+/**
+ * @brief Finds a data inside the binary search tree. The function works mostly
+ * like a `contains` method, with extra accumulator field, in order to fetch the
+ * data from the node, it is needed if you have pointers fields which can be
+ * modified, thus the cmp function MUST not depend on the pointer data,
+ * otherwise it may break the structure of the binary search tree.
+ *
+ */
 #define MBST_FIND(ID, T)                                                       \
   merr_t ID##_mbst_find(const ID##_mbst_ptr_t *const self, T data,             \
                         T *const acc) {                                        \
@@ -199,6 +234,10 @@
     return M_OK;                                                               \
   }
 
+/**
+ * @brief Finds the minimum data of the binary search tree, works just like
+ * mbst_find, with fetching the minimum node.
+ */
 #define MBST_MIN(ID, T)                                                        \
   ID##_mbst_node_t ID##_internal_mbst_min_node(                                \
       const ID##_mbst_ptr_t *const self, ID##_mbst_node_t self_node) {         \
@@ -224,6 +263,10 @@
     return M_OK;                                                               \
   }
 
+/**
+ * @brief Finds the maximumdata of the binary search tree, works just like
+ * mbst_find, with fetching the maximum node.
+ */
 #define MBST_MAX(ID, T)                                                        \
   ID##_mbst_node_t ID##_internal_mbst_max_node(                                \
       const ID##_mbst_ptr_t *const self, ID##_mbst_node_t self_node) {         \
@@ -249,6 +292,10 @@
     return M_OK;                                                               \
   }
 
+/**
+ * @brief Finds the predecessor data of the binary search tree, works just like
+ * mbst_find, with fetching the predecessor node.
+ */
 #define MBST_PRED(ID, T)                                                       \
   merr_t ID##_mbst_pred(const ID##_mbst_ptr_t *const self, T data,             \
                         T *const acc) {                                        \
@@ -281,6 +328,10 @@
     return M_OK;                                                               \
   }
 
+/**
+ * @brief Finds the successor data of the binary search tree, works just like
+ * mbst_find, with fetching the successor node.
+ */
 #define MBST_SUCC(ID, T)                                                       \
   merr_t ID##_mbst_succ(const ID##_mbst_ptr_t *const self, T data,             \
                         T *const acc) {                                        \
@@ -313,6 +364,10 @@
     return M_OK;                                                               \
   }
 
+/**
+ * @brief Finds the lowest common ancestor data of the binary search tree, works
+ * just like mbst_find.
+ */
 #define MBST_LCA(ID, T)                                                        \
   merr_t ID##_mbst_lca(const ID##_mbst_ptr_t *const self, T left, T right,     \
                        T *const acc) {                                         \
@@ -348,6 +403,11 @@
     return M_OK;                                                               \
   }
 
+/**
+ * @brief Inserts a new data inside the binary search tree, it is important to
+ * specify a valid cmp function in order to arange data inside the binary search
+ * tree.
+ */
 #define MBST_PUSH(ID, T)                                                       \
   merr_t ID##_mbst_push(ID##_mbst_t const self, T data) {                      \
     if (self == NULL) {                                                        \
@@ -393,6 +453,11 @@
     return M_OK;                                                               \
   }
 
+/**
+ * @brief Removes a single data node from the binary search tree and frees its
+ * content using the frd function specified at the creation of the object.
+ *
+ */
 #define MBST_POP(ID, T)                                                        \
   void ID##_internal_mbst_swap(ID##_mbst_t const self,                         \
                                ID##_mbst_node_t const dest,                    \
@@ -521,6 +586,9 @@
     return M_OK;                                                               \
   }
 
+/**
+ * @brief Traversing the tree inorder method.
+ */
 #define MBST_TRAVERSE_INORDER(ID, T)                                           \
   ACTION_FUNC(ID, T)                                                           \
                                                                                \
@@ -557,6 +625,9 @@
     return M_OK;                                                               \
   }
 
+/**
+ * @brief Traversing the tree preorder method.
+ */
 #define MBST_TRAVERSE_PREORDER(ID, T)                                          \
   ACTION_FUNC(ID, T)                                                           \
                                                                                \
@@ -593,6 +664,9 @@
     return M_OK;                                                               \
   }
 
+/**
+ * @brief Traversing the tree postorder method.
+ */
 #define MBST_TRAVERSE_POSTORDER(ID, T)                                         \
   ACTION_FUNC(ID, T)                                                           \
                                                                                \
@@ -630,6 +704,16 @@
     return M_OK;                                                               \
   }
 
+/**
+ * @brief Adds the all API for the `mbst_t` structure (binary search tree). You
+ * will not be always need to use all the API, in this case you must be sure
+ * that you call `MBST` for definition, any other macro definitions are to bring
+ * new functionalities. The code length may be reduced a lot if you do not call
+ * `MBST_ALL`, the code duplicated when calling `MBST_ALL` for different ids or
+ * different types, it is encoureged to not to use `MBST_ALL` or not to declare
+ * different ids for the same type. The ID protocol is used when different files
+ * want to have the same two typed structures in order to avoid name collisions.
+ */
 #define MBST_ALL(ID, T)                                                        \
   MBST(ID, T)                                                                  \
   MBST_EMPTY(ID, T)                                                            \
