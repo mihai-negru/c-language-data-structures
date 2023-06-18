@@ -44,7 +44,9 @@ typedef enum merr_s {
   M_POP_FROM_EMPTY,
   M_IDX_OVERFLOW,
   M_NULL_ACTION,
-  M_EMPTY_STRUCTURE
+  M_EMPTY_STRUCTURE,
+  M_INVALID_INPUT,
+  M_UNDEFINED_BEHAVIOUR
 } merr_t;
 
 #define CMP_FUNC(ID, T)                                                        \
