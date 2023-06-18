@@ -74,7 +74,7 @@
     return self;                                                               \
   }                                                                            \
                                                                                \
-  ID##_mqueue_node_t ID##_mqueue_node(T data) {                                \
+  ID##_mqueue_node_t ID##_internal_mqueue_node(T *const data) {                \
     ID##_mqueue_node_t self_node = malloc(sizeof *self_node);                  \
                                                                                \
     if (self_node == NULL) {                                                   \
@@ -82,7 +82,7 @@
     }                                                                          \
                                                                                \
     self_node->next = NULL;                                                    \
-    self_node->data = data;                                                    \
+    self_node->data = *data;                                                   \
                                                                                \
     return self_node;                                                          \
   }                                                                            \
@@ -218,7 +218,7 @@
       return M_NULL_INPUT;                                                     \
     }                                                                          \
                                                                                \
-    ID##_mqueue_node_t self_node = ID##_mqueue_node(data);                     \
+    ID##_mqueue_node_t self_node = ID##_internal_mqueue_node(&data);           \
                                                                                \
     if (self_node == NULL) {                                                   \
       return M_MALLOC_FAILED;                                                  \

@@ -73,7 +73,7 @@
     return self;                                                               \
   }                                                                            \
                                                                                \
-  ID##_mstack_node_t ID##_mstack_node(T data) {                                \
+  ID##_mstack_node_t ID##_internal_mstack_node(T *const data) {                \
     ID##_mstack_node_t self_node = malloc(sizeof *self_node);                  \
                                                                                \
     if (self_node == NULL) {                                                   \
@@ -81,7 +81,7 @@
     }                                                                          \
                                                                                \
     self_node->next = NULL;                                                    \
-    self_node->data = data;                                                    \
+    self_node->data = *data;                                                   \
                                                                                \
     return self_node;                                                          \
   }                                                                            \
@@ -197,7 +197,7 @@
       return M_NULL_INPUT;                                                     \
     }                                                                          \
                                                                                \
-    ID##_mstack_node_t self_node = ID##_mstack_node(data);                     \
+    ID##_mstack_node_t self_node = ID##_internal_mstack_node(&data);           \
                                                                                \
     if (self_node == NULL) {                                                   \
       return M_MALLOC_FAILED;                                                  \

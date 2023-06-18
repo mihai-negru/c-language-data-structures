@@ -82,7 +82,7 @@
     return self;                                                               \
   }                                                                            \
                                                                                \
-  ID##_mdlist_node_t ID##_mdlist_node(T data) {                                \
+  ID##_mdlist_node_t ID##_internal_mdlist_node(T *const data) {                \
     ID##_mdlist_node_t self_node = malloc(sizeof *self_node);                  \
                                                                                \
     if (self_node == NULL) {                                                   \
@@ -90,7 +90,7 @@
     }                                                                          \
                                                                                \
     self_node->prev = self_node->next = NULL;                                  \
-    self_node->data = data;                                                    \
+    self_node->data = *data;                                                   \
                                                                                \
     return self_node;                                                          \
   }                                                                            \
@@ -180,15 +180,15 @@
  * uses cmp function provided by user at the creation of the doubly linked list.
  */
 #define MDLIST_FIND_NODE(ID, T)                                                \
-  ID##_mdlist_node_t ID##_mdlist_find_node(                                    \
-      const ID##_mdlist_ptr_t *const self, T data) {                           \
+  ID##_mdlist_node_t ID##_internal_mdlist_find_node(                           \
+      const ID##_mdlist_ptr_t *const self, T *const data) {                    \
     if ((self == NULL) || (self->head == NULL)) {                              \
       return NULL;                                                             \
     }                                                                          \
                                                                                \
     ID##_mdlist_node_t iterator = self->head;                                  \
                                                                                \
-    while ((iterator != NULL) && (self->cmp(&iterator->data, &data) != 0)) {   \
+    while ((iterator != NULL) && (self->cmp(&iterator->data, data) != 0)) {    \
       iterator = iterator->next;                                               \
     }                                                                          \
                                                                                \
@@ -270,13 +270,13 @@
       return M_NULL_INPUT;                                                     \
     }                                                                          \
                                                                                \
-    ID##_mdlist_node_t fst_node = ID##_mdlist_find_node(self, fst);            \
+    ID##_mdlist_node_t fst_node = ID##_internal_mdlist_find_node(self, &fst);  \
                                                                                \
     if (fst_node == NULL) {                                                    \
       return M_NOT_FOUND;                                                      \
     }                                                                          \
                                                                                \
-    ID##_mdlist_node_t snd_node = ID##_mdlist_find_node(self, snd);            \
+    ID##_mdlist_node_t snd_node = ID##_internal_mdlist_find_node(self, &snd);  \
                                                                                \
     if (snd_node == NULL) {                                                    \
       return M_NOT_FOUND;                                                      \
@@ -338,7 +338,8 @@
       return M_NULL_INPUT;                                                     \
     }                                                                          \
                                                                                \
-    ID##_mdlist_node_t base_node = ID##_mdlist_find_node(self, base);          \
+    ID##_mdlist_node_t base_node =                                             \
+        ID##_internal_mdlist_find_node(self, &base);                           \
                                                                                \
     if (base_node == NULL) {                                                   \
       return M_NOT_FOUND;                                                      \
@@ -379,7 +380,7 @@
       return M_NULL_INPUT;                                                     \
     }                                                                          \
                                                                                \
-    ID##_mdlist_node_t self_node = ID##_mdlist_node(data);                     \
+    ID##_mdlist_node_t self_node = ID##_internal_mdlist_node(&data);           \
                                                                                \
     if (self_node == NULL) {                                                   \
       return M_MALLOC_FAILED;                                                  \
@@ -410,7 +411,7 @@
       return M_NULL_INPUT;                                                     \
     }                                                                          \
                                                                                \
-    ID##_mdlist_node_t self_node = ID##_mdlist_node(data);                     \
+    ID##_mdlist_node_t self_node = ID##_internal_mdlist_node(&data);           \
                                                                                \
     if (self_node == NULL) {                                                   \
       return M_MALLOC_FAILED;                                                  \
@@ -461,7 +462,7 @@
       return M_NULL_INPUT;                                                     \
     }                                                                          \
                                                                                \
-    ID##_mdlist_node_t self_node = ID##_mdlist_node(data);                     \
+    ID##_mdlist_node_t self_node = ID##_internal_mdlist_node(&data);           \
                                                                                \
     if (self == NULL) {                                                        \
       return M_MALLOC_FAILED;                                                  \
@@ -499,7 +500,7 @@
     if (idx == 0)                                                              \
       return ID##_mdlist_push_front(self, data);                               \
                                                                                \
-    ID##_mdlist_node_t self_node = ID##_mdlist_node(data);                     \
+    ID##_mdlist_node_t self_node = ID##_internal_mdlist_node(&data);           \
                                                                                \
     if (self_node == NULL) {                                                   \
       return M_MALLOC_FAILED;                                                  \
