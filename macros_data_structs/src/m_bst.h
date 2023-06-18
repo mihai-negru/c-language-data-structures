@@ -85,7 +85,6 @@
       return NULL;                                                             \
     }                                                                          \
                                                                                \
-    self->nil->data = (T)0;                                                    \
     self->nil->count = 1;                                                      \
     self->nil->left = self->nil->right = self->nil->parent = self->nil;        \
                                                                                \
