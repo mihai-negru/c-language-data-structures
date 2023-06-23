@@ -430,7 +430,7 @@
                                                                                \
     if (acc != NULL) {                                                         \
       if (iterator->right != self->nil) {                                      \
-        *acc = ID##_internal_mavl_min_node(self, iterator->left)->data;        \
+        *acc = ID##_internal_mavl_min_node(self, iterator->right)->data;       \
       } else {                                                                 \
         ID##_mavl_node_t parent_iterator = iterator->parent;                   \
                                                                                \
