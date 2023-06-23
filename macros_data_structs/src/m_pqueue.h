@@ -36,8 +36,8 @@
  * @param T the type of the data stored inside the structure.
  */
 
-#define DEFAULT_CAPACITY 10
-#define DEFAULT_REALLOC_RATIO 2
+#define MPQUEUE_DEFAULT_CAPACITY 10
+#define MPQUEUE_DEFAULT_REALLOC_RATIO 2
 
 #define MPQUEUE_INTERNAL_LT_IDX(idx) (2 * (idx) + 1)
 #define MPQUEUE_INTERNAL_RT_IDX(idx) (2 * (idx) + 2)
@@ -86,8 +86,8 @@
       return NULL;                                                             \
     }                                                                          \
                                                                                \
-    if (init_capacity < DEFAULT_CAPACITY) {                                    \
-      init_capacity = DEFAULT_CAPACITY;                                        \
+    if (init_capacity < MPQUEUE_DEFAULT_CAPACITY) {                            \
+      init_capacity = MPQUEUE_DEFAULT_CAPACITY;                                \
     }                                                                          \
                                                                                \
     ID##_mpqueue_t self = malloc(sizeof *self);                                \
@@ -432,13 +432,13 @@
     }                                                                          \
                                                                                \
     if (self->size >= self->capacity) {                                        \
-      self->capacity *= DEFAULT_REALLOC_RATIO;                                 \
+      self->capacity *= MPQUEUE_DEFAULT_REALLOC_RATIO;                         \
                                                                                \
       ID##_mpqueue_node_t *try_real =                                          \
           realloc(self->nodes, sizeof *(self->nodes) * self->capacity);        \
                                                                                \
       if (try_real == NULL) {                                                  \
-        self->capacity /= DEFAULT_REALLOC_RATIO;                               \
+        self->capacity /= MPQUEUE_DEFAULT_REALLOC_RATIO;                       \
                                                                                \
         return M_REALLOC_FAILED;                                               \
       }                                                                        \
