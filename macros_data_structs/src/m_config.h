@@ -38,6 +38,7 @@ typedef enum merr_s {
 
   M_MUST_BE_NULL,
   M_MALLOC_FAILED,
+  M_REALLOC_FAILED,
   M_FREE_NULL,
   M_NULL_INPUT,
   M_NOT_FOUND,
