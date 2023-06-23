@@ -409,7 +409,7 @@ typedef enum notype_rbk_color_s { RED, BLACK } notype_rbk_color_t;
                                                                                \
     if (acc != NULL) {                                                         \
       if (iterator->right != self->nil) {                                      \
-        *acc = ID##_internal_mrbk_min_node(self, iterator->left)->data;        \
+        *acc = ID##_internal_mrbk_min_node(self, iterator->right)->data;       \
       } else {                                                                 \
         ID##_mrbk_node_t parent_iterator = iterator->parent;                   \
                                                                                \
