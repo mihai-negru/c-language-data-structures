@@ -18,7 +18,7 @@ int main(void) {
   test_mrbk_t my_tree = test_mrbk(&compare_int, NULL);
 
   if (NULL == my_tree) {
-    printf("AVL tree was not allocated\n");
+    printf("RBK tree was not allocated\n");
     exit(EXIT_FAILURE);
   }
 
@@ -51,18 +51,18 @@ int main(void) {
     exit(EXIT_FAILURE);
   }
 
-  printf("\nThe AVL tree printed by postorder method is:\n");
+  printf("\nThe RBK tree printed by postorder method is:\n");
   test_mrbk_traverse_postorder(my_tree, &print_int);
   printf("\n\n");
 
-  printf("In the avl tree there exist %lu unique random integers\n\n",
+  printf("In the RBK tree there exist %lu unique random integers\n\n",
          test_mrbk_size(my_tree));
 
   int root_data;
   err = test_mrbk_root(my_tree, &root_data);
 
   if (err == M_OK) {
-    printf("The root value of the avl tree is %d\n", root_data);
+    printf("The root value of the RBK tree is %d\n", root_data);
 
     int min_max = 0;
     test_mrbk_max(my_tree, root_data, &min_max);
@@ -104,7 +104,7 @@ int main(void) {
     int del;
 
     if (test_mrbk_root(my_tree, &del) == M_OK) {
-      printf("Removing %d value from AVL\n", del);
+      printf("Removing %d value from RBK\n", del);
 
       err = test_mrbk_pop(my_tree, del);
 
@@ -116,7 +116,7 @@ int main(void) {
 
   printf("\n");
 
-  printf("After deletion the AVL tree shows like (inorder):\n");
+  printf("After deletion the RBK tree shows like (inorder):\n");
   test_mrbk_traverse_inorder(my_tree, &print_int);
   printf("\n\n");
 

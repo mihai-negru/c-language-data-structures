@@ -18,7 +18,7 @@ int main(void) {
   test_mbst_t my_tree = test_mbst(&compare_int, NULL);
 
   if (NULL == my_tree) {
-    printf("AVL tree was not allocated\n");
+    printf("BST tree was not allocated\n");
     exit(EXIT_FAILURE);
   }
 
@@ -51,18 +51,18 @@ int main(void) {
     exit(EXIT_FAILURE);
   }
 
-  printf("\nThe AVL tree printed by postorder method is:\n");
+  printf("\nThe BST tree printed by postorder method is:\n");
   test_mbst_traverse_postorder(my_tree, &print_int);
   printf("\n\n");
 
-  printf("In the avl tree there exist %lu unique random integers\n\n",
+  printf("In the BST tree there exist %lu unique random integers\n\n",
          test_mbst_size(my_tree));
 
   int root_data;
   err = test_mbst_root(my_tree, &root_data);
 
   if (err == M_OK) {
-    printf("The root value of the avl tree is %d\n", root_data);
+    printf("The root value of the BST tree is %d\n", root_data);
 
     int min_max = 0;
     test_mbst_max(my_tree, root_data, &min_max);
@@ -104,7 +104,7 @@ int main(void) {
     int del;
 
     if (test_mbst_root(my_tree, &del) == M_OK) {
-      printf("Removing %d value from AVL\n", del);
+      printf("Removing %d value from BST\n", del);
 
       err = test_mbst_pop(my_tree, del);
 
@@ -116,7 +116,7 @@ int main(void) {
 
   printf("\n");
 
-  printf("After deletion the AVL tree shows like (inorder):\n");
+  printf("After deletion the BST tree shows like (inorder):\n");
   test_mbst_traverse_inorder(my_tree, &print_int);
   printf("\n\n");
 
