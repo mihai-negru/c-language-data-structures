@@ -14,10 +14,10 @@ In this readme file we will walk through the MBST structure and its utilities. W
 
 ### `include and define`
 
-In order to use the strcutures and the whole api, you need to clone the "**m_avl.h**" file into your project. The for including you just need to simply include it.
+In order to use the strcutures and the whole api, you need to clone the "**m_bst.h**" file into your project. The for including you just need to simply include it.
 
 ```c
-  #include "path_to_file/m_avl.h"
+  #include "path_to_file/m_bst.h"
 ```
 
 For now you are ready to use the api.
@@ -85,9 +85,9 @@ Let's dive into some code in order to undestand better:
   }
 ```
 
-So the type chosen is int, and I have assinged the name of *doc*. For the creating of an avl tree, we need two things:
+So the type chosen is int, and I have assinged the name of *doc*. For the creating of an bst tree, we need two things:
 
-* A compare function for the type, because the avl tree is an ordered structure and we need to arrange the data in a specified order.
+* A compare function for the type, because the bst tree is an ordered structure and we need to arrange the data in a specified order.
 * A free function if it is required.
 
 In this case we did not need a free function because the type is a primitive one, so the *free* function will not free the data and will free just the nodes of the structure.
