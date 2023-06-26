@@ -34,7 +34,7 @@ the *id* represents the name of the structure and the *type* represents the type
 For example:
 
 ```c
-  MSTACK(test, int) // will create the structure test_mavl_t
+  MSTACK(test, int) // will create the structure test_mstack_t
 ```
 
 >**NOTE:** It is allowed to specify NO id, however it is a god practice, because you may have name collisions with other structures defined in the libc or other libraries.
@@ -42,8 +42,8 @@ For example:
 Other methods are included like following:
 
 ```c
-  MSTACK_PUSH(test, int) // defines the test_mavl_push method
-  MSTACK_POP(test, int) // defines the test_mavl_pop method
+  MSTACK_PUSH(test, int) // defines the test_mstack_push method
+  MSTACK_POP(test, int) // defines the test_mstack_pop method
 ```
 
 it is very important that the id and type be the same as the definition of the structure.
@@ -70,7 +70,7 @@ Let's dive into some code in order to undestand better:
   MSTACK(doc, int)
 
   // the doc_mavl_t struture is a pointer
-  // typedef struct doc_mavl_s *doc_mavl_t;
+  // typedef struct doc_mstack_s *doc_mstack_t;
   ...
 
   int main(void) {
