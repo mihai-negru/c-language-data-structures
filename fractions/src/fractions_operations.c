@@ -1,5 +1,5 @@
 /**
- * @file fractions.c
+ * @file fractions_operations.c
  * @author Mihai Negru (determinant289@gmail.com)
  * @version 1.0.0
  * @date 2023-06-26
