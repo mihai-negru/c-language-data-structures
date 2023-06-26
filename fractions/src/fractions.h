@@ -26,8 +26,54 @@
 #ifndef C_LANGUAGE_DATA_STRUCTURE_PROJECT_FRACTIONS_H_
 #define C_LANGUAGE_DATA_STRUCTURE_PROJECT_FRACTIONS_H_
 
+#include <float.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+typedef enum sign_s {
+  plus = 0,
+  mins = 1,
+  erro = 2
+} sign_t;
+
+typedef struct frac_s {
+  uint32_t  x;
+  uint32_t  y;
+  sign_t    s;
+} frac_t;
+
+#define     error_frac    (frac_t){ (uint32_t) - 1, (uint32_t)-1, erro }
+#define     zero_frac     (frac_t){ (uint32_t)0, (uint32_t)0, plus }
+#define     id_frac       (frac_t){ (uint32_t)1, (uint32_t)1, plus}
+#define     eval_sign(s)  ((s) == mins ? -1 : 1)
+
+uint8_t     is_ferror     (frac_t f); //
+uint8_t     is_fzero      (frac_t f); //
+uint8_t     is_fid        (frac_t f); //
+
+double      feval         (frac_t f); //
+
+frac_t      fxy           (uint32_t x, uint32_t y, sign_t s); //
+
+frac_t      fadd          (frac_t f1, frac_t f2); //
+frac_t      fsub          (frac_t f1, frac_t f2); //
+frac_t      fmul          (frac_t f1, frac_t f2); //
+frac_t      fdiv          (frac_t f1, frac_t f2); //
+
+frac_t      fconst        (frac_t f1, int32_t c); //
+void        fconste       (frac_t *f1, int32_t c); //
+
+void        fadde         (frac_t *f1, frac_t f2);
+void        fsube         (frac_t *f1, frac_t f2);
+void        fmule         (frac_t *f1, frac_t f2);
+void        fdive         (frac_t *f1, frac_t f2);
+
+uint8_t     feq           (frac_t f1, frac_t f2);
+uint8_t     fneq          (frac_t f1, frac_t f2);
+uint8_t     fgt           (frac_t f1, frac_t f2);
+uint8_t     flt           (frac_t f1, frac_t f2);
+uint8_t     fgte          (frac_t f1, frac_t f2);
+uint8_t     flte          (frac_t f1, frac_t f2);
 
 #endif /* C_LANGUAGE_DATA_STRUCTURE_PROJECT_FRACTIONS_H_ */
