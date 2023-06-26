@@ -345,6 +345,9 @@
       return M_NOT_FOUND;                                                      \
     }                                                                          \
                                                                                \
+    if (self->frd != NULL) {                                                   \
+      self->frd(&base_node->data);                                             \
+    }                                                                          \
     base_node->data = new;                                                     \
                                                                                \
     return M_OK;                                                               \
@@ -366,6 +369,9 @@
       base_node = base_node->next;                                             \
     }                                                                          \
                                                                                \
+    if (self->frd != NULL) {                                                   \
+      self->frd(&base_node->data);                                             \
+    }                                                                          \
     base_node->data = new;                                                     \
                                                                                \
     return M_OK;                                                               \
