@@ -142,7 +142,7 @@
   merr_t ID##_mpqueue_free(ID##_mpqueue_t *self) {                             \
     if ((self != NULL) && (*self != NULL)) {                                   \
       if ((*self)->nodes != NULL) {                                            \
-        for (size_t iter = 0; iter < (*self)->size; ++iter) {                  \
+        for (size_t iter = 0; iter < (*self)->capacity; ++iter) {              \
           if ((*self)->nodes[iter] != NULL) {                                  \
             if ((*self)->frd_prio != NULL) {                                   \
               (*self)->frd_prio(&(*self)->nodes[iter]->prio);                  \
@@ -187,6 +187,7 @@
     size_t swap_idx = idx;                                                     \
                                                                                \
     size_t check_idx = MPQUEUE_INTERNAL_LT_IDX(idx);                           \
+                                                                               \
     if ((check_idx < self->size) &&                                            \
         (self->cmp_prio(&self->nodes[check_idx]->prio,                         \
                         &self->nodes[swap_idx]->prio) >= 1)) {                 \
@@ -295,12 +296,16 @@
     }                                                                          \
                                                                                \
     if (self->cmp_prio(&self->nodes[idx]->prio, &prio) >= 1) {                 \
+      if (self->frd_prio != NULL) {                                            \
+        self->frd_prio(&self->nodes[idx]->prio);                               \
+      }                                                                        \
       self->nodes[idx]->prio = prio;                                           \
                                                                                \
       ID##_internal_mpqueue_sift_down(self, idx);                              \
-    }                                                                          \
-                                                                               \
-    if (self->cmp_prio(&self->nodes[idx]->prio, &prio) <= -1) {                \
+    } else if (self->cmp_prio(&self->nodes[idx]->prio, &prio) <= -1) {         \
+      if (self->frd_prio != NULL) {                                            \
+        self->frd_prio(&self->nodes[idx]->prio);                               \
+      }                                                                        \
       self->nodes[idx]->prio = prio;                                           \
                                                                                \
       ID##_internal_mpqueue_sift_up(self, idx);                                \
@@ -324,6 +329,9 @@
       return M_IDX_OVERFLOW;                                                   \
     }                                                                          \
                                                                                \
+    if (self->frd_data != NULL) {                                              \
+      self->frd_data(&self->nodes[idx]->data);                                 \
+    }                                                                          \
     self->nodes[idx]->data = data;                                             \
                                                                                \
     return M_OK;                                                               \
@@ -513,7 +521,7 @@
       return M_NULL_ACTION;                                                    \
     }                                                                          \
                                                                                \
-    if (self->size == NULL) {                                                  \
+    if (self->size == 0) {                                                     \
       printf("[]\n");                                                          \
     } else {                                                                   \
       printf("[");                                                             \
