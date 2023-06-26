@@ -11,7 +11,7 @@ In this readme file we will walk through the MDLIST structure and its utilities.
 3. [`fetching data with accumulators`](#fetching-data-with-accumulators)
 4. [`finding`](#finding)
 5. [`changing`](#changing)
-6. [`map and filter`](map-and-filter)
+6. [`map and filter`](#map-and-filter)
 7. [`traversing`](#traversing)
 
 ### `include and define`
