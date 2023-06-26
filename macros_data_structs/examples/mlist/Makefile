@@ -16,19 +16,19 @@ VALGRIND += valgrind $(VALGRIND_FLAGS)
 build: e1 e2 e3
 
 e1: example1
-	@printf "Run MDLIST example 1: "
+	@printf "Run MLIST example 1: "
 	@$(VALGRIND) --log-file=valgrind_log_1.txt ./example1
 	@printf "Done\n"
 	@rm -rf example1
 
 e2: example2
-	@printf "Run MDLIST example 2: "
+	@printf "Run MLIST example 2: "
 	@$(VALGRIND) --log-file=valgrind_log_2.txt ./example2
 	@printf "Done\n"
 	@rm -rf example2
 
 e3: example3
-	@printf "Run MDLIST example 3: "
+	@printf "Run MLIST example 3: "
 	@$(VALGRIND) --log-file=valgrind_log_3.txt ./example3
 	@printf "Done\n"
 	@rm -rf example3
