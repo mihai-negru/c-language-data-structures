@@ -1,11 +1,7 @@
 ![Projec Logo](../images/logo.png)
 
-[![GitHub issues](https://img.shields.io/github/issues/Matrix22/C-language-Data-Structures?label=Issues)](https://github.com/Matrix22/C-language-Data-Structures/issues)
-[![GitHub forks](https://img.shields.io/github/forks/Matrix22/C-language-Data-Structures?label=Forks)](https://github.com/Matrix22/C-language-Data-Structures/network)
-[![GitHub stars](https://img.shields.io/github/stars/Matrix22/C-language-Data-Structures?label=Stars)](https://github.com/Matrix22/C-language-Data-Structures/stargazers)
-[![GitHub license](https://img.shields.io/github/license/Matrix22/C-language-Data-Structures?label=License)](https://github.com/Matrix22/C-language-Data-Structures/blob/master/LICENCE)
-
 # **Table of Contents**
+
 1. [Getting Started](#start-description)
 2. [Building the Project](#build-description)
 3. [Using the library](#use-description)
@@ -152,6 +148,7 @@ compile everything from the beginning. The **sudo make** command is good then yo
 if you work on changing some files you should not call **sudo make**.
 
 When running **make build** two new folders will appear in the **build** folder:
+
 * **dynamic_obj** - a folder containing all object files that compose the dynamic library
 * **static_obj** - a folder containing all object files that compose the satic library
 
@@ -212,8 +209,4 @@ I am very open for contributing, however if you want to take part of this projec
 * First you should respect the code styling, some references are [C Style](https://github.com/mcinglis/c-style)
 * You should provide documentation (respecting doxygen standard) for every function or piece of code
 * You should come with some tests or examples to show how to work with your new functions
-* Be happy and don't stop coding :) 
-
-
-
-
+* Be happy and don't stop coding :)

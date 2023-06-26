@@ -2,6 +2,11 @@
 
 ![Projec Logo](images/logo.png)
 
+[![GitHub issues](https://img.shields.io/github/issues/mihai-negru/c-language-data-structures?label=Issues)](https://github.com/mihai-negru/c-language-data-structures/issues)
+[![GitHub forks](https://img.shields.io/github/forks/mihai-negru/c-language-data-structures?label=Forks)](https://github.com/mihai-negru/c-language-data-structures/network)
+[![GitHub stars](https://img.shields.io/github/stars/mihai-negru/c-language-data-structures?label=Stars)](https://github.com/mihai-negru/c-language-data-structures/stargazers)
+[![GitHub license](https://img.shields.io/github/license/mihai-negru/c-language-data-structures?label=License)](https://github.com/mihai-negru/c-language-data-structures/blob/master/LICENCE)
+
 This project is a collection of small objects that consist into a big library.
 
 The project is divided in two main sub-projects:
