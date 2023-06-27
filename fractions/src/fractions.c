@@ -25,8 +25,7 @@
 
 #include "./fractions.h"
 
-#define fmax(x, y) ((x) > (y) ? (x) : (y))
-#define fmin(x, y) ((x) > (y) ? (y) : (x))
+#define eval_sign(s) ((s) == mins ? -1 : 1)
 
 static uint32_t gcd(uint32_t u, uint32_t v) {
   if (u == 0) {
@@ -136,6 +135,10 @@ frac_t fadd(frac_t f1, frac_t f2) {
     f.s = plus;
   }
 
+  if (f.x == 0) {
+    f = zero_frac;
+  }
+
   return f;
 }
 
@@ -218,126 +221,25 @@ frac_t fconst(frac_t f1, int32_t c) {
   return f;
 }
 
-void fconste(frac_t *f1, int32_t c) {
-  if (is_ferror(*f1)) {
-    return;
-  }
-
-  if (c == 0) {
-    *f1 = zero_frac;
-    return;
-  }
-
-  if (c < 0) {
-    f1->s = (f1->s + 1) % 2;
-    c *= -1;
-  }
-
-  uint32_t simplify = gcd((uint32_t)c, f1->y);
-  f1->x *= (c / simplify);
-  f1->y /= simplify;
+void fconstp(frac_t *f1, int32_t c) {
+  *f1 = fconst(*f1, c);
 }
 
 
-void fadde(frac_t *f1, frac_t f2) {
-  if (is_ferror(*f1) || is_ferror(f2)) {
-    *f1 = error_frac;
-    return;
-  }
-
-  if (is_fzero(*f1)) {
-    *f1 = f2;
-  }
-
-  if (is_fzero(f2)) {
-    return;
-  }
-
-  uint32_t common = gcd(f1->y, f2.y); // common = ab/gcd(a,b) = a * c
-  uint32_t amplify_f1 = f2.y / common;
-  uint32_t amplify_f2 = f1->y / common;
-
-  f1->x *= amplify_f1;
-  f2.x *= amplify_f2;
-
-  f1->y *= amplify_f1;
-  if (f1->s == mins && f2.s == mins) {
-    f1->x = f1->x + f2.x;
-  } else if (f1->s == mins) {
-    if (f1->x > f2.x) {
-      f1->x -= f2.x;
-    } else {
-      f1->x = f2.x - f1->x;
-      f1->s = plus;
-    }
-  } else if (f2.s == mins) {
-    if (f1->x >= f2.x) {
-      f1->x -= f2.x;
-    } else {
-      f1->x = f2.x - f1->x;
-      f1->s = mins;
-    }
-  } else {
-    f1->x += f2.x;
-    f1->s = plus;
-  }
+void faddp(frac_t *f1, frac_t f2) {
+  *f1 = fadd(*f1, f2);
 }
 
-void fsube(frac_t *f1, frac_t f2) {
-  if (is_ferror(*f1) || is_ferror(f2)) {
-    *f1 = error_frac;
-    return;
-  }
-
-  f2.s = (f2.s + 1) % 2;
-
-  fadde(f1, f2);
+void fsubp(frac_t *f1, frac_t f2) {
+  *f1 = fsub(*f1, f2);
 }
 
-void fmule(frac_t *f1, frac_t f2) {
-  if (is_ferror(*f1) || is_ferror(f2)) {
-    *f1 = error_frac;
-    return;
-  }
-
-  if (is_fzero(*f1) || is_fzero(f2)) {
-    *f1 = zero_frac;
-    return;
-  }
-
-  if (is_fid(*f1)) {
-    *f1 = f2;
-    return;
-  }
-
-  if (is_fid(f2)) {
-    return;
-  }
-
-  uint32_t g1 = gcd(f1->x, f2.y);
-  uint32_t g2 = gcd(f2.x, f1->y);
-
-  f1->x = (f1->x / g1) * (f2.x / g2);
-  f1->y = (f1->y / g2) * (f2.y / g1);
-  
-  if ((f1->s == mins && f2.s == mins) || (f1->s == plus && f2.s == plus)) {
-    f1->s = plus;
-  } else {
-    f1->s = mins;
-  }
+void fmulp(frac_t *f1, frac_t f2) {
+  *f1 = fmul(*f1, f2);
 }
 
-void fdive(frac_t *f1, frac_t f2) {
-  if (is_fzero(f2)) {
-    *f1 = error_frac;
-    return;
-  }
-
-  uint32_t temp = f2.x;
-  f2.x = f2.y;
-  f2.y = temp;
-
-  fmule(f1, f2);
+void fdivp(frac_t *f1, frac_t f2) {
+  *f1 = fdiv(*f1, f2);
 }
 
 uint8_t feq(frac_t f1, frac_t f2) {
