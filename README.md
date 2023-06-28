@@ -13,6 +13,7 @@ The project is divided in two main sub-projects:
 
 * *[Void Pointer data structures](voidptr_data_structs/README.md)* - which are generic data structures implemented using the void pointer.
 * *[Macros data structures](macros_data_structs/README.md)* - which are the void pointer tructures reimplemented using macros.
+* *[Fractions codification](fractions/README.md)* - which are an implementation of the fractions using the numerator and denumerator, in order to preserve data loss at every operation.
 
 ## Getting Started
 
