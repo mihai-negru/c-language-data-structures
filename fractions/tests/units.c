@@ -172,7 +172,7 @@ void test_fxy(void) {
   assert_frac("-0/1 = zero", is_fzero(fxy(0, 1, mins)));
   assert_frac("1/0 = inf", is_fpinf(fxy(1, 0, plus)));
   assert_frac("-1/0 = -inf", is_fminf(fxy(1, 0, mins)));
-  assert_frac("nan = nan", is_fnan(fxy(1, 4, nan)));
+  assert_frac("nan = nan", is_fnan(fxy(1, 4, nans)));
   assert_frac("24/6 = 4", cnd(fxy(24, 6, plus), fxy(4, 1, plus)));
   assert_frac("6/24 = 1/4", cnd(fxy(6, 24, plus), fxy(1, 4, plus)));
   assert_frac("1/7 is ireductible", cnd(fxy(1, 7, plus), fxy(1, 7, plus)));

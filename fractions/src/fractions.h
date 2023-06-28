@@ -30,6 +30,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * @brief Enum that encodes the truth values `false` and `true`,
@@ -51,7 +52,7 @@ typedef enum fbool_s {
 typedef enum sign_s {
   plus  = 0,           /* Plus sign + */
   mins  = 1,           /* Minus sign - */
-  nan   = 2            /* Error sign */
+  nans  = 2            /* Error sign */
 } sign_t;
 
 /**
@@ -76,11 +77,20 @@ typedef struct frac_s {
  * minus infinity and so on, the zero fraction and the identity fraction.
  * 
  */
-#define     nan_frac      (frac_t) { (uint32_t)-1, (uint32_t)-1, nan }
+#define     nan_frac      (frac_t) { UINT32_MAX, UINT32_MAX, nans }
 #define     pinf_frac     (frac_t) { 1, 0, plus }
 #define     minf_frac     (frac_t) { 1, 0, mins }
-#define     zero_frac     (frac_t) { (uint32_t)0, (uint32_t)-1, plus }
-#define     id_frac       (frac_t) { (uint32_t)1, (uint32_t)1, plus }
+#define     zero_frac     (frac_t) { 0, 1, plus }
+#define     id_frac       (frac_t) { 1, 1, plus }
+
+
+/**
+ * @brief Takes a fraction and computes the string representation.
+ * 
+ * @param f fraction structure.
+ * @return const char* the string representation of the fraction.
+ */
+const char* frac_out(frac_t f);
 
 
 /**

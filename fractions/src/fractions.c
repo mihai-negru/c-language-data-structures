@@ -71,7 +71,7 @@ static uint32_t gcd(uint32_t u, uint32_t v) {
  * @param f fraction structure.
  * @return fbool_t ftrue if fraction is not a number, ffalse otherwise.
  */
-fbool_t is_fnan(frac_t f) {return ((f.x == (uint32_t)-1) && (f.y == (uint32_t)-1)) || (f.s == nan);}
+fbool_t is_fnan(frac_t f) {return ((f.x == UINT32_MAX) && (f.y == UINT32_MAX)) || (f.s == nans);}
 
 /**
  * @brief Checks wheter a fraction is infinity fraction or not.
@@ -113,7 +113,7 @@ fbool_t is_fpositive(frac_t f) { return f.s == plus; }
  * @param f fraction structure.
  * @return fbool_t ftrue if the fraction is a zero fraction, ffalse otherwise.
  */
-fbool_t is_fzero(frac_t f) { return (f.x == (uint32_t)0); }
+fbool_t is_fzero(frac_t f) { return (f.x == 0); }
 
 /**
  * @brief Checks wheter a fraction is an identity fraction or not.
@@ -123,7 +123,47 @@ fbool_t is_fzero(frac_t f) { return (f.x == (uint32_t)0); }
  * @param f fraction structure.
  * @return fbool_t ftrue if the fraction is an identity fraction, ffalse otherwise.
  */
-fbool_t is_fid(frac_t f) { return (f.x == (uint32_t)1) && (f.y == (uint32_t)1) && (f.s == plus);}
+fbool_t is_fid(frac_t f) { return (f.x == 1) && (f.y == 1) && (f.s == plus);}
+
+
+/**
+ * @brief Takes a fraction and computes the string representation.
+ * 
+ * @param f fraction structure.
+ * @return const char* the string representation of the fraction.
+ */
+const char* frac_out(frac_t f) {
+  if (is_fnan(f)) {
+    return "nans";
+  }
+
+  if (is_fpinf(f)) {
+    return "inf";
+  }
+
+  if (is_fminf(f)) {
+    return "-inf";
+  }
+
+  if (is_fzero(f)) {
+    return "0";
+  }
+
+  static char buffer[25];
+  int offset = 0;
+
+  if (f.s == mins) {
+    offset = snprintf(buffer, 25, "-");
+  }
+
+  offset += snprintf(buffer + offset, 25, "%u", f.x);
+
+  if (f.y != 1) {
+    snprintf(buffer + offset, 25, "/%u", f.y);
+  }
+
+  return buffer;
+}
 
 
 /**
@@ -167,7 +207,7 @@ double feval(frac_t f) {
  * @return frac_t the fraction structure. 
  */
 frac_t fxy(uint32_t x, uint32_t y, sign_t s) {
-  if (s == nan) {
+  if (s == nans) {
     return nan_frac;
   }
 
@@ -245,7 +285,7 @@ frac_t fconst(frac_t f1, int32_t c) {
  * 
  * @param f1 first fraction.
  * @param f2 second fraction.
- * @return frac_t nan fraction or one of the infinity.
+ * @return frac_t nans fraction or one of the infinity.
  */
 static frac_t finf_add(frac_t f1, frac_t f2) {
   if ((is_fpinf(f1) && is_fminf(f2)) || (is_fminf(f1) && is_fpinf(f2))) {
@@ -351,7 +391,7 @@ frac_t fsub(frac_t f1, frac_t f2) {
  * 
  * @param f1 first fraction.
  * @param f2 second fraction.
- * @return frac_t nan fraction or one of the infinity.
+ * @return frac_t nans fraction or one of the infinity.
  */
 static frac_t finf_mul(frac_t f1, frac_t f2) {
   if (is_fzero(f2) || is_fzero(f1)) {
@@ -422,7 +462,7 @@ frac_t fmul(frac_t f1, frac_t f2) {
  * 
  * @param f1 first fraction.
  * @param f2 second fraction.
- * @return frac_t nan fraction, zero fraction or one of the infinity.
+ * @return frac_t nans fraction, zero fraction or one of the infinity.
  */
 static frac_t finf_div(frac_t f1, frac_t f2) {
   if (is_finf(f1) && is_finf(f2)) {
@@ -569,7 +609,7 @@ void fdivp(frac_t *f1, frac_t f2) {
 /**
  * @brief Checks if two fractions are equal. Because all the fractions
  * are represented as ireductible fractions, the function checks if the
- * numerators, denominators and signs are equal. The `nan` and `infinities`
+ * numerators, denominators and signs are equal. The `nans` and `infinities`
  * fraction will always generate the `funknown` answer for indeterminate states.
  * f1 == f2
  * 
@@ -597,7 +637,7 @@ fbool_t feq(frac_t f1, frac_t f2) {
 /**
  * @brief Checks if two fractions are not equal. Because all the fractions
  * are represented as ireductible fractions, the function checks if the
- * numerators, denominators or signs are not equal. The `nan` and `infinities`
+ * numerators, denominators or signs are not equal. The `nans` and `infinities`
  * fraction will always generate the `funknown` answer for indeterminate states.
  * f1 != f2
  * 
@@ -623,7 +663,7 @@ fbool_t fneq(frac_t f1, frac_t f2) {
 
 /**
  * @brief Compares two fractions with the "greater than" operation.
- * The `nan` and `infinities` fraction will always generate the
+ * The `nans` and `infinities` fraction will always generate the
  * `funknown` answer for indeterminate states.
  * f1 > f2
  * 
@@ -665,7 +705,7 @@ fbool_t fgt(frac_t f1, frac_t f2) {
 
 /**
  * @brief Compares two fractions with the "less than" operation.
- * The `nan` and `infinities` fraction will always generate the
+ * The `nans` and `infinities` fraction will always generate the
  * `funknown` answer for indeterminate states.
  * f1 < f2
  * 
@@ -707,7 +747,7 @@ fbool_t flt(frac_t f1, frac_t f2) {
 
 /**
  * @brief Compares two fractions with the "greater than or equal to" operation.
- * The `nan` and `infinities` fraction will always generate the
+ * The `nans` and `infinities` fraction will always generate the
  * `funknown` answer for indeterminate states.
  * f1 >= f2
  * 
@@ -750,7 +790,7 @@ fbool_t fgte(frac_t f1, frac_t f2) {
 
 /**
  * @brief Compares two fractions with the "less than or equal to" operation.
- * The `nan` and `infinities` fraction will always generate the
+ * The `nans` and `infinities` fraction will always generate the
  * `funknown` answer for indeterminate states.
  * f1 <= f2
  * 
