@@ -1,9 +1,43 @@
+/**
+ * @file units.c
+ * @author Mihai Negru (determinant289@gmail.com)
+ * @version 1.0.0
+ * @date 2023-06-26
+ *
+ * @copyright Copyright (C) 2022-2023 Mihai Negru <determinant289@gmail.com>
+ * This file is part of c-language-data-structures.
+ *
+ * c-language-data-structures is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * c-language-data-structures is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with c-language-data-structures.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ *
+ */
+
 #include <assert.h>
 #include <string.h>
 #include "../src/fractions.h"
 
+/**
+ * @brief Checks a raw equality of a fraction to another.
+ * 
+ */
 #define cnd(f1, f2) (f1.x == f2.x && f1.y == f2.y && f1.s == f2.s)
 
+/**
+ * @brief Prints the header of the test.
+ * 
+ * @param msg the header title.
+ */
 void print_header(const char *const msg) {
   size_t msg_len = strlen(msg);
   size_t dots = (44 - msg_len) / 2;
@@ -25,6 +59,10 @@ void print_header(const char *const msg) {
   fprintf(stderr, "\n");
 }
 
+/**
+ * @brief Print the footer of a test.
+ * 
+ */
 void print_footer(void) {
   for (size_t dot = 0; dot < 46; ++dot) {
     fprintf(stderr, ".");
@@ -33,6 +71,13 @@ void print_footer(void) {
   fprintf(stderr, "\n\n");
 }
 
+/**
+ * @brief Checks if the condition is true and prints passed
+ * or failed on the `stderr`.
+ * 
+ * @param msg 
+ * @param cond 
+ */
 void assert_frac(const char *const msg, fbool_t cond) {
   size_t msg_len = strlen(msg);
   size_t dots = 38 - msg_len;
@@ -47,6 +92,10 @@ void assert_frac(const char *const msg, fbool_t cond) {
   );
 }
 
+/**
+ * @brief Test `is_finf` method.
+ * 
+ */
 void test_is_finf(void) {
   print_header("is_fpinf");
 
@@ -64,6 +113,10 @@ void test_is_finf(void) {
   print_footer();
 }
 
+/**
+ * @brief Test `is_fzero` method.
+ * 
+ */
 void test_is_fzero(void) {
   print_header("is_fzero");
 
@@ -84,6 +137,10 @@ void test_is_fzero(void) {
   print_footer();
 }
 
+/**
+ * @brief Test `is_fid` method.
+ * 
+ */
 void test_is_fid(void) {
   print_header("is_fid");
 
@@ -102,6 +159,10 @@ void test_is_fid(void) {
   print_footer();
 }
 
+/**
+ * @brief Test `fxy` method.
+ * 
+ */
 void test_fxy(void) {
   print_header("fxy");
 
@@ -119,6 +180,10 @@ void test_fxy(void) {
   print_footer();
 }
 
+/**
+ * @brief Test `fconst` method.
+ * 
+ */
 void test_fconst(void) {
   print_header("fconst");
 
@@ -146,6 +211,10 @@ void test_fconst(void) {
   print_footer();
 }
 
+/**
+ * @brief Test `fadd` method.
+ * 
+ */
 void test_fadd(void) {
   print_header("fadd");
 
@@ -179,6 +248,10 @@ void test_fadd(void) {
   print_footer();
 }
 
+/**
+ * @brief Test `fsub` method.
+ * 
+ */
 void test_fsub(void) {
   print_header("fsub");
 
@@ -217,6 +290,10 @@ void test_fsub(void) {
   print_footer();
 }
 
+/**
+ * @brief Test `fmul` method.
+ * 
+ */
 void test_fmul(void) {
   print_header("fmul");
 
@@ -264,6 +341,10 @@ void test_fmul(void) {
   print_footer();
 }
 
+/**
+ * @brief Test `fdiv` method.
+ * 
+ */
 void test_fdiv(void) {
   print_header("fdiv");
 
@@ -306,6 +387,10 @@ void test_fdiv(void) {
   print_footer();
 }
 
+/**
+ * @brief Test `feq` method.
+ * 
+ */
 void test_feq(void) {
   print_header("feq");
 
@@ -330,6 +415,10 @@ void test_feq(void) {
   print_footer();
 }
 
+/**
+ * @brief Test `fneq` method.
+ * 
+ */
 void test_fneq(void) {
   print_header("fneq");
 
@@ -354,6 +443,10 @@ void test_fneq(void) {
   print_footer();
 }
 
+/**
+ * @brief Test `fgt` method.
+ * 
+ */
 void test_fgt(void) {
   print_header("fgt");
 
@@ -386,6 +479,10 @@ void test_fgt(void) {
   print_footer();
 }
 
+/**
+ * @brief Test `flt` method.
+ * 
+ */
 void test_flt(void) {
   print_header("flt");
 
@@ -418,6 +515,10 @@ void test_flt(void) {
   print_footer();
 }
 
+/**
+ * @brief Test `fgte` method.
+ * 
+ */
 void test_fgte(void) {
   print_header("fgte");
 
@@ -450,6 +551,10 @@ void test_fgte(void) {
   print_footer();
 }
 
+/**
+ * @brief Test `flte` method.
+ * 
+ */
 void test_flte(void) {
   print_header("flte");
 
@@ -482,6 +587,10 @@ void test_flte(void) {
   print_footer();
 }
 
+/**
+ * @brief Main function that calls every test function appart.
+ *
+ */
 int main(void) {
   print_header("FRAC UNIT TESTS");
 
