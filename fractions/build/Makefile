@@ -23,9 +23,9 @@ STATIC_LIB 				:= 		$(LIBS_PATH)/$(STATIC_LIB_NAME)
 STATIC_OBJ_PATH 		:= 		static_obj
 STATIC_OFILES 			:= 		$(patsubst $(SRC_PATH)/%.c,$(STATIC_OBJ_PATH)/%.o,$(SRC_FILES))
 
-.PHONY: all build clean
+.PHONY: all build clean_o
 
-all: build clean
+all: build clean_o
 	@printf "Finished Project "
 	@printf "%0.37s" $(PADDING)
 	@printf "%s\n\n" " PASSED"
@@ -80,8 +80,8 @@ $(STATIC_OBJ_PATH)/%.o: $(SRC_PATH)/%.c
 	@file=$@ && printf "%0.$$((50 - $${#file}))s" $(PADDING)
 	@printf "%s\n" " PASSED"
 
-clean:
+clean_o:
 	@rm -rf $(DYNAMIC_OBJ_PATH) $(STATIC_OBJ_PATH)
 
-cleanall:
+clean:
 	@rm -rf $(DYNAMIC_OBJ_PATH) $(STATIC_OBJ_PATH) $(LIBS_PATH)
