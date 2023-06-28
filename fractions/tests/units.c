@@ -2,13 +2,7 @@
 #include <string.h>
 #include "../src/fractions.h"
 
-typedef enum status_s {
-  FAILED = 0,
-  PASSED = 1
-} status_t;
-
-#define cnd0(f, nx, ny, ns) (f.x == nx && f.y == ny && f.s == ns)
-#define cnd1(f1, f2) (f1.x == f2.x && f1.y == f2.y && f1.s == f2.s)
+#define cnd(f1, f2) (f1.x == f2.x && f1.y == f2.y && f1.s == f2.s)
 
 void print_header(const char *const msg) {
   size_t msg_len = strlen(msg);
@@ -39,7 +33,7 @@ void print_footer(void) {
   fprintf(stderr, "\n\n");
 }
 
-void assert_frac(const char *const msg, status_t cond) {
+void assert_frac(const char *const msg, fbool_t cond) {
   size_t msg_len = strlen(msg);
   size_t dots = 38 - msg_len;
 
@@ -49,20 +43,23 @@ void assert_frac(const char *const msg, status_t cond) {
   }
   fprintf(stderr,
           " %s\n",
-          cond == PASSED ? "\033[0;32mpassed\033[0m" : "\033[0;31mfailed\033[0m"
+          cond == ftrue ? "\033[0;32mpassed\033[0m" : "\033[0;31mfailed\033[0m"
   );
 }
 
-void test_is_ferror(void) {
-  print_header("is_ferror");
+void test_is_finf(void) {
+  print_header("is_fpinf");
 
-  assert_frac("error = error", is_ferror(error_frac));
-  assert_frac("1/2 != error", !is_ferror((frac_t){1, 2, plus}));
-  assert_frac("-1/2 != error", !is_ferror((frac_t){1, 2, mins}));
-  assert_frac("zero != error", !is_ferror(zero_frac));
-  assert_frac("id != error", !is_ferror(id_frac));
-  assert_frac("0/2 != error", !is_ferror((frac_t){0, 2, plus}));
-  assert_frac("-0/2 != error", !is_ferror((frac_t){0, 2, mins}));
+  frac_t a = (frac_t){1, 2, plus};
+
+  assert_frac("inf is infinity", is_finf(pinf_frac));
+  assert_frac("-inf is infinity", is_finf(minf_frac));
+  assert_frac("-inf != inf", !cnd(minf_frac, pinf_frac));
+  assert_frac("inf != -inf", !cnd(pinf_frac, minf_frac));
+  assert_frac("a is not infinity", !is_finf(a));
+  assert_frac("nan is not infinity", !is_finf(nan_frac));
+  assert_frac("zero is not infinity", !is_finf(zero_frac));
+  assert_frac("is is not infinity", !is_finf(id_frac));
 
   print_footer();
 }
@@ -70,13 +67,19 @@ void test_is_ferror(void) {
 void test_is_fzero(void) {
   print_header("is_fzero");
 
-  assert_frac("error != zero", !is_fzero(error_frac));
-  assert_frac("1/2 != zero", !is_fzero((frac_t){1, 2, plus}));
-  assert_frac("-1/2 != zero", !is_fzero((frac_t){1, 2, mins}));
-  assert_frac("zero = zero", is_fzero(zero_frac));
-  assert_frac("id != zero", !is_fzero(id_frac));
-  assert_frac("0/2 = zero", is_fzero((frac_t){0, 2, plus}));
-  assert_frac("-0/2 = zero", is_fzero((frac_t){0, 2, mins}));
+  frac_t a = (frac_t){1, 2, plus};
+  frac_t b = (frac_t){0, 2, plus};
+  frac_t _b = (frac_t){0, 2, mins};
+  frac_t mzero = (frac_t){0, 1, mins};
+
+  assert_frac("zero is zero", is_fzero(zero_frac));
+  assert_frac("-zero is zero", is_fzero(mzero));
+  assert_frac("a is not zero", !is_fzero(a));
+  assert_frac("id is not zero", !is_fzero(id_frac));
+  assert_frac("inf is not zero", !is_fzero(pinf_frac));
+  assert_frac("-inf is not zero", !is_fzero(minf_frac));
+  assert_frac("0/b is zero", is_fzero(b));
+  assert_frac("-0/b is zero", is_fzero(_b));
 
   print_footer();
 }
@@ -84,15 +87,17 @@ void test_is_fzero(void) {
 void test_is_fid(void) {
   print_header("is_fid");
 
-  assert_frac("error != id", !is_fid(error_frac));
-  assert_frac("1/2 != id", !is_fid((frac_t){1, 2, plus}));
-  assert_frac("-1/2 != id", !is_fid((frac_t){1, 2, mins}));
-  assert_frac("zero != id", !is_fid(zero_frac));
-  assert_frac("id = id", is_fid(id_frac));
-  assert_frac("0/2 != id", !is_fid((frac_t){0, 2, plus}));
-  assert_frac("-0/2 != id", !is_fid((frac_t){0, 2, mins}));
-  assert_frac("-1/1 != id", !is_fid((frac_t){1, 1, mins}));
-  assert_frac("1/1 = id", is_fid((frac_t){1, 1, plus}));
+  frac_t a = (frac_t){1, 2, plus};
+  frac_t b = (frac_t){1, 1, plus};
+  frac_t mid = (frac_t){1, 1, mins};
+
+  assert_frac("id is identity", is_fid(id_frac));
+  assert_frac("-id is not identity", !is_fid(mid));
+  assert_frac("a is not identity", !is_fid(a));
+  assert_frac("zero is not identity", !is_fid(zero_frac));
+  assert_frac("inf is not identity", !is_fid(pinf_frac));
+  assert_frac("-inf is not identity", !is_fid(minf_frac));
+  assert_frac("1/1 is identity", is_fid(b));
 
   print_footer();
 }
@@ -101,14 +106,15 @@ void test_fxy(void) {
   print_header("fxy");
 
   assert_frac("1/1 = id", is_fid(fxy(1, 1, plus)));
-  assert_frac("-1/1 != id", !cnd1(fxy(1, 1, mins), id_frac));
-  assert_frac("0/1 = 0", is_fzero(fxy(0, 1, plus)));
-  assert_frac("-0/1 = 0", is_fzero(fxy(0, 1, mins)));
-  assert_frac("1/0 = error", is_ferror(fxy(1, 0, plus)));
-  assert_frac("-1/0 = error", is_ferror(fxy(1, 0, mins)));
-  assert_frac("24/6 = 4", cnd1(fxy(24, 6, plus), fxy(4, 1, plus)));
-  assert_frac("6/24 = 1/4", cnd1(fxy(6, 24, plus), fxy(1, 4, plus)));
-  assert_frac("1/7 = 1/7", cnd1(fxy(1, 7, plus), fxy(1, 7, plus)));
+  assert_frac("-1/1 != id", !cnd(fxy(1, 1, mins), id_frac));
+  assert_frac("0/1 = zero", is_fzero(fxy(0, 1, plus)));
+  assert_frac("-0/1 = zero", is_fzero(fxy(0, 1, mins)));
+  assert_frac("1/0 = inf", is_fpinf(fxy(1, 0, plus)));
+  assert_frac("-1/0 = -inf", is_fminf(fxy(1, 0, mins)));
+  assert_frac("nan = nan", is_fnan(fxy(1, 4, nan)));
+  assert_frac("24/6 = 4", cnd(fxy(24, 6, plus), fxy(4, 1, plus)));
+  assert_frac("6/24 = 1/4", cnd(fxy(6, 24, plus), fxy(1, 4, plus)));
+  assert_frac("1/7 is ireductible", cnd(fxy(1, 7, plus), fxy(1, 7, plus)));
 
   print_footer();
 }
@@ -120,16 +126,22 @@ void test_fconst(void) {
   frac_t _a = fxy(1, 3, mins);
   int32_t c = 7;
 
-  assert_frac("c * error = error", is_ferror(fconst(error_frac, c)));
-  assert_frac("(-c) * error = error", is_ferror(fconst(error_frac, -c)));
-  assert_frac("c * 0 = 0", is_fzero(fconst(zero_frac, c)));
-  assert_frac("(-c) * 0 = 0", is_fzero(fconst(zero_frac, -c)));
-  assert_frac("c * a = (c*a)", cnd1(fconst(a, c), fxy(7, 3, plus)));
-  assert_frac("(-c) * a = -(c*a)", cnd1(fconst(a, -c), fxy(7, 3, mins)));
-  assert_frac("0 * a = 0", is_fzero(fconst(a, 0)));
-  assert_frac("0 * (-a) = 0", is_fzero(fconst(_a, 0)));
-  assert_frac("c * id = (c*id)", cnd1(fconst(id_frac, c), fxy(c, 1, plus)));
-  assert_frac("(-c) * id = -(c*id)", cnd1(fconst(id_frac, -c), fxy(c, 1, mins)));
+  assert_frac("c * nan = nan", is_fnan(fconst(nan_frac, c)));
+  assert_frac("-c * nan = nan", is_fnan(fconst(nan_frac, -c)));
+  assert_frac("c * inf = inf", is_fpinf(fconst(pinf_frac, c)));
+  assert_frac("(-c) * inf = -inf", is_fminf(fconst(pinf_frac, -c)));
+  assert_frac("c * (-inf) = -inf", is_fminf(fconst(minf_frac, c)));
+  assert_frac("(-c) * (-inf) = inf", is_fpinf(fconst(minf_frac, -c)));
+  assert_frac("c * zero = zero", is_fzero(fconst(zero_frac, c)));
+  assert_frac("(-c) * zero = zero", is_fzero(fconst(zero_frac, -c)));
+  assert_frac("c * a = (c*a)", cnd(fconst(a, c), fxy(7, 3, plus)));
+  assert_frac("(-c) * a = -(c*a)", cnd(fconst(a, -c), fxy(7, 3, mins)));
+  assert_frac("0 * a = zero", is_fzero(fconst(a, 0)));
+  assert_frac("0 * (-a) = zero", is_fzero(fconst(_a, 0)));
+  assert_frac("0 * inf = nan", is_fnan(fconst(pinf_frac, 0)));
+  assert_frac("0 * (-inf) = nan", is_fnan(fconst(minf_frac, 0)));
+  assert_frac("c * id = (c*id)", cnd(fconst(id_frac, c), fxy(c, 1, plus)));
+  assert_frac("(-c) * id = -(c*id)", cnd(fconst(id_frac, -c), fxy(c, 1, mins)));
 
   print_footer();
 }
@@ -142,20 +154,27 @@ void test_fadd(void) {
   frac_t b = fxy(1, 2, plus);
   frac_t c = fxy(7, 4, plus);
 
-  assert_frac("error + error = error", is_ferror(fadd(error_frac, error_frac)));
-  assert_frac("error + a = error", is_ferror(fadd(error_frac, a)));
-  assert_frac("a + error = error", is_ferror(fadd(a, error_frac)));
-  assert_frac("0 + error = error", is_ferror(fadd(zero_frac, error_frac)));
-  assert_frac("error + 0 = error", is_ferror(fadd(error_frac, zero_frac)));
-  assert_frac("0 + a = a", cnd1(fadd(zero_frac, a), a));
-  assert_frac("0 + (-a) = -a", cnd1(fadd(zero_frac, _a), _a));
-  assert_frac("a + 0 = a", cnd1(fadd(a, zero_frac), a));
-  assert_frac("(-a) + 0 = -a", cnd1(fadd(_a, zero_frac), _a));
-  assert_frac("a + a = 2a", cnd1(fadd(a, a), fconst(a, 2)));
-  assert_frac("a + (-a) = 0", cnd1(fadd(a, _a), zero_frac));
-  assert_frac("(-a) + (-a) = -2a", cnd1(fadd(_a, _a), fconst(a, -2)));
-  assert_frac("a + b = b + a", cnd1(fadd(a, b), fadd(b, a)));
-  assert_frac("(a+b)+c = a+(b+c)", cnd1(fadd(fadd(a, b), c), fadd(a, fadd(b, c))));
+  assert_frac("nan + nan = nan", is_fnan(fadd(nan_frac, nan_frac)));
+  assert_frac("nan + a = nan", is_fnan(fadd(nan_frac, a)));
+  assert_frac("a + nan = nan", is_fnan(fadd(a, nan_frac)));
+  assert_frac("inf + inf = inf", is_fpinf(fadd(pinf_frac, pinf_frac)));
+  assert_frac("inf + (-inf) = nan", is_fnan(fadd(pinf_frac, minf_frac)));
+  assert_frac("(-inf) + inf = nan", is_fnan(fadd(minf_frac, pinf_frac)));
+  assert_frac("inf + a = inf", is_fpinf(fadd(pinf_frac, a)));
+  assert_frac("a + inf = inf", is_fpinf(fadd(a, pinf_frac)));
+  assert_frac("(-inf) + a = -inf", is_fminf(fadd(minf_frac, a)));
+  assert_frac("a + (-inf) = -inf", is_fminf(fadd(a, minf_frac)));
+  assert_frac("zero + a = a", cnd(fadd(zero_frac, a), a));
+  assert_frac("zero + (-a) = -a", cnd(fadd(zero_frac, _a), _a));
+  assert_frac("a + zero = a", cnd(fadd(a, zero_frac), a));
+  assert_frac("(-a) + zero = -a", cnd(fadd(_a, zero_frac), _a));
+  assert_frac("a + a = 2a", cnd(fadd(a, a), fconst(a, 2)));
+  assert_frac("a + (-a) = zero", cnd(fadd(a, _a), zero_frac));
+  assert_frac("(-a) + (-a) = -2a", cnd(fadd(_a, _a), fconst(a, -2)));
+  assert_frac("a + b = b + a", cnd(fadd(a, b), fadd(b, a)));
+  assert_frac("(a+b)+c = a+(b+c)", cnd(fadd(fadd(a, b), c), fadd(a, fadd(b, c))));
+  assert_frac("1/3 + 7/4 = 25/12", cnd(fadd(a, c), fxy(25, 12, plus)));
+  assert_frac("-1/3 + 1/2 = 1/6", cnd(fadd(_a, b), fxy(1, 6, plus)));
 
   print_footer();
 }
@@ -168,21 +187,32 @@ void test_fsub(void) {
   frac_t b = fxy(1, 2, plus);
   frac_t c = fxy(7, 4, plus);
 
-  assert_frac("error - error = error", is_ferror(fsub(error_frac, error_frac)));
-  assert_frac("error - a = error", is_ferror(fsub(error_frac, a)));
-  assert_frac("a - error = error", is_ferror(fsub(a, error_frac)));
-  assert_frac("0 - error = error", is_ferror(fsub(zero_frac, error_frac)));
-  assert_frac("error - 0 = error", is_ferror(fsub(error_frac, zero_frac)));
-  assert_frac("0 - a = -a", cnd1(fsub(zero_frac, a), _a));
-  assert_frac("0 - (-a) = a", cnd1(fsub(zero_frac, _a), a));
-  assert_frac("a - 0 = a", cnd1(fsub(a, zero_frac), a));
-  assert_frac("(-a) - 0 = -a", cnd1(fsub(_a, zero_frac), _a));
-  assert_frac("a - a = 0", cnd1(fsub(a, a), zero_frac));
-  assert_frac("(-a) - (-a) = 0", cnd1(fsub(_a, _a), zero_frac));
-  assert_frac("(-a) - a = -2a", cnd1(fsub(_a, a), fconst(a, -2)));
-  assert_frac("a - (-a) = 2a", cnd1(fsub(a, _a), fconst(a, 2)));
-  assert_frac("a - b != b - a", !cnd1(fsub(a, b), fsub(b, a)));
-  assert_frac("(a-b)-c = a-(b+c)", cnd1(fsub(fsub(a, b), c), fsub(a, fadd(b, c))));
+  assert_frac("nan - nan = nan", is_fnan(fsub(nan_frac, nan_frac)));
+  assert_frac("nan - a = nan", is_fnan(fsub(nan_frac, a)));
+  assert_frac("a - nan = nan", is_fnan(fsub(a, nan_frac)));
+  assert_frac("inf - inf = nan", is_fnan(fsub(pinf_frac, pinf_frac)));
+  assert_frac("inf - (-inf) = inf", is_fpinf(fsub(pinf_frac, minf_frac)));
+  assert_frac("(-inf) - inf = -inf", is_fminf(fsub(minf_frac, pinf_frac)));
+  assert_frac("inf - a = inf", is_fpinf(fsub(pinf_frac, a)));
+  assert_frac("a - inf = -inf", is_fminf(fsub(a, pinf_frac)));
+  assert_frac("(-inf) - a = -inf", is_fminf(fsub(minf_frac, a)));
+  assert_frac("a - (-inf) = inf", is_fpinf(fsub(a, minf_frac)));
+  assert_frac("zero - inf = -inf", is_fminf(fsub(zero_frac, pinf_frac)));
+  assert_frac("inf - zero = inf", is_fpinf(fsub(pinf_frac, zero_frac)));
+  assert_frac("zero - (-inf) = inf", is_fpinf(fsub(zero_frac, minf_frac)));
+  assert_frac("(-inf) - zero = -inf", is_fminf(fsub(minf_frac, zero_frac)));
+  assert_frac("zero - a = -a", cnd(fsub(zero_frac, a), _a));
+  assert_frac("zero - (-a) = a", cnd(fsub(zero_frac, _a), a));
+  assert_frac("a - zero = a", cnd(fsub(a, zero_frac), a));
+  assert_frac("(-a) - zero = -a", cnd(fsub(_a, zero_frac), _a));
+  assert_frac("a - a = zero", cnd(fsub(a, a), zero_frac));
+  assert_frac("(-a) - (-a) = zero", cnd(fsub(_a, _a), zero_frac));
+  assert_frac("(-a) - a = -2a", cnd(fsub(_a, a), fconst(a, -2)));
+  assert_frac("a - (-a) = 2a", cnd(fsub(a, _a), fconst(a, 2)));
+  assert_frac("a - b != b - a", !cnd(fsub(a, b), fsub(b, a)));
+  assert_frac("(a-b)-c = a-(b+c)", cnd(fsub(fsub(a, b), c), fsub(a, fadd(b, c))));
+  assert_frac("1/3 - 7/4 = -17/12", cnd(fsub(a, c), fxy(17, 12, mins)));
+  assert_frac("_1/3 - 7/4 = -25/12", cnd(fsub(_a, c), fxy(25, 12, mins)));
 
   print_footer();
 }
@@ -190,31 +220,46 @@ void test_fsub(void) {
 void test_fmul(void) {
   print_header("fmul");
 
-  frac_t a = fxy(1, 3, plus);
-  frac_t _a = fxy(1, 3, mins);
+  frac_t a = fxy(4, 3, plus);
+  frac_t _a = fxy(4, 3, mins);
+  frac_t a_over_1 = fxy(3, 4, plus);
+  frac_t _a_over_1 = fxy(3, 4, mins);
   frac_t b = fxy(1, 2, plus);
   frac_t c = fxy(7, 4, plus);
 
-  assert_frac("error * error = error", is_ferror(fmul(error_frac, error_frac)));
-  assert_frac("error * a = error", is_ferror(fmul(error_frac, a)));
-  assert_frac("a * error = error", is_ferror(fmul(a, error_frac)));
-  assert_frac("0 * error = error", is_ferror(fmul(zero_frac, error_frac)));
-  assert_frac("error * 0 = error", is_ferror(fmul(error_frac, zero_frac)));
-  assert_frac("1 * error = error", is_ferror(fmul(id_frac, error_frac)));
-  assert_frac("error * 1 = error", is_ferror(fmul(error_frac, id_frac)));
-  assert_frac("0 * a = 0", cnd1(fmul(zero_frac, a), zero_frac));
-  assert_frac("a * 0 = 0", cnd1(fmul(a, zero_frac), zero_frac));
-  assert_frac("0 * (-a) = 0", cnd1(fmul(zero_frac, _a), zero_frac));
-  assert_frac("(-a) * 0 = 0", cnd1(fmul(_a, zero_frac), zero_frac));
-  assert_frac("1 * a = a", cnd1(fmul(id_frac, a), a));
-  assert_frac("a * 1 = a", cnd1(fmul(a, id_frac), a));
-  assert_frac("1 * (-a) = -a", cnd1(fmul(id_frac, _a), _a));
-  assert_frac("(-a) * 1 = -a", cnd1(fmul(_a, id_frac), _a));
-  assert_frac("(-a) * a = -a^2", cnd1(fmul(_a, a), fxy(1, 9, mins)));
-  assert_frac("a * (-a) = -a^2", cnd1(fmul(a, _a), fxy(1, 9, mins)));
-  assert_frac("(-a) * (-a) = a^2", cnd1(fmul(_a, _a), fxy(1, 9, plus)));
-  assert_frac("a * a = a^2", cnd1(fmul(a, a), fxy(1, 9, plus)));
-  assert_frac("(a*b)*c = a*(b*c)", cnd1(fmul(fmul(a, b), c), fmul(a, fmul(b, c))));
+  assert_frac("nan * nan = nan", is_fnan(fmul(nan_frac, nan_frac)));
+  assert_frac("nan * a = nan", is_fnan(fmul(nan_frac, a)));
+  assert_frac("a * nan = nan", is_fnan(fmul(a, nan_frac)));
+  assert_frac("inf * inf = inf", is_fpinf(fmul(pinf_frac, pinf_frac)));
+  assert_frac("(-inf) * inf = -inf", is_fminf(fmul(minf_frac, pinf_frac)));
+  assert_frac("inf * (-inf) = -inf", is_fminf(fmul(pinf_frac, minf_frac)));
+  assert_frac("(-inf) * (-inf) = inf", is_fpinf(fmul(minf_frac, minf_frac)));
+  assert_frac("zero * inf = nan", is_fnan(fmul(zero_frac, pinf_frac)));
+  assert_frac("zero * -inf = nan", is_fnan(fmul(zero_frac, minf_frac)));
+  assert_frac("inf * zero = nan", is_fnan(fmul(pinf_frac, zero_frac)));
+  assert_frac("(-inf) * zero = nan", is_fnan(fmul(minf_frac, zero_frac)));
+  assert_frac("a * inf = inf", is_fpinf(fmul(a, pinf_frac)));
+  assert_frac("a * (-inf) = -inf", is_fminf(fmul(a, minf_frac)));
+  assert_frac("(-a) * inf = -inf", is_fminf(fmul(_a, pinf_frac)));
+  assert_frac("(-a) * (-inf) = inf", is_fpinf(fmul(_a, minf_frac)));
+  assert_frac("zero * a = zero", cnd(fmul(zero_frac, a), zero_frac));
+  assert_frac("a * zero = zero", cnd(fmul(a, zero_frac), zero_frac));
+  assert_frac("zero * (-a) = zero", cnd(fmul(zero_frac, _a), zero_frac));
+  assert_frac("(-a) * zero = zero", cnd(fmul(_a, zero_frac), zero_frac));
+  assert_frac("id * a = a", cnd(fmul(id_frac, a), a));
+  assert_frac("a * id = a", cnd(fmul(a, id_frac), a));
+  assert_frac("id * (-a) = -a", cnd(fmul(id_frac, _a), _a));
+  assert_frac("(-a) * id = -a", cnd(fmul(_a, id_frac), _a));
+  assert_frac("a * (1/a) = id", cnd(fmul(a, a_over_1),id_frac));
+  assert_frac("(-a) * (-1/a) = id", cnd(fmul(_a, _a_over_1),id_frac));
+  assert_frac("(1/a) * a = id", cnd(fmul(a_over_1, a),id_frac));
+  assert_frac("(-1/a) * (-a) = id", cnd(fmul(_a_over_1, _a),id_frac));
+  assert_frac("(-a) * a = -a^2", cnd(fmul(_a, a), fxy(16, 9, mins)));
+  assert_frac("a * (-a) = -a^2", cnd(fmul(a, _a), fxy(16, 9, mins)));
+  assert_frac("(-a) * (-a) = a^2", cnd(fmul(_a, _a), fxy(16, 9, plus)));
+  assert_frac("a * a = a^2", cnd(fmul(a, a), fxy(16, 9, plus)));
+  assert_frac("(a*b)*c = a*(b*c)", cnd(fmul(fmul(a, b), c), fmul(a, fmul(b, c))));
+  assert_frac("(4/3)*(7/4)*(1/2) = 7/6", cnd(fmul(fmul(a, c), b), fxy(7, 6, plus)));
 
   print_footer();
 }
@@ -227,359 +272,220 @@ void test_fdiv(void) {
   frac_t b = fxy(1, 2, plus);
   frac_t c = fxy(7, 4, plus);
 
-  assert_frac("error / error = error", is_ferror(fdiv(error_frac, error_frac)));
-  assert_frac("error / a = error", is_ferror(fdiv(error_frac, a)));
-  assert_frac("a / error = error", is_ferror(fdiv(a, error_frac)));
-  assert_frac("0 / error = error", is_ferror(fdiv(zero_frac, error_frac)));
-  assert_frac("error / 0 = error", is_ferror(fdiv(error_frac, zero_frac)));
-  assert_frac("0 / a = 0", is_fzero(fdiv(zero_frac, a)));
-  assert_frac("a / 0 = 0", is_ferror(fdiv(a, zero_frac)));
-  assert_frac("0 / (-a) = 0", is_fzero(fdiv(zero_frac, _a)));
-  assert_frac("(-a) / 0 = 0", is_ferror(fdiv(_a, zero_frac)));
-  assert_frac("1/(x/y) = y/x", cnd1(fdiv(id_frac, a), fxy(a.y, a.x, a.s)));
-  assert_frac("a / 1 = a", cnd1(fdiv(a, id_frac), a));
-  assert_frac("(-a) / 1 = -a", cnd1(fdiv(_a, id_frac), _a));
+  assert_frac("nan / nan = nan", is_fnan(fdiv(nan_frac, nan_frac)));
+  assert_frac("nan / a = nan", is_fnan(fdiv(nan_frac, a)));
+  assert_frac("a / nan = nan", is_fnan(fdiv(a, nan_frac)));
+  assert_frac("inf / inf = nan", is_fnan(fdiv(pinf_frac, pinf_frac)));
+  assert_frac("inf / (-inf) = nan", is_fnan(fdiv(pinf_frac, minf_frac)));
+  assert_frac("(-inf) / inf = nan", is_fnan(fdiv(minf_frac, pinf_frac)));
+  assert_frac("(-inf) / (-inf) = nan", is_fnan(fdiv(minf_frac, minf_frac)));
+  assert_frac("inf / a = inf", is_fpinf(fdiv(pinf_frac, a)));
+  assert_frac("inf / (-a) = -inf", is_fminf(fdiv(pinf_frac, _a)));
+  assert_frac("(-inf) / a = -inf", is_fminf(fdiv(minf_frac, a)));
+  assert_frac("(-inf) / (-a) = inf", is_fpinf(fdiv(minf_frac, _a)));
+  assert_frac("a / inf = zero", is_fzero(fdiv(a, pinf_frac)));
+  assert_frac("a / (-inf) = zero", is_fzero(fdiv(a, minf_frac)));
+  assert_frac("(-a) / inf = zero", is_fzero(fdiv(_a, pinf_frac)));
+  assert_frac("(-a) / (-inf) = zero", is_fzero(fdiv(_a, minf_frac)));
+  assert_frac("zero / a = zero", is_fzero(fdiv(zero_frac, a)));
+  assert_frac("a / zero = inf", is_fpinf(fdiv(a, zero_frac)));
+  assert_frac("(-a) / zero = -inf", is_fminf(fdiv(_a, zero_frac)));
+  assert_frac("zero / (-a) = zero", is_fzero(fdiv(zero_frac, _a)));
+  assert_frac("1/(x/y) = y/x", cnd(fdiv(id_frac, a), fxy(a.y, a.x, a.s)));
+  assert_frac("a / 1 = a", cnd(fdiv(a, id_frac), a));
+  assert_frac("(-a) / 1 = -a", cnd(fdiv(_a, id_frac), _a));
   assert_frac("a / a = 1", is_fid(fdiv(a, a)));
   assert_frac("(-a) / a = -1", is_fid(fconst(fdiv(_a, a), -1)));
   assert_frac("a / (-a) = -1", is_fid(fconst(fdiv(a, _a), -1)));
   assert_frac("(-a) / (-a) = 1", is_fid(fdiv(_a, _a)));
-  assert_frac("a/b != b/a", !cnd1(fdiv(a, b), fdiv(b, a)));
-  assert_frac("(a/b)/c != a/(b/c)", !cnd1(fdiv(fdiv(a, b), c), fdiv(a, fdiv(b, c))));
-  assert_frac("a/b/c = a/(b/c)", cnd1(fxy(7, 6, plus), fdiv(a, fdiv(b, c))));
-
-  print_footer();
-}
-
-void test_fconstp(void) {
-  print_header("fconstp");
-
-  frac_t a = fxy(1, 3, plus);
-  frac_t _a = fxy(1, 3, mins);
-  int32_t c = 7;
-
-  frac_t f = error_frac; fconstp(&f, c);
-  assert_frac("c * error = error", is_ferror(f));
-
-  f = error_frac; fconstp(&f, -c);
-  assert_frac("(-c) * error = error", is_ferror(f));
-
-  f = zero_frac; fconstp(&f, c);
-  assert_frac("c * 0 = 0", is_fzero(f));
-
-  f = zero_frac; fconstp(&f, -c);
-  assert_frac("(-c) * 0 = 0", is_fzero(f));
-
-  f = a; fconstp(&f, c);
-  assert_frac("c * a = (c*a)", cnd1(f, fxy(7, 3, plus)));
-
-  f = a; fconstp(&f, -c);
-  assert_frac("(-c) * a = -(c*a)", cnd1(f, fxy(7, 3, mins)));
-
-  f = a; fconstp(&f, 0);
-  assert_frac("0 * a = 0", is_fzero(f));
-
-  f = _a; fconstp(&f, 0);
-  assert_frac("0 * (-a) = 0", is_fzero(f));
-
-  f = id_frac; fconstp(&f, c);
-  assert_frac("c * id = (c*id)", cnd1(f, fxy(c, 1, plus)));
-
-  f = id_frac; fconstp(&f, -c);
-  assert_frac("(-c) * id = -(c*id)", cnd1(f, fxy(c, 1, mins)));
-
-  print_footer();
-}
-
-void test_faddp(void) {
-  print_header("faddp");
-
-  frac_t a = fxy(1, 3, plus);
-  frac_t _a = fxy(1, 3, mins);
-  frac_t b = fxy(1, 2, plus);
-  frac_t c = fxy(7, 4, plus);
-
-  frac_t f = error_frac; faddp(&f, error_frac);
-  assert_frac("error + error = error", is_ferror(f));
-
-  f = error_frac; faddp(&f, a);
-  assert_frac("error + a = error", is_ferror(f));
-
-  f = a; faddp(&f, error_frac);
-  assert_frac("a + error = error", is_ferror(f));
-
-  f = zero_frac; faddp(&f, error_frac);
-  assert_frac("0 + error = error", is_ferror(f));
-
-  f = error_frac; faddp(&f, zero_frac);
-  assert_frac("error + 0 = error", is_ferror(f));
-
-  f = zero_frac; faddp(&f, a);
-  assert_frac("0 + a = a", cnd1(f, a));
-
-  f = zero_frac; faddp(&f, _a);
-  assert_frac("0 + (-a) = -a", cnd1(f, _a));
-
-  f = a; faddp(&f, zero_frac);
-  assert_frac("a + 0 = a", cnd1(f, a));
-
-  f = _a; faddp(&f, zero_frac);
-  assert_frac("(-a) + 0 = -a", cnd1(f, _a));
-
-  f = a; faddp(&f, a);
-  assert_frac("a + a = 2a", cnd1(f, fconst(a, 2)));
-
-  f = a; faddp(&f, _a);
-  assert_frac("a + (-a) = 0", cnd1(f, zero_frac));
-
-  f = _a; faddp(&f, _a);
-  assert_frac("(-a) + (-a) = -2a", cnd1(f, fconst(a, -2)));
-
-  f = a; faddp(&f, b);
-  frac_t f1 = b; faddp(&f1, a);
-  assert_frac("a + b = b + a", cnd1(f, f1));
-
-  f = a; faddp(&f, b); faddp(&f, c);
-  f1 = b; faddp(&f1, c); faddp(&f1, a);
-  assert_frac("(a+b)+c = a+(b+c)", cnd1(f, f1));
-
-  print_footer();
-}
-
-void test_fsubp(void) {
-  print_header("fsubp");
-
-  frac_t a = fxy(1, 3, plus);
-  frac_t _a = fxy(1, 3, mins);
-  frac_t b = fxy(1, 2, plus);
-  frac_t c = fxy(7, 4, plus);
-
-  frac_t f = error_frac; fsubp(&f, error_frac);
-  assert_frac("error - error = error", is_ferror(f));
-
-  f = error_frac; fsubp(&f, a);
-  assert_frac("error - a = error", is_ferror(f));
-
-  f = a; fsubp(&f, error_frac);
-  assert_frac("a - error = error", is_ferror(f));
-
-  f = zero_frac; fsubp(&f, error_frac);
-  assert_frac("0 - error = error", is_ferror(f));
-
-  f = error_frac; fsubp(&f, zero_frac);
-  assert_frac("error - 0 = error", is_ferror(f));
-
-  f = zero_frac; fsubp(&f, a);
-  assert_frac("0 - a = -a", cnd1(f, _a));
-
-  f = zero_frac; fsubp(&f, _a);
-  assert_frac("0 - (-a) = a", cnd1(f, a));
-
-  f = a; fsubp(&f, zero_frac);
-  assert_frac("a - 0 = a", cnd1(f, a));
-
-  f = _a; fsubp(&f, zero_frac);
-  assert_frac("(-a) - 0 = -a", cnd1(f, _a));
-
-  f = a; fsubp(&f, a);
-  assert_frac("a - a = 0", cnd1(f, zero_frac));
-
-  f = _a; fsubp(&f, _a);
-  assert_frac("(-a) - (-a) = 0", cnd1(f, zero_frac));
-
-  f = _a; fsubp(&f, a);
-  assert_frac("(-a) - a = -2a", cnd1(f, fconst(a, -2)));
-
-  f = a; fsubp(&f, _a);
-  assert_frac("a - (-a) = 2a", cnd1(f, fconst(a, 2)));
-
-  f = a; fsubp(&f, b);
-  frac_t f1 = b; fsubp(&f1, a);
-  assert_frac("a - b != b - a", !cnd1(f, f1));
-
-  f = a; fsubp(&f, b); fsubp(&f, c);
-  f1 = b; faddp(&f1, c); frac_t f2 = a; fsubp(&f2, f1);
-  assert_frac("(a-b)-c = a-(b+c)", cnd1(f, f2));
-
-  print_footer();
-}
-
-void test_fmulp(void) {
-  print_header("fmulp");
-
-  frac_t a = fxy(1, 3, plus);
-  frac_t _a = fxy(1, 3, mins);
-  frac_t b = fxy(1, 2, plus);
-  frac_t c = fxy(7, 4, plus);
-
-  frac_t f = error_frac; fmulp(&f, error_frac);
-  assert_frac("error * error = error", is_ferror(f));
-
-  f = error_frac; fmulp(&f, a);
-  assert_frac("error * a = error", is_ferror(f));
-
-  f = a; fmulp(&f, error_frac);
-  assert_frac("a * error = error", is_ferror(f));
-
-  f = zero_frac; fmulp(&f, error_frac);
-  assert_frac("0 * error = error", is_ferror(f));
-
-  f = error_frac; fmulp(&f, zero_frac);
-  assert_frac("error * 0 = error", is_ferror(f));
-
-  f = id_frac; fmulp(&f, error_frac);
-  assert_frac("1 * error = error", is_ferror(f));
-
-  f = error_frac; fmulp(&f, id_frac);
-  assert_frac("error * 1 = error", is_ferror(f));
-
-  f = zero_frac; fmulp(&f, a);
-  assert_frac("0 * a = 0", cnd1(f, zero_frac));
-
-  f = a; fmulp(&f, zero_frac);
-  assert_frac("a * 0 = 0", cnd1(f, zero_frac));
-
-  f = zero_frac; fmulp(&f, _a);
-  assert_frac("0 * (-a) = 0", cnd1(f, zero_frac));
-
-  f = _a; fmulp(&f, zero_frac);
-  assert_frac("(-a) * 0 = 0", cnd1(f, zero_frac));
-
-  f = id_frac; fmulp(&f, a);
-  assert_frac("1 * a = a", cnd1(f, a));
-
-  f = a; fmulp(&f, id_frac);
-  assert_frac("a * 1 = a", cnd1(f, a));
-
-  f = id_frac; fmulp(&f, _a);
-  assert_frac("1 * (-a) = -a", cnd1(f, _a));
-
-  f = _a; fmulp(&f, id_frac);
-  assert_frac("(-a) * 1 = -a", cnd1(f, _a));
-
-  f = _a; fmulp(&f, a);
-  assert_frac("(-a) * a = -a^2", cnd1(f, fxy(1, 9, mins)));
-
-  f = a; fmulp(&f, _a);
-  assert_frac("a * (-a) = -a^2", cnd1(f, fxy(1, 9, mins)));
-
-  f = _a; fmulp(&f, _a);
-  assert_frac("(-a) * (-a) = a^2", cnd1(f, fxy(1, 9, plus)));
-
-  f = a; fmulp(&f, a);
-  assert_frac("a * a = a^2", cnd1(f, fxy(1, 9, plus)));
-
-  f = a; fmulp(&f, b); fmulp(&f, c);
-  frac_t f1 = b; fmulp(&f1, c); frac_t f2 = a; fmulp(&f2, f1);
-  assert_frac("(a*b)*c = a*(b*c)", cnd1(f, f2));
-
-  print_footer();
-}
-
-void test_fdivp(void) {
-  print_header("fdivp");
-
-  frac_t a = fxy(1, 3, plus);
-  frac_t _a = fxy(1, 3, mins);
-  frac_t b = fxy(1, 2, plus);
-  frac_t c = fxy(7, 4, plus);
-
-  frac_t f = error_frac; fdivp(&f, error_frac);
-  assert_frac("error / error = error", is_ferror(f));
-
-  f = error_frac; fdivp(&f, a);
-  assert_frac("error / a = error", is_ferror(f));
-
-  f = a; fdivp(&f, error_frac);
-  assert_frac("a / error = error", is_ferror(f));
-
-  f = zero_frac; fdivp(&f, error_frac);
-  assert_frac("0 / error = error", is_ferror(f));
-
-  f = error_frac; fdivp(&f, zero_frac);
-  assert_frac("error / 0 = error", is_ferror(f));
-
-  f = zero_frac; fdivp(&f, a);
-  assert_frac("0 / a = 0", is_fzero(f));
-
-  f = a; fdivp(&f, zero_frac);
-  assert_frac("a / 0 = 0", is_ferror(f));
-
-  f = zero_frac; fdivp(&f, _a);
-  assert_frac("0 / (-a) = 0", is_fzero(f));
-
-  f = _a; fdivp(&f, zero_frac);
-  assert_frac("(-a) / 0 = 0", is_ferror(f));
-
-  f = id_frac; fdivp(&f, a);
-  assert_frac("1/(x/y) = y/x", cnd1(f, fxy(a.y, a.x, a.s)));
-
-  f = a; fdivp(&f, id_frac);
-  assert_frac("a / 1 = a", cnd1(f, a));
-
-  f = _a; fdivp(&f, id_frac);
-  assert_frac("(-a) / 1 = -a", cnd1(f, _a));
-
-  f = a; fdivp(&f, a);
-  assert_frac("a / a = 1", is_fid(f));
-
-  f = _a; fdivp(&f, a);
-  assert_frac("(-a) / a = -1", is_fid(fconst(f, -1)));
-
-  f = a; fdivp(&f, _a);
-  assert_frac("a / (-a) = -1", is_fid(fconst(f, -1)));
-
-  f = _a; fdivp(&f, _a);
-  assert_frac("(-a) / (-a) = 1", is_fid(f));
-
-  f = a; fdivp(&f, b);
-  frac_t f1 = b; fdivp(&f1, a);
-  assert_frac("a/b != b/a", !cnd1(f, f1));
-
-  f = a; fdivp(&f, b); fdivp(&f, c);
-  f1 = b; fdivp(&f1, c); frac_t f2 = a; fdivp(&f2, f1);
-  assert_frac("(a/b)/c != a/(b/c)", !cnd1(f, f2));
-
-  f = b; fdivp(&f, c); f1 = a; fdivp(&f1, f);
-  assert_frac("a/b/c = a/(b/c)", cnd1(fxy(7, 6, plus), f1));
+  assert_frac("a/b != b/a", !cnd(fdiv(a, b), fdiv(b, a)));
+  assert_frac("(a/b)/c != a/(b/c)", !cnd(fdiv(fdiv(a, b), c), fdiv(a, fdiv(b, c))));
+  assert_frac("a/b/c = a/(b/c)", cnd(fxy(7, 6, plus), fdiv(a, fdiv(b, c))));
+  assert_frac("(1/3)/(1/2)/(7/4) = 7/6", cnd(fdiv(a, fdiv(b, c)), fxy(7, 6, plus)));
 
   print_footer();
 }
 
 void test_feq(void) {
   print_header("feq");
+
+  frac_t a = fxy(1, 3, plus);
+  frac_t b = fxy(4, 7, plus);
+
+  assert_frac("nan == nan", feq(nan_frac, nan_frac) == funknown);
+  assert_frac("a == nan", feq(a, nan_frac) == funknown);
+  assert_frac("nan == a", feq(nan_frac, a) == funknown);
+  assert_frac("inf == inf", feq(pinf_frac, pinf_frac) == funknown);
+  assert_frac("-inf == -inf", feq(minf_frac, minf_frac) == funknown);
+  assert_frac("-inf == inf", feq(minf_frac, pinf_frac) == ffalse);
+  assert_frac("inf == -inf", feq(pinf_frac, minf_frac) == ffalse);
+  assert_frac("inf == a", feq(pinf_frac, a) == ffalse);
+  assert_frac("-inf == a", feq(minf_frac, a) == ffalse);
+  assert_frac("a == inf", feq(a, pinf_frac) == ffalse);
+  assert_frac("a == -inf", feq(a, minf_frac) == ffalse);
+  assert_frac("a == a", feq(a, a) == ftrue);
+  assert_frac("a == b", feq(a, b) == ffalse);
+  assert_frac("b == a", feq(b, a) == ffalse);
   
   print_footer();
 }
 
 void test_fneq(void) {
   print_header("fneq");
+
+  frac_t a = fxy(1, 3, plus);
+  frac_t b = fxy(4, 7, plus);
+
+  assert_frac("nan != nan", fneq(nan_frac, nan_frac) == funknown);
+  assert_frac("a != nan", fneq(a, nan_frac) == funknown);
+  assert_frac("nan != a", fneq(nan_frac, a) == funknown);
+  assert_frac("inf != inf", fneq(pinf_frac, pinf_frac) == funknown);
+  assert_frac("-inf != -inf", fneq(minf_frac, minf_frac) == funknown);
+  assert_frac("-inf != inf", fneq(minf_frac, pinf_frac) == ftrue);
+  assert_frac("inf != -inf", fneq(pinf_frac, minf_frac) == ftrue);
+  assert_frac("inf != a", fneq(pinf_frac, a) == ftrue);
+  assert_frac("-inf != a", fneq(minf_frac, a) == ftrue);
+  assert_frac("a != inf", fneq(a, pinf_frac) == ftrue);
+  assert_frac("a != -inf", fneq(a, minf_frac) == ftrue);
+  assert_frac("a != a", fneq(a, a) == ffalse);
+  assert_frac("a != b", fneq(a, b) == ftrue);
+  assert_frac("b != a", fneq(b, a) == ftrue);
+
   print_footer();
 }
 
 void test_fgt(void) {
   print_header("fgt");
+
+  frac_t a = fxy(1, 3, plus);
+  frac_t _a = fxy(1, 3, mins);
+  frac_t b = fxy(4, 7, plus);
+
+  assert_frac("nan > nan", fgt(nan_frac, nan_frac) == funknown);
+  assert_frac("nan > a", fgt(nan_frac, a) == funknown);
+  assert_frac("a > nan", fgt(a, nan_frac) == funknown);
+  assert_frac("inf > inf", fgt(pinf_frac, pinf_frac) == funknown);
+  assert_frac("inf > -inf", fgt(pinf_frac, minf_frac) == ftrue);
+  assert_frac("-inf > inf", fgt(minf_frac, pinf_frac) == ffalse);
+  assert_frac("-inf > -inf", fgt(minf_frac, minf_frac) == funknown);
+  assert_frac("inf > a", fgt(pinf_frac, a) == ftrue);
+  assert_frac("inf > -a", fgt(pinf_frac, _a) == ftrue);
+  assert_frac("-inf > a", fgt(minf_frac, a) == ffalse);
+  assert_frac("-inf > -a", fgt(minf_frac, _a) == ffalse);
+  assert_frac("a > inf", fgt(a, pinf_frac) == ffalse);
+  assert_frac("-a > inf", fgt(_a, pinf_frac) == ffalse);
+  assert_frac("a > -inf", fgt(a, minf_frac) == ftrue);
+  assert_frac("-a > -inf", fgt(_a, minf_frac) == ftrue);
+  assert_frac("a > b", fgt(a, b) == ffalse);
+  assert_frac("b > a", fgt(b, a) == ftrue);
+  assert_frac("a > a", fgt(a, a) == ffalse);
+  assert_frac("-a > -a", fgt(_a, _a) == ffalse);
+  assert_frac("-a > b", fgt(_a, b) == ffalse);
+  assert_frac("b > -a", fgt(b, _a) == ftrue);
+
   print_footer();
 }
 
 void test_flt(void) {
   print_header("flt");
+
+  frac_t a = fxy(1, 3, plus);
+  frac_t _a = fxy(1, 3, mins);
+  frac_t b = fxy(4, 7, plus);
+
+  assert_frac("nan < nan", flt(nan_frac, nan_frac) == funknown);
+  assert_frac("nan < a", flt(nan_frac, a) == funknown);
+  assert_frac("a < nan", flt(a, nan_frac) == funknown);
+  assert_frac("inf < inf", flt(pinf_frac, pinf_frac) == funknown);
+  assert_frac("inf < -inf", flt(pinf_frac, minf_frac) == ffalse);
+  assert_frac("-inf < inf", flt(minf_frac, pinf_frac) == ftrue);
+  assert_frac("-inf < -inf", flt(minf_frac, minf_frac) == funknown);
+  assert_frac("inf < a", flt(pinf_frac, a) == ffalse);
+  assert_frac("inf < -a", flt(pinf_frac, _a) == ffalse);
+  assert_frac("-inf < a", flt(minf_frac, a) == ftrue);
+  assert_frac("-inf < -a", flt(minf_frac, _a) == ftrue);
+  assert_frac("a < inf", flt(a, pinf_frac) == ftrue);
+  assert_frac("-a < inf", flt(_a, pinf_frac) == ftrue);
+  assert_frac("a < -inf", flt(a, minf_frac) == ffalse);
+  assert_frac("-a < -inf", flt(_a, minf_frac) == ffalse);
+  assert_frac("a < b", flt(a, b) == ftrue);
+  assert_frac("b < a", flt(b, a) == ffalse);
+  assert_frac("a < a", flt(a, a) == ffalse);
+  assert_frac("-a < -a", flt(_a, _a) == ffalse);
+  assert_frac("-a < b", flt(_a, b) == ftrue);
+  assert_frac("b < -a", flt(b, _a) == ffalse);
+
   print_footer();
 }
 
 void test_fgte(void) {
   print_header("fgte");
+
+  frac_t a = fxy(1, 3, plus);
+  frac_t _a = fxy(1, 3, mins);
+  frac_t b = fxy(4, 7, plus);
+
+  assert_frac("nan >= nan", fgte(nan_frac, nan_frac) == funknown);
+  assert_frac("nan >= a", fgte(nan_frac, a) == funknown);
+  assert_frac("a >= nan", fgte(a, nan_frac) == funknown);
+  assert_frac("inf >= inf", fgte(pinf_frac, pinf_frac) == funknown);
+  assert_frac("inf >= -inf", fgte(pinf_frac, minf_frac) == ftrue);
+  assert_frac("-inf >= inf", fgte(minf_frac, pinf_frac) == ffalse);
+  assert_frac("-inf >= -inf", fgte(minf_frac, minf_frac) == funknown);
+  assert_frac("inf >= a", fgte(pinf_frac, a) == ftrue);
+  assert_frac("inf >= -a", fgte(pinf_frac, _a) == ftrue);
+  assert_frac("-inf >= a", fgte(minf_frac, a) == ffalse);
+  assert_frac("-inf >= -a", fgte(minf_frac, _a) == ffalse);
+  assert_frac("a >= inf", fgte(a, pinf_frac) == ffalse);
+  assert_frac("-a >= inf", fgte(_a, pinf_frac) == ffalse);
+  assert_frac("a >= -inf", fgte(a, minf_frac) == ftrue);
+  assert_frac("-a >= -inf", fgte(_a, minf_frac) == ftrue);
+  assert_frac("a >= b", fgte(a, b) == ffalse);
+  assert_frac("b >= a", fgte(b, a) == ftrue);
+  assert_frac("a >= a", fgte(a, a) == ftrue);
+  assert_frac("-a >= -a", fgte(_a, _a) == ftrue);
+  assert_frac("-a >= b", fgte(_a, b) == ffalse);
+  assert_frac("b >= -a", fgte(b, _a) == ftrue);
+
   print_footer();
 }
 
 void test_flte(void) {
   print_header("flte");
+
+  frac_t a = fxy(1, 3, plus);
+  frac_t _a = fxy(1, 3, mins);
+  frac_t b = fxy(4, 7, plus);
+
+  assert_frac("nan <= nan", flte(nan_frac, nan_frac) == funknown);
+  assert_frac("nan <= a", flte(nan_frac, a) == funknown);
+  assert_frac("a <= nan", flte(a, nan_frac) == funknown);
+  assert_frac("inf <= inf", flte(pinf_frac, pinf_frac) == funknown);
+  assert_frac("inf <= -inf", flte(pinf_frac, minf_frac) == ffalse);
+  assert_frac("-inf <= inf", flte(minf_frac, pinf_frac) == ftrue);
+  assert_frac("-inf <= -inf", flte(minf_frac, minf_frac) == funknown);
+  assert_frac("inf <= a", flte(pinf_frac, a) == ffalse);
+  assert_frac("inf <= -a", flte(pinf_frac, _a) == ffalse);
+  assert_frac("-inf <= a", flte(minf_frac, a) == ftrue);
+  assert_frac("-inf <= -a", flte(minf_frac, _a) == ftrue);
+  assert_frac("a <= inf", flte(a, pinf_frac) == ftrue);
+  assert_frac("-a <= inf", flte(_a, pinf_frac) == ftrue);
+  assert_frac("a <= -inf", flte(a, minf_frac) == ffalse);
+  assert_frac("-a <= -inf", flte(_a, minf_frac) == ffalse);
+  assert_frac("a <= b", flte(a, b) == ftrue);
+  assert_frac("b <= a", flte(b, a) == ffalse);
+  assert_frac("a <= a", flte(a, a) == ftrue);
+  assert_frac("-a <= -a", flte(_a, _a) == ftrue);
+  assert_frac("-a <= b", flte(_a, b) == ftrue);
+  assert_frac("b <= -a", flte(b, _a) == ffalse);
+
   print_footer();
 }
 
 int main(void) {
   print_header("FRAC UNIT TESTS");
 
-  test_is_ferror();
+  test_is_finf();
   test_is_fzero();
   test_is_fid();
 
@@ -590,12 +496,6 @@ int main(void) {
   test_fsub();
   test_fmul();
   test_fdiv();
-
-  test_fconstp();
-  test_faddp();
-  test_fsubp();
-  test_fmulp();
-  test_fdivp();
 
   test_feq();
   test_fneq();
