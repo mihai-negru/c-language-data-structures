@@ -181,32 +181,63 @@ void test_fxy(void) {
 }
 
 /**
- * @brief Test `fconst` method.
+ * @brief Test `fmconst` method.
  * 
  */
-void test_fconst(void) {
-  print_header("fconst");
+void test_fmconst(void) {
+  print_header("fmconst");
 
   frac_t a = fxy(1, 3, plus);
   frac_t _a = fxy(1, 3, mins);
   int32_t c = 7;
 
-  assert_frac("c * nan = nan", is_fnan(fconst(nan_frac, c)));
-  assert_frac("-c * nan = nan", is_fnan(fconst(nan_frac, -c)));
-  assert_frac("c * inf = inf", is_fpinf(fconst(pinf_frac, c)));
-  assert_frac("(-c) * inf = -inf", is_fminf(fconst(pinf_frac, -c)));
-  assert_frac("c * (-inf) = -inf", is_fminf(fconst(minf_frac, c)));
-  assert_frac("(-c) * (-inf) = inf", is_fpinf(fconst(minf_frac, -c)));
-  assert_frac("c * zero = zero", is_fzero(fconst(zero_frac, c)));
-  assert_frac("(-c) * zero = zero", is_fzero(fconst(zero_frac, -c)));
-  assert_frac("c * a = (c*a)", cnd(fconst(a, c), fxy(7, 3, plus)));
-  assert_frac("(-c) * a = -(c*a)", cnd(fconst(a, -c), fxy(7, 3, mins)));
-  assert_frac("0 * a = zero", is_fzero(fconst(a, 0)));
-  assert_frac("0 * (-a) = zero", is_fzero(fconst(_a, 0)));
-  assert_frac("0 * inf = nan", is_fnan(fconst(pinf_frac, 0)));
-  assert_frac("0 * (-inf) = nan", is_fnan(fconst(minf_frac, 0)));
-  assert_frac("c * id = (c*id)", cnd(fconst(id_frac, c), fxy(c, 1, plus)));
-  assert_frac("(-c) * id = -(c*id)", cnd(fconst(id_frac, -c), fxy(c, 1, mins)));
+  assert_frac("c * nan = nan", is_fnan(fmconst(nan_frac, c)));
+  assert_frac("-c * nan = nan", is_fnan(fmconst(nan_frac, -c)));
+  assert_frac("c * inf = inf", is_fpinf(fmconst(pinf_frac, c)));
+  assert_frac("(-c) * inf = -inf", is_fminf(fmconst(pinf_frac, -c)));
+  assert_frac("c * (-inf) = -inf", is_fminf(fmconst(minf_frac, c)));
+  assert_frac("(-c) * (-inf) = inf", is_fpinf(fmconst(minf_frac, -c)));
+  assert_frac("c * zero = zero", is_fzero(fmconst(zero_frac, c)));
+  assert_frac("(-c) * zero = zero", is_fzero(fmconst(zero_frac, -c)));
+  assert_frac("c * a = (c*a)", cnd(fmconst(a, c), fxy(7, 3, plus)));
+  assert_frac("(-c) * a = -(c*a)", cnd(fmconst(a, -c), fxy(7, 3, mins)));
+  assert_frac("0 * a = zero", is_fzero(fmconst(a, 0)));
+  assert_frac("0 * (-a) = zero", is_fzero(fmconst(_a, 0)));
+  assert_frac("0 * inf = nan", is_fnan(fmconst(pinf_frac, 0)));
+  assert_frac("0 * (-inf) = nan", is_fnan(fmconst(minf_frac, 0)));
+  assert_frac("c * id = (c*id)", cnd(fmconst(id_frac, c), fxy(c, 1, plus)));
+  assert_frac("(-c) * id = -(c*id)", cnd(fmconst(id_frac, -c), fxy(c, 1, mins)));
+
+  print_footer();
+}
+
+/**
+ * @brief Test `fdconst` method.
+ * 
+ */
+void test_fdconst(void) {
+  print_header("fdconst");
+
+  frac_t a = fxy(1, 3, plus);
+  frac_t _a = fxy(1, 3, mins);
+  int32_t c = 7;
+
+  assert_frac("nan / c = nan", is_fnan(fdconst(nan_frac, c)));
+  assert_frac("nan / (-c) = nan", is_fnan(fdconst(nan_frac, -c)));
+  assert_frac("inf / c = inf", is_fpinf(fdconst(pinf_frac, c)));
+  assert_frac("inf / (-c) = -inf", is_fminf(fdconst(pinf_frac, -c)));
+  assert_frac("(-inf) / c = -inf", is_fminf(fdconst(minf_frac, c)));
+  assert_frac("(-inf) / (-c) = inf", is_fpinf(fdconst(minf_frac, -c)));
+  assert_frac("zero / c = zero", is_fzero(fdconst(zero_frac, c)));
+  assert_frac("zero / (-c) = zero", is_fzero(fdconst(zero_frac, -c)));
+  assert_frac("a / c = (a/c)", cnd(fdconst(a, c), fxy(1, 21, plus)));
+  assert_frac("a / (-c) = -(a/c)", cnd(fdconst(a, -c), fxy(1, 21, mins)));
+  assert_frac("a / 0 = inf", is_fpinf(fdconst(a, 0)));
+  assert_frac("(-a) / 0 = -inf", is_fminf(fdconst(_a, 0)));
+  assert_frac("inf / 0 = inf", is_fpinf(fdconst(pinf_frac, 0)));
+  assert_frac("(-inf) / 0 = -inf", is_fminf(fdconst(minf_frac, 0)));
+  assert_frac("id / c = (id/c)", cnd(fdconst(id_frac, c), fxy(1, c, plus)));
+  assert_frac("id / (-c) = -(id/c)", cnd(fdconst(id_frac, -c), fxy(1, c, mins)));
 
   print_footer();
 }
@@ -237,9 +268,9 @@ void test_fadd(void) {
   assert_frac("zero + (-a) = -a", cnd(fadd(zero_frac, _a), _a));
   assert_frac("a + zero = a", cnd(fadd(a, zero_frac), a));
   assert_frac("(-a) + zero = -a", cnd(fadd(_a, zero_frac), _a));
-  assert_frac("a + a = 2a", cnd(fadd(a, a), fconst(a, 2)));
+  assert_frac("a + a = 2a", cnd(fadd(a, a), fmconst(a, 2)));
   assert_frac("a + (-a) = zero", cnd(fadd(a, _a), zero_frac));
-  assert_frac("(-a) + (-a) = -2a", cnd(fadd(_a, _a), fconst(a, -2)));
+  assert_frac("(-a) + (-a) = -2a", cnd(fadd(_a, _a), fmconst(a, -2)));
   assert_frac("a + b = b + a", cnd(fadd(a, b), fadd(b, a)));
   assert_frac("(a+b)+c = a+(b+c)", cnd(fadd(fadd(a, b), c), fadd(a, fadd(b, c))));
   assert_frac("1/3 + 7/4 = 25/12", cnd(fadd(a, c), fxy(25, 12, plus)));
@@ -280,8 +311,8 @@ void test_fsub(void) {
   assert_frac("(-a) - zero = -a", cnd(fsub(_a, zero_frac), _a));
   assert_frac("a - a = zero", cnd(fsub(a, a), zero_frac));
   assert_frac("(-a) - (-a) = zero", cnd(fsub(_a, _a), zero_frac));
-  assert_frac("(-a) - a = -2a", cnd(fsub(_a, a), fconst(a, -2)));
-  assert_frac("a - (-a) = 2a", cnd(fsub(a, _a), fconst(a, 2)));
+  assert_frac("(-a) - a = -2a", cnd(fsub(_a, a), fmconst(a, -2)));
+  assert_frac("a - (-a) = 2a", cnd(fsub(a, _a), fmconst(a, 2)));
   assert_frac("a - b != b - a", !cnd(fsub(a, b), fsub(b, a)));
   assert_frac("(a-b)-c = a-(b+c)", cnd(fsub(fsub(a, b), c), fsub(a, fadd(b, c))));
   assert_frac("1/3 - 7/4 = -17/12", cnd(fsub(a, c), fxy(17, 12, mins)));
@@ -376,8 +407,8 @@ void test_fdiv(void) {
   assert_frac("a / 1 = a", cnd(fdiv(a, id_frac), a));
   assert_frac("(-a) / 1 = -a", cnd(fdiv(_a, id_frac), _a));
   assert_frac("a / a = 1", is_fid(fdiv(a, a)));
-  assert_frac("(-a) / a = -1", is_fid(fconst(fdiv(_a, a), -1)));
-  assert_frac("a / (-a) = -1", is_fid(fconst(fdiv(a, _a), -1)));
+  assert_frac("(-a) / a = -1", is_fid(fmconst(fdiv(_a, a), -1)));
+  assert_frac("a / (-a) = -1", is_fid(fmconst(fdiv(a, _a), -1)));
   assert_frac("(-a) / (-a) = 1", is_fid(fdiv(_a, _a)));
   assert_frac("a/b != b/a", !cnd(fdiv(a, b), fdiv(b, a)));
   assert_frac("(a/b)/c != a/(b/c)", !cnd(fdiv(fdiv(a, b), c), fdiv(a, fdiv(b, c))));
@@ -600,7 +631,8 @@ int main(void) {
 
   test_fxy();
 
-  test_fconst();
+  test_fmconst();
+  test_fdconst();
   test_fadd();
   test_fsub();
   test_fmul();

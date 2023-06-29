@@ -186,10 +186,20 @@ frac_t      fxy           (uint32_t x, uint32_t y, sign_t s);
  * 
  * @param f1 first fraction.
  * @param c constant value.
- * @return frac_t the product of the constant and fraction, or a infinity fraction
- * if the fraction is error.
+ * @return frac_t the product of the constant and fraction, or nan if case of errors
  */
-frac_t      fconst        (frac_t f1, int32_t c);
+frac_t      fmconst        (frac_t f1, int32_t c);
+
+/**
+ * @brief Devides the fraction with a constant and returns the irreductible fraction f = a/b,
+ * where a and b are coprime. The function does the exact operation as the '/' operator.
+ * f = f1 / c = f1 * (1/c).
+ * 
+ * @param f1 first fraction.
+ * @param c constant value.
+ * @return frac_t the division of the constant and fraction, or nan if case of errors.
+ */
+frac_t      fdconst       (frac_t f1, int32_t c);
 
 /**
  * @brief Adds two fractions and returns the irreductible fraction f = a/b,
@@ -250,7 +260,19 @@ frac_t      fdiv          (frac_t f1, frac_t f2);
  * @param c constant value.
  *
  */
-void        fconstp       (frac_t *f1, int32_t c);
+void        fmconstp       (frac_t *f1, int32_t c);
+
+/**
+ * @brief Divides the fraction with a constant and stores the irreductible
+ * fraction f = a/b in the first fraction, where a and b are coprime.
+ * The function does the exact operation as the '/=' operator.
+ * f1 /= c.
+ * 
+ * @param f1 pointer to first fraction.
+ * @param c constant value.
+ *
+ */
+void        fdconstp       (frac_t *f1, int32_t c);
 
 /**
  * @brief Adds two fractions and stores the irreductible fraction f = a/b in the first fraction,

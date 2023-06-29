@@ -18,7 +18,8 @@ The API consists in the following functions:
 * *fsub* - subtracts two fractions and returns the result.
 * *fmul* - multiplies two fractions and returns the result.
 * *fdiv* - divides two fractions and returns the result.
-* *fconst* - multiplies a fraction with a constant.
+* *fmconst* - multiplies a fraction with a constant.
+* *fdconst* - divides a fraction with a constant.
 
 The API also comes with *pointer* functions, that do the same thing, however upates the first fraction instead of returning a new fraction.
 
@@ -28,7 +29,8 @@ The methods are:
 * *fsubp* - subtracts two fractions and returns the result.
 * *fmulp* - multiplies two fractions and returns the result.
 * *fdivp* - divides two fractions and returns the result.
-* *fconstp* - multiplies a fraction with a constant.
+* *fmconstp* - multiplies a fraction with a constant.
+* *fdconstp* - divides a fraction with a constant.
 
 ## Building the project
 

@@ -236,10 +236,9 @@ frac_t fxy(uint32_t x, uint32_t y, sign_t s) {
  * 
  * @param f1 first fraction.
  * @param c constant value.
- * @return frac_t the product of the constant and fraction, or a infinity fraction
- * if the fraction is error.
+ * @return frac_t the product of the constant and fraction, or nan if case of errors
  */
-frac_t fconst(frac_t f1, int32_t c) {
+frac_t fmconst(frac_t f1, int32_t c) {
   if (is_fnan(f1)) {
     return nan_frac;
   }
@@ -272,6 +271,56 @@ frac_t fconst(frac_t f1, int32_t c) {
       uint32_t simplify = gcd((uint32_t)c, f1.y);
       f.x = (c / simplify) * f1.x;
       f.y = f1.y / simplify;
+    }
+
+    return f;
+  }
+}
+
+/**
+ * @brief Devides the fraction with a constant and returns the irreductible fraction f = a/b,
+ * where a and b are coprime. The function does the exact operation as the '/' operator.
+ * f = f1 / c = f1 * (1/c).
+ * 
+ * @param f1 first fraction.
+ * @param c constant value.
+ * @return frac_t the division of the constant and fraction, or nan if case of errors.
+ */
+frac_t fdconst(frac_t f1, int32_t c) {
+  if (is_fnan(f1)) {
+    return nan_frac;
+  }
+
+  frac_t f;
+  if (c < 0) {
+    f.s = (f1.s + 1) % 2;
+    c *= -1;
+  } else {
+    f.s = f1.s;
+  }
+
+  fbool_t is_f1_inf = is_finf(f1);
+
+  if (c == 0) {
+    if (is_fzero(f1)) {
+      return nan_frac;
+    } else if (is_fpositive(f1)) {
+      return pinf_frac;
+    } else {
+      return minf_frac;
+    }
+  } else {
+    if (is_fzero(f1)) {
+      return zero_frac;
+    }
+
+    if (is_f1_inf) {
+      f.x = f1.x;
+      f.y = f1.y;
+    } else {
+      uint32_t simplify = gcd((uint32_t)c, f1.x);
+      f.x = f1.x / simplify;
+      f.y = (c / simplify) * f1.y;
     }
 
     return f;
@@ -549,8 +598,22 @@ frac_t fdiv(frac_t f1, frac_t f2) {
  * @param c constant value.
  *
  */
-void fconstp(frac_t *f1, int32_t c) {
-  *f1 = fconst(*f1, c);
+void fmconstp(frac_t *f1, int32_t c) {
+  *f1 = fmconst(*f1, c);
+}
+
+/**
+ * @brief Divides the fraction with a constant and stores the irreductible
+ * fraction f = a/b in the first fraction, where a and b are coprime.
+ * The function does the exact operation as the '/=' operator.
+ * f1 /= c.
+ * 
+ * @param f1 pointer to first fraction.
+ * @param c constant value.
+ *
+ */
+void fdconstp(frac_t *f1, int32_t c) {
+  *f1 = fdconst(*f1, c);
 }
 
 /**
